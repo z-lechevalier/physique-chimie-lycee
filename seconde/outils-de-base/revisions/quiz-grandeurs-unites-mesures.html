@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : Grandeurs</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+/* === QCM === */
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+/* === Banques d'étiquettes === */
+.banques{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--gris-l);border-radius:var(--r);background:#f8f6f2;align-items:center}
+.bank-label{width:100%;font-size:.8rem;color:#888;font-style:italic;margin-bottom:2px}
+.etq{font-family:'Source Serif 4',serif;font-size:.92rem;padding:6px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s;user-select:none}
+.etq:hover{background:#eef4fa}
+.etq.sel{background:var(--bleu-cl);color:var(--blanc)}
+/* === Tableaux grandeurs / unités / appareils === */
+.grandeur-table{width:100%;border-collapse:collapse;margin-top:6px}
+.grandeur-table th,.grandeur-table td{padding:6px 8px;border:1px solid var(--gris-l);text-align:center;font-size:.9rem}
+.grandeur-table th{background:var(--bleu);font-weight:700;color:var(--blanc);font-size:.84rem;letter-spacing:.02em}
+.cell-fixe{font-weight:600;color:var(--texte);background:#f0ede6}
+.tslot{font-family:'Source Serif 4',serif;font-size:.9rem;width:100%;min-height:38px;padding:6px 8px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;color:var(--texte)}
+.tslot:hover:not(:disabled):not(.fige){border-color:var(--bleu-cl);background:#eef4fa}
+.tslot.sel{border-color:var(--bleu-cl);border-style:solid;background:#ddeef8}
+.tslot.filled{border-style:solid;border-color:var(--bleu-cl);color:var(--bleu);font-weight:600}
+.tslot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.tslot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.tslot.fige{cursor:default}
+/* Cases inline pour la phrase à trous */
+.tslot-inline{display:inline-block;width:auto;min-width:120px;vertical-align:middle;margin:2px 3px}
+.phrase{font-size:.95rem;line-height:2.2}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .grandeur-table th,.grandeur-table td{padding:4px 4px;font-size:.8rem}
+  .tslot{min-height:34px;padding:5px 4px;font-size:.8rem}
+  .etq{font-size:.85rem;padding:5px 9px}
+}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> Grandeurs vs unités vs mesures (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+<div class="consignes-titre">CONSIGNES</div>
+<div class="contexte">
+  Pour chaque tableau, sur chaque ligne <strong>une case t'est donnée</strong> : à toi de placer les deux autres
+  (grandeur, unité usuelle, appareil de mesure).
+  Clique sur une <strong>étiquette</strong> dans une banque, puis sur la <strong>case vide</strong> où tu veux la poser
+  (tu peux aussi cliquer d'abord sur la case). Pour reprendre une étiquette mal placée, clique simplement dessus dans le tableau.
+  Attention : les banques contiennent des <strong>étiquettes en trop</strong> !
+  <strong>Chaque ligne compte pour 1 point</strong> (ses 2 cases doivent être justes). Au 2ᵉ essai, seules les étiquettes des
+  lignes fausses retournent dans les banques. La partie B se termine par des questions de réflexion sur ce que ces tableaux racontent.<br>
+  <strong>Relancer l'activité remet tout à zéro et remélange les tableaux.</strong>
+</div>
+
+<div class="partie-titre">Partie A — Les grandeurs, leurs unités, leurs appareils</div>
+
+<div class="qbloc" id="blocT1">
+  <div class="qenonce">
+    <span class="qnum">A1</span>
+    <span>Compléter le tableau ci-dessous avec les étiquettes en respectant les colonnes.</span>
+  </div>
+  <div class="qcont">
+    <table class="grandeur-table">
+      <thead>
+        <tr><th style="width:28%">Grandeur</th><th style="width:36%">Unité usuelle</th><th style="width:36%">Appareil de mesure</th></tr>
+      </thead>
+      <tbody id="tb_T1"></tbody>
+    </table>
+    <div class="banques">
+      <div class="bank" id="bank_t1gra"><div class="bank-label">Banque des grandeurs</div></div>
+      <div class="bank" id="bank_t1uni"><div class="bank-label">Banque des unités</div></div>
+      <div class="bank" id="bank_t1app"><div class="bank-label">Banque des appareils</div></div>
+    </div>
+    <div class="fb" id="fb_T1"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_T1">Valider le tableau 1</button>
+      <button class="btn-r" id="btnr_T1">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="qbloc" id="blocT2">
+  <div class="qenonce">
+    <span class="qnum">A2</span>
+    <span>Compléter le tableau ci-dessous avec les étiquettes en respectant les colonnes.</span>
+  </div>
+  <div class="qcont">
+    <table class="grandeur-table">
+      <thead>
+        <tr><th style="width:28%">Grandeur</th><th style="width:36%">Unité usuelle</th><th style="width:36%">Appareil de mesure</th></tr>
+      </thead>
+      <tbody id="tb_T2"></tbody>
+    </table>
+    <div class="banques">
+      <div class="bank" id="bank_t2gra"><div class="bank-label">Banque des grandeurs</div></div>
+      <div class="bank" id="bank_t2uni"><div class="bank-label">Banque des unités</div></div>
+      <div class="bank" id="bank_t2app"><div class="bank-label">Banque des appareils</div></div>
+    </div>
+    <div class="fb" id="fb_T2"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_T2">Valider le tableau 2</button>
+      <button class="btn-r" id="btnr_T2">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="partie-titre">Partie B — Grandeur, unité, valeur : qui est qui ?</div>
+
+<div class="qbloc" id="qB1">
+  <div class="qenonce">
+    <span class="qnum">B1</span>
+    <span>À partir des tableaux ci-dessus, choisis la meilleure définition d'une grandeur physique.</span>
+  </div>
+  <div class="qcont">
+    <ul class="opts" id="opts_qB1"></ul>
+    <div class="fb" id="fb_qB1"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_qB1">Valider</button>
+      <button class="btn-r" id="btnr_qB1">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="qbloc" id="qB2">
+  <div class="qenonce">
+    <span class="qnum">B2</span>
+    <span>Un camarade écrit sur son compte-rendu : «&nbsp;J'ai mesuré la masse du caillou : m&nbsp;=&nbsp;47,3&nbsp;». Pourquoi son résultat est-il inutilisable ?</span>
+  </div>
+  <div class="qcont">
+    <ul class="opts" id="opts_qB2"></ul>
+    <div class="fb" id="fb_qB2"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_qB2">Valider</button>
+      <button class="btn-r" id="btnr_qB2">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="qbloc" id="qB3">
+  <div class="qenonce">
+    <span class="qnum">B3</span>
+    <span>Dans la phrase «&nbsp;la masse de cette pomme vaut 150&nbsp;g&nbsp;», que représente «&nbsp;150&nbsp;g&nbsp;» ?</span>
+  </div>
+  <div class="qcont">
+    <ul class="opts" id="opts_qB3"></ul>
+    <div class="fb" id="fb_qB3"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_qB3">Valider</button>
+      <button class="btn-r" id="btnr_qB3">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="qbloc" id="qB4">
+  <div class="qenonce">
+    <span class="qnum">B4</span>
+    <span>Le pH et la densité n'ont pas d'unité. Sont-ils quand même des grandeurs physiques ?</span>
+  </div>
+  <div class="qcont">
+    <ul class="opts" id="opts_qB4"></ul>
+    <div class="fb" id="fb_qB4"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_qB4">Valider</button>
+      <button class="btn-r" id="btnr_qB4">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="qbloc" id="qB5">
+  <div class="qenonce">
+    <span class="qnum">B5</span>
+    <span>Complète la phrase de synthèse en plaçant les bons mots de la banque (attention, il y a des mots en trop).</span>
+  </div>
+  <div class="qcont">
+    <p class="phrase">
+      Pour connaître une
+      <button class="tslot tslot-inline" data-cat="mot" data-bloc="PH" data-good="grandeur" data-val=""></button>
+      (par exemple la masse), on utilise un
+      <button class="tslot tslot-inline" data-cat="mot" data-bloc="PH" data-good="appareil" data-val=""></button>
+      (par exemple la balance), qui fournit une
+      <button class="tslot tslot-inline" data-cat="mot" data-bloc="PH" data-good="valeur" data-val=""></button>
+      (par exemple 150), que l'on écrit toujours avec son
+      <button class="tslot tslot-inline" data-cat="mot" data-bloc="PH" data-good="unité" data-val=""></button>
+      (par exemple le gramme).
+    </p>
+    <div class="banques">
+      <div class="bank" id="bank_mot"><div class="bank-label">Banque des mots</div></div>
+    </div>
+    <div class="fb" id="fb_qB5"></div>
+    <div style="margin-top:10px">
+      <button class="btn-v" id="btnv_qB5">Valider la phrase</button>
+      <button class="btn-r" id="btnr_qB5">2<sup>e</sup> essai</button>
+    </div>
+  </div>
+</div>
+
+<div class="barre-finale">
+  <button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+  <button class="btn-global btn-recommencer" id="btn-reload">&#8634; Recommencer</button>
+</div>
+
+<div id="bilan">
+  <h2>Bilan</h2>
+  <div class="score-res">
+    <div class="score-res-item">Note 1 (1ᵉʳ essai) : <span class="score-res-val" id="bilan-n1">0 / 25</span></div>
+    <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai) : <span class="score-res-val" id="bilan-n2">0 / 25</span></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+"use strict";
+
+// ===== Mode du quiz (question 0 de l'étape 0) =====
+const MODE_QUIZ = "entrainement";
+const PHASE = "bases";                        // "bases" | "competences" | "aucune"
+const FIGER_JUSTES = (PHASE === "bases");     // 2e essai differentiel : les cases justes restent figees
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+// ===== Données des deux tableaux =====
+const ETQ_CALC = "Pas de mesure directe — grandeur calculée";
+
+const TABLEAUX = {
+  T1: {
+    bloc: "blocT1", tbody: "tb_T1", catGra: "t1gra", catUni: "t1uni", catApp: "t1app",
+    fbokTxt: "&#10003; Exact ! Le tableau 1 est entièrement reconstitué.",
+    rows: [
+      { q: "t1_long",    gra: "Longueur (ℓ, d)",            uni: "le mètre (m)",                              app: "la règle graduée" },
+      { q: "t1_masse",   gra: "Masse (m)",                  uni: "le kilogramme (kg)",                        app: "la balance" },
+      { q: "t1_temp",    gra: "Température (θ)",            uni: "le degré Celsius (°C)",                     app: "le thermomètre" },
+      { q: "t1_vit",     gra: "Vitesse (v)",                uni: "le mètre par seconde (m/s)",                app: "le cinémomètre" },
+      { q: "t1_force",   gra: "Force — poids (F, P)",       uni: "le newton (N)",                             app: "le dynamomètre" },
+      { q: "t1_tension", gra: "Tension électrique (U)",     uni: "le volt (V)",                               app: "le voltmètre" },
+      { q: "t1_ph",      gra: "pH",                         uni: "sans unité",                                app: "le pH-mètre" },
+      { q: "t1_freq",    gra: "Fréquence (f)",              uni: "le hertz (Hz)",                             app: "le fréquencemètre" },
+      { q: "t1_mv",      gra: "Masse volumique (ρ)",        uni: "le kilogramme par mètre cube (kg/m³)",      app: ETQ_CALC },
+      { q: "t1_angle",   gra: "Angle (α)",                  uni: "le degré (°)",                              app: "le rapporteur" }
+    ],
+    distUni: ["le kelvin (K)", "le coulomb (C)"],
+    distApp: ["le thermostat", "l'altimètre", "le baromètre"],
+    distGra: ["Charge électrique (q)", "Accélération (a)"]
+  },
+  T2: {
+    bloc: "blocT2", tbody: "tb_T2", catGra: "t2gra", catUni: "t2uni", catApp: "t2app",
+    fbokTxt: "&#10003; Exact ! Le tableau 2 est entièrement reconstitué.",
+    rows: [
+      { q: "t2_duree",  gra: "Durée (Δt)",                  uni: "la seconde (s)",          app: "le chronomètre" },
+      { q: "t2_vol",    gra: "Volume (V)",                 uni: "le litre (L)",            app: "l'éprouvette graduée" },
+      { q: "t2_dens",   gra: "Densité (d)",                uni: "sans unité",              app: ETQ_CALC },
+      { q: "t2_pres",   gra: "Pression (P)",               uni: "le pascal (Pa)",          app: "le manomètre" },
+      { q: "t2_int",    gra: "Intensité du courant (I)",   uni: "l'ampère (A)",            app: "l'ampèremètre" },
+      { q: "t2_res",    gra: "Résistance électrique (R)",  uni: "l'ohm (Ω)",               app: "l'ohmmètre" },
+      { q: "t2_per",    gra: "Période (T)",                uni: "la seconde (s)",          app: "l'oscilloscope" },
+      { q: "t2_ener",   gra: "Énergie (E)",                uni: "le joule (J)",            app: "le joulemètre" },
+      { q: "t2_puis",   gra: "Puissance (P)",              uni: "le watt (W)",             app: "le wattmètre" },
+      { q: "t2_aire",   gra: "Aire (S)",                   uni: "le mètre carré (m²)",     app: ETQ_CALC }
+    ],
+    distUni: ["le hertz (Hz)", "le newton (N)"],
+    distApp: ["le fréquencemètre", "l'hygromètre", "le luxmètre"],
+    distGra: ["Quantité de matière (n)", "Longueur d'onde (λ)"]
+  }
+};
+
+const PARQ = {};      // PARQ[qid] = ligne (row) correspondante
+const TABLEAU_DE = {};// TABLEAU_DE[qid] = "T1" | "T2"
+Object.keys(TABLEAUX).forEach(tk => {
+  TABLEAUX[tk].rows.forEach(r => { PARQ[r.q] = r; TABLEAU_DE[r.q] = tk; });
+});
+
+const NOM_BANQUE = {
+  t1gra: "Grandeurs (tableau 1)",
+  t1uni: "Unités (tableau 1)",
+  t1app: "Appareils (tableau 1)",
+  t2gra: "Grandeurs (tableau 2)",
+  t2uni: "Unités (tableau 2)",
+  t2app: "Appareils (tableau 2)",
+  mot:   "Mots de la phrase"
+};
+
+// ===== QCM (partie B) =====
+const QCM = {
+  qB1: {
+    props: [
+      { html: "Une propriété d'un objet ou d'un phénomène que l'on peut mesurer, c'est-à-dire exprimer par une valeur.", correct: true },
+      { html: "Le nombre que l'on lit sur l'écran ou sur la graduation de l'appareil au moment où l'on effectue la mesure.", correct: false },
+      { html: "La référence choisie par convention qui permet de comparer entre eux les résultats de différentes mesures.", correct: false },
+      { html: "L'instrument utilisé au laboratoire pour obtenir, avec précision, la valeur que l'on cherche à connaître.", correct: false }
+    ],
+    fb1: "Trois de ces propositions décrivent en réalité autre chose : la valeur, l'unité ou l'appareil. Laquelle décrit la colonne « Grandeur » des tableaux ci-dessus ?",
+    fb2: "Une grandeur est ce que l'on cherche à connaître : une propriété (longueur, masse, tension…) que l'on peut quantifier. Le nombre lu est la <strong>valeur</strong>, la référence de comparaison est l'<strong>unité</strong>, l'instrument est l'<strong>appareil</strong>.",
+    fbok: "&#10003; Exact ! Une grandeur est une propriété d'un objet ou d'un phénomène que l'on peut mesurer."
+  },
+  qB2: {
+    props: [
+      { html: "Sans unité, le nombre seul ne veut rien dire.", correct: true },
+      { html: "Parce qu'il n'a pas indiqué l'appareil de mesure utilisé.", correct: false },
+      { html: "Parce qu'il manque des chiffres après la virgule pour être précis.", correct: false },
+      { html: "Parce qu'une masse doit s'exprimer par un nombre entier.", correct: false }
+    ],
+    fb1: "Relis le résultat : 47,3… 47,3 quoi ? Que manque-t-il pour que ce nombre ait un sens ?",
+    fb2: "Il manque l'<strong>unité</strong> : 47,3 g, 47,3 kg ou 47,3 t, ce n'est pas du tout la même masse ! L'unité fait partie du résultat. L'appareil, lui, est une information utile mais pas indispensable pour comprendre le résultat.",
+    fbok: "&#10003; Exact ! Sans unité, le nombre seul ne veut rien dire : l'unité fait partie du résultat de mesure."
+  },
+  qB3: {
+    props: [
+      { html: "La valeur de la grandeur, exprimée avec son unité.", correct: true },
+      { html: "La grandeur que l'on cherche à connaître.", correct: false },
+      { html: "L'unité dans laquelle la grandeur est exprimée.", correct: false },
+      { html: "Le symbole de la grandeur qui a été mesurée.", correct: false }
+    ],
+    fb1: "Décompose « 150 g » : un nombre et une unité. Lequel des mots du cours désigne cet ensemble ?",
+    fb2: "« 150 » est le nombre et « g » est l'unité : ensemble, ils forment la <strong>valeur</strong> de la grandeur. La grandeur, elle, c'est la <strong>masse</strong> ; son symbole est <i>m</i>.",
+    fbok: "&#10003; Exact ! « 150 g » est la valeur (nombre + unité) de la grandeur « masse »."
+  },
+  qB4: {
+    props: [
+      { html: "Oui : on peut les quantifier par une valeur, et c'est cela qui définit une grandeur.", correct: true },
+      { html: "Non : une grandeur est toujours accompagnée d'une unité, sans aucune exception.", correct: false },
+      { html: "Oui, mais seulement parce qu'on peut les mesurer directement avec un appareil dédié.", correct: false },
+      { html: "Non : ce sont seulement des nombres pratiques, sans réelle signification physique.", correct: false }
+    ],
+    fb1: "Qu'est-ce qui définit une grandeur : le fait d'avoir une unité, ou le fait de pouvoir être exprimée par une valeur ?",
+    fb2: "Une grandeur est une propriété que l'on peut <strong>quantifier</strong>. pH = 7 ou d = 0,92 sont bien des valeurs : le pH et la densité sont donc des grandeurs, simplement sans unité.",
+    fbok: "&#10003; Exact ! Une grandeur se définit par le fait d'être quantifiable, pas par son unité."
+  }
+};
+
+// ===== Phrase à trous (qB5) =====
+const MOTS_PHRASE = ["grandeur", "appareil", "valeur", "unité", "symbole", "formule"];
+
+// ===== Constantes communes =====
+const LABELS = {
+  t1_long:    "Tableau 1 · Longueur",
+  t1_masse:   "Tableau 1 · Masse",
+  t1_temp:    "Tableau 1 · Température",
+  t1_vit:     "Tableau 1 · Vitesse",
+  t1_force:   "Tableau 1 · Force (poids)",
+  t1_tension: "Tableau 1 · Tension électrique",
+  t1_ph:      "Tableau 1 · pH",
+  t1_freq:    "Tableau 1 · Fréquence",
+  t1_mv:      "Tableau 1 · Masse volumique",
+  t1_angle:   "Tableau 1 · Angle",
+  t2_duree:   "Tableau 2 · Durée",
+  t2_vol:     "Tableau 2 · Volume",
+  t2_dens:    "Tableau 2 · Densité",
+  t2_pres:    "Tableau 2 · Pression",
+  t2_int:     "Tableau 2 · Intensité du courant",
+  t2_res:     "Tableau 2 · Résistance électrique",
+  t2_per:     "Tableau 2 · Période",
+  t2_ener:    "Tableau 2 · Énergie",
+  t2_puis:    "Tableau 2 · Puissance",
+  t2_aire:    "Tableau 2 · Aire",
+  qB1: "Définition d'une grandeur",
+  qB2: "Rôle de l'unité",
+  qB3: "Valeur = nombre + unité",
+  qB4: "Grandeurs sans unité",
+  qB5: "Phrase de synthèse"
+};
+
+const SCORM_IDS = {
+  t1_long: "unite_appareil", t1_masse: "unite_appareil", t1_temp: "unite_appareil",
+  t1_vit: "unite_appareil", t1_force: "unite_appareil", t1_tension: "unite_appareil",
+  t1_ph: "unite_appareil", t1_freq: "unite_appareil", t1_mv: "unite_appareil",
+  t1_angle: "unite_appareil",
+  t2_duree: "unite_appareil", t2_vol: "unite_appareil", t2_dens: "unite_appareil",
+  t2_pres: "unite_appareil", t2_int: "unite_appareil", t2_res: "unite_appareil",
+  t2_per: "unite_appareil", t2_ener: "unite_appareil", t2_puis: "unite_appareil",
+  t2_aire: "unite_appareil",
+  qB1: "def_grandeur", qB2: "role_unite", qB3: "valeur_nombre_unite",
+  qB4: "grandeurs_sans_unite", qB5: "phrase_synthese"
+};
+
+const IDS_QCM        = ["qB1", "qB2", "qB3", "qB4"];
+const IDS_QCM_MULTI  = [];
+const IDS_ASSOC      = [];
+const IDS_NUM        = [];
+const IDS_EXPR       = [];
+const IDS_CONSTR     = [];
+const IDS_CLASS      = [];
+const IDS_RECON      = [];
+const IDS_EQUIL      = [];
+const IDS_CLASSEMENT = [];
+const IDS_TRANSFO_R  = [];
+const IDS_TRANSFO_C  = [];
+const IDS_TABLEAU    = Object.keys(TABLEAUX).flatMap(tk => TABLEAUX[tk].rows.map(r => r.q));
+const IDS_PHRASE     = ["qB5"];
+
+const TOUS_IDS = [...IDS_TABLEAU, ...IDS_QCM, ...IDS_PHRASE];
+const TOTAL = TOUS_IDS.length;
+
+const etat = {};
+TOUS_IDS.forEach(id => { etat[id] = { resultat: null, tentative: 0 }; });
+
+const ORDRE_T = { T1: [], T2: [] }; // ordre d'affichage des lignes de chaque tableau après mélange
+const DONNEES = {};                 // DONNEES[qid] = champ de la case donnée ("gra"/"uni"/"app")
+let etqSel = null;                  // étiquette sélectionnée dans une banque
+let slotSel = null;                 // case vide sélectionnée
+const VERROU = { T1: false, T2: false, PH: false };
+
+// ===== Mélange Fisher-Yates =====
+function melanger(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== Construction des tableaux et des banques =====
+function construireTableau(tk){
+  const cfg = TABLEAUX[tk];
+  ORDRE_T[tk] = melanger(cfg.rows.map(r => r.q));
+
+  // Répartition équilibrée des cases données : 10 lignes / 3 colonnes → 3+3+3,
+  // la colonne qui reçoit la 10e case donnée est tirée au hasard (4+3+3)
+  const champs = ["gra","uni","app"];
+  const cats = melanger(["gra","gra","gra","uni","uni","uni","app","app","app",
+                         champs[Math.floor(Math.random()*3)]]);
+  ORDRE_T[tk].forEach((qid, i) => { DONNEES[qid] = cats[i]; });
+
+  const catDe = { gra: cfg.catGra, uni: cfg.catUni, app: cfg.catApp };
+
+  const tbody = document.getElementById(cfg.tbody);
+  tbody.innerHTML = '';
+  ORDRE_T[tk].forEach(qid => {
+    const r = PARQ[qid];
+    const donnee = DONNEES[qid];
+    const tr = document.createElement('tr');
+    champs.forEach(champ => {
+      const td = document.createElement('td');
+      if(champ === donnee){
+        td.className = "cell-fixe";
+        td.textContent = r[champ];
+      } else {
+        const b = document.createElement('button');
+        b.className = 'tslot';
+        b.dataset.cat = catDe[champ];
+        b.dataset.bloc = tk;
+        b.dataset.qid = qid;
+        b.dataset.champ = champ;
+        b.dataset.val = '';
+        b.onclick = () => clicSlot(b);
+        td.appendChild(b);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  // Banques : valeurs NON données de chaque colonne + distracteurs éventuels, mélangées
+  const distDe = { gra: cfg.distGra, uni: cfg.distUni, app: cfg.distApp };
+  champs.forEach(champ => {
+    const bank = document.getElementById('bank_' + catDe[champ]);
+    const valeurs = ORDRE_T[tk].filter(qid => DONNEES[qid] !== champ)
+                               .map(qid => PARQ[qid][champ])
+                               .concat(distDe[champ]);
+    melanger(valeurs).forEach(v => {
+      const e = document.createElement('button');
+      e.className = 'etq';
+      e.dataset.cat = catDe[champ];
+      e.dataset.bloc = tk;
+      e.dataset.val = v;
+      e.textContent = v;
+      e.onclick = () => clicEtiquette(e);
+      bank.appendChild(e);
+    });
+  });
+
+  document.getElementById('btnv_' + tk).onclick = () => validerTableau(tk);
+  document.getElementById('btnr_' + tk).onclick = () => retryTableau(tk);
+}
+
+// ===== Construction de la phrase à trous =====
+function construirePhrase(){
+  const bank = document.getElementById('bank_mot');
+  melanger(MOTS_PHRASE).forEach(v => {
+    const e = document.createElement('button');
+    e.className = 'etq';
+    e.dataset.cat = 'mot';
+    e.dataset.bloc = 'PH';
+    e.dataset.val = v;
+    e.textContent = v;
+    e.onclick = () => clicEtiquette(e);
+    bank.appendChild(e);
+  });
+  slotsPhrase().forEach(s => { s.onclick = () => clicSlot(s); });
+  document.getElementById('btnv_qB5').onclick = validerPhrase;
+  document.getElementById('btnr_qB5').onclick = retryPhrase;
+}
+
+function slotsPhrase(){
+  return [...document.querySelectorAll('.tslot[data-bloc="PH"]')];
+}
+
+// ===== Interactions étiquettes / cases =====
+function deselectionner(){
+  if(etqSel){ etqSel.classList.remove('sel'); etqSel = null; }
+  if(slotSel){ slotSel.classList.remove('sel'); slotSel = null; }
+}
+
+function clicEtiquette(e){
+  if(VERROU[e.dataset.bloc]) return;
+  if(slotSel){
+    // Une case vide attendait une étiquette
+    if(slotSel.dataset.cat !== e.dataset.cat){
+      alert("Cette étiquette appartient à la banque « " + NOM_BANQUE[e.dataset.cat] + " ».");
+      return;
+    }
+    placer(e, slotSel);
+    deselectionner();
+    return;
+  }
+  if(etqSel === e){ deselectionner(); return; }
+  deselectionner();
+  etqSel = e;
+  e.classList.add('sel');
+}
+
+function clicSlot(s){
+  if(VERROU[s.dataset.bloc] || s.classList.contains('fige')) return;
+  if(s.dataset.val !== ''){
+    // Case remplie : on reprend l'étiquette
+    deselectionner();
+    reprendre(s);
+    return;
+  }
+  if(etqSel){
+    if(etqSel.dataset.cat !== s.dataset.cat){
+      alert("Cette étiquette appartient à la banque « " + NOM_BANQUE[etqSel.dataset.cat] + " ».");
+      return;
+    }
+    placer(etqSel, s);
+    deselectionner();
+    return;
+  }
+  if(slotSel === s){ deselectionner(); return; }
+  deselectionner();
+  slotSel = s;
+  s.classList.add('sel');
+}
+
+function placer(etq, slot){
+  slot.dataset.val = etq.dataset.val;
+  slot.textContent = etq.dataset.val;
+  slot.classList.add('filled');
+  etq.style.display = 'none';
+}
+
+function reprendre(slot){
+  const bank = document.getElementById('bank_' + slot.dataset.cat);
+  const etq = [...bank.querySelectorAll('.etq')].find(e => e.dataset.val === slot.dataset.val && e.style.display === 'none');
+  if(etq){ etq.style.display = ''; }
+  slot.dataset.val = '';
+  slot.textContent = '';
+  slot.classList.remove('filled');
+}
+
+function slotsDe(qid){
+  return [...document.querySelectorAll('.tslot[data-qid="' + qid + '"]')];
+}
+
+function valeurLigne(qid){
+  // Réponse de la ligne en texte lisible : unité | appareil
+  return slotsDe(qid).map(s => s.dataset.val).join(" | ");
+}
+
+// ===== Validation d'un tableau (chaque ligne = 1 question, 2 essais) =====
+function validerTableau(tk){
+  if(VERROU[tk]) return;
+  deselectionner();
+  const cfg = TABLEAUX[tk];
+  const idsTab = cfg.rows.map(r => r.q);
+  // Toutes les cases des lignes non tranchées doivent être remplies
+  const restantes = idsTab.filter(qid => etat[qid].resultat === null);
+  for(const qid of restantes){
+    for(const s of slotsDe(qid)){
+      if(s.dataset.val === ''){
+        alert("Place toutes les étiquettes avant de valider.");
+        return;
+      }
+    }
+  }
+  const fb   = document.getElementById('fb_' + tk);
+  const btnv = document.getElementById('btnv_' + tk);
+  const btnr = document.getElementById('btnr_' + tk);
+  const bloc = document.getElementById(cfg.bloc);
+  const lignesKo = [];
+  restantes.forEach(qid => {
+    const r = PARQ[qid];
+    const t = etat[qid]; t.tentative++;
+    const rep = valeurLigne(qid);   // capture AVANT toute révélation
+    let ligneOk = true;
+    slotsDe(qid).forEach(s => {
+      const attendu = r[s.dataset.champ];
+      const ok = (s.dataset.val === attendu);
+      s.classList.remove('ok','ko');
+      s.classList.add(ok ? 'ok' : 'ko');
+      if(!ok) ligneOk = false;
+    });
+    if(ligneOk){
+      slotsDe(qid).forEach(s => s.classList.add('fige'));
+      t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+      scormInteraction(qid, true, rep, t.tentative);
+    } else if(t.tentative === 2){
+      slotsDe(qid).forEach(s => s.classList.add('fige'));
+      t.resultat = 'ko';
+      lignesKo.push(qid);
+      scormInteraction(qid, false, rep, t.tentative);
+    } else {
+      lignesKo.push(qid);
+    }
+  });
+  const premierEssai = restantes.some(qid => etat[qid].tentative === 1);
+  if(lignesKo.length === 0){
+    fb.className = 'fb ok';
+    fb.innerHTML = cfg.fbokTxt;
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc');
+    bloc.classList.add(idsTab.every(id => etat[id].resultat !== 'ko') ? 'ok-bloc' : 'ko-bloc');
+    VERROU[tk] = true;
+  } else if(premierEssai){
+    fb.className = 'fb ko';
+    fb.innerHTML = "✗ " + lignesKo.length + " ligne" + (lignesKo.length > 1 ? "s comportent" : " comporte") +
+      " des erreurs (cases rouges). Clique sur « 2<sup>e</sup> essai » : les étiquettes des lignes fausses retourneront dans les banques, les lignes justes restent figées en vert.";
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'inline-block';
+    bloc.classList.add('warn-bloc');
+    VERROU[tk] = true;
+  } else {
+    // 2e essai raté pour certaines lignes : choix laissés affichés, corrections listées
+    let corr = "✗ Réponses attendues pour les lignes fausses :<ul style='margin:6px 0 0 18px'>";
+    lignesKo.forEach(qid => {
+      const r = PARQ[qid];
+      corr += "<li><strong>" + r.gra + "</strong> → " + r.uni + " → " + r.app + "</li>";
+    });
+    corr += "</ul>";
+    fb.className = 'fb ko2';
+    fb.innerHTML = corr + (EN_CLASSE ? RELANCE_PROF : '');
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+    VERROU[tk] = true;
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+/* 2e essai — depend de PHASE (COMMUN) :
+   FIGER_JUSTES (phase "bases")        -> differentiel : les lignes justes restent figees en vert.
+   sinon        (phase "competences")  -> ardoise vierge : TOUT retourne dans les banques.
+   Dans les deux cas la Note 1 est deja encaissee : rien n'est perdu. */
+function retryTableau(tk){
+  const cfg = TABLEAUX[tk];
+  const idsTab = cfg.rows.map(r => r.q);
+  const cibles = FIGER_JUSTES
+    ? idsTab.filter(qid => etat[qid].resultat === null)
+    : idsTab.filter(qid => etat[qid].tentative < 2);
+  cibles.forEach(qid => {
+    if(!FIGER_JUSTES) etat[qid].resultat = null;
+    slotsDe(qid).forEach(s => {
+      s.classList.remove('ok','ko','fige');
+      if(s.dataset.val !== '') reprendre(s);
+    });
+  });
+  document.getElementById('fb_' + tk).style.display = 'none';
+  document.getElementById('btnr_' + tk).style.display = 'none';
+  document.getElementById('btnv_' + tk).disabled = false;
+  document.getElementById(cfg.bloc).classList.remove('warn-bloc');
+  VERROU[tk] = false;
+}
+
+// ===== Validation de la phrase à trous (1 question, 2 essais) =====
+function validerPhrase(){
+  if(VERROU.PH) return;
+  deselectionner();
+  const qid = 'qB5';
+  const slots = slotsPhrase();
+  for(const s of slots){
+    if(s.dataset.val === ''){
+      alert("Place un mot dans chaque case avant de valider.");
+      return;
+    }
+  }
+  const t = etat[qid]; t.tentative++;
+  const rep = slots.map(s => s.dataset.val).join(" | ");
+  let toutBon = true;
+  slots.forEach(s => {
+    const ok = (s.dataset.val === s.dataset.good);
+    s.classList.remove('ok','ko');
+    s.classList.add(ok ? 'ok' : 'ko');
+    if(!ok) toutBon = false;
+  });
+  const fb   = document.getElementById('fb_qB5');
+  const btnv = document.getElementById('btnv_qB5');
+  const btnr = document.getElementById('btnr_qB5');
+  const bloc = document.getElementById('qB5');
+  if(toutBon){
+    slots.forEach(s => s.classList.add('fige'));
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    fb.className = 'fb ok';
+    fb.innerHTML = "&#10003; Exact ! C'est toute la chaîne de la mesure : une <strong>grandeur</strong>, un <strong>appareil</strong>, une <strong>valeur</strong>, une <strong>unité</strong>.";
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    VERROU.PH = true;
+    scormInteraction(qid, true, rep, t.tentative);
+  } else if(t.tentative === 1){
+    fb.className = 'fb ko';
+    fb.innerHTML = "✗ Des cases sont fausses (en rouge). Aide-toi des exemples entre parenthèses : la masse est une… ? la balance est un… ? 150 est une… ? le gramme est une… ?";
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'inline-block';
+    bloc.classList.add('warn-bloc');
+    VERROU.PH = true;
+  } else {
+    slots.forEach(s => s.classList.add('fige'));
+    t.resultat = 'ko';
+    fb.className = 'fb ko2';
+    fb.innerHTML = "✗ La phrase attendue : « Pour connaître une <strong>grandeur</strong>, on utilise un <strong>appareil</strong> qui fournit une <strong>valeur</strong>, que l'on écrit toujours avec son <strong>unité</strong>. »" + (EN_CLASSE ? RELANCE_PROF : '');
+    fb.style.display = 'block';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+    VERROU.PH = true;
+    scormInteraction(qid, false, rep, t.tentative);
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+/* 2e essai — depend de PHASE (COMMUN) :
+   FIGER_JUSTES (phase "bases")       -> differentiel : les cases justes restent figees en vert.
+   sinon       (phase "competences")  -> ardoise vierge : TOUT repart en banque. */
+function retryPhrase(){
+  slotsPhrase().forEach(s => {
+    if(FIGER_JUSTES && s.classList.contains('ok')){ s.classList.add('fige'); return; }   // acquis : on le garde
+    s.classList.remove('ko','ok','fige');
+    if(s.dataset.val !== '') reprendre(s);
+  });
+  document.getElementById('fb_qB5').style.display = 'none';
+  document.getElementById('btnr_qB5').style.display = 'none';
+  document.getElementById('btnv_qB5').disabled = false;
+  document.getElementById('qB5').classList.remove('warn-bloc');
+  VERROU.PH = false;
+}
+
+// ===== Moteur QCM (Type 1a) =====
+function construireQCM(qid){
+  const q = QCM[qid];
+  const ul = document.getElementById('opts_'+qid);
+  ul.innerHTML = '';
+  melanger(q.props).forEach(p => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="opt-btn" data-correct="${p.correct}">${p.html}</button>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      ul.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('sel'));
+      this.classList.add('sel');
+    });
+  });
+  document.getElementById('btnv_'+qid).onclick = () => validerQCM(qid);
+  document.getElementById('btnr_'+qid).onclick = () => retryQCM(qid);
+}
+
+function validerQCM(qid){
+  const ul = document.getElementById('opts_'+qid);
+  const sel = ul.querySelector('.opt-btn.sel');
+  if(!sel){ alert("Sélectionne une réponse."); return; }
+  const isOk = sel.dataset.correct === 'true';
+  const t = etat[qid]; t.tentative++;
+  const rep = sel.textContent.slice(0, 80);
+  ul.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  if(isOk){
+    sel.classList.add('ok');
+    fb.className = 'fb ok'; fb.innerHTML = QCM[qid].fbok; fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    scormInteraction(qid, true, rep, t.tentative);
+  } else {
+    sel.classList.add('ko');
+    fb.className = 'fb ko'; bloc.classList.add('warn-bloc');
+    if(t.tentative === 1){
+      fb.innerHTML = '✗ ' + QCM[qid].fb1; fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      ul.querySelectorAll('.opt-btn').forEach(b => {
+        if(b.dataset.correct === 'true') b.classList.add('show-ok');
+      });
+      fb.className = 'fb ko2'; fb.innerHTML = '✗ ' + QCM[qid].fb2 + (EN_CLASSE ? RELANCE_PROF : ''); fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, rep, t.tentative);
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryQCM(qid){
+  const ul = document.getElementById('opts_'+qid);
+  ul.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('sel','ok','ko','show-ok');
+  });
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+// ===== Scores, bilan =====
+function calculerNote1(){
+  return TOUS_IDS.filter(id => etat[id].resultat === 'ok1').length;
+}
+function calculerNote2(){
+  return TOUS_IDS.filter(id => etat[id].resultat === 'ok1' || etat[id].resultat === 'ok2').length;
+}
+
+function majScores(){
+  const e1 = document.getElementById('sval-n1'); if(e1) e1.textContent = calculerNote1() + " / " + TOTAL;
+  const e2 = document.getElementById('sval-n2'); if(e2) e2.textContent = calculerNote2() + " / " + TOTAL;
+}
+
+function verifierFin(){
+  majScores();
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if(fini) afficherBilan();
+}
+
+function afficherBilan(){
+  const n1 = calculerNote1(), n2 = calculerNote2();
+  document.getElementById('bilan-n1').textContent = n1 + " / " + TOTAL;
+  document.getElementById('bilan-n2').textContent = n2 + " / " + TOTAL;
+  document.getElementById('bilan').style.display = 'block';
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if(fini) scormReport(n1);
+}
+
+// ===== Couche SCORM 1.2 — mode entraînement =====
+var scormAPI = null, scormInit = false;
+var scormNbInter = 0;
+
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerNote1()));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormEnd(){
+  try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){}
+}
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+// ===== Init =====
+window.addEventListener('DOMContentLoaded', () => {
+  scormStart();
+  construireTableau('T1');
+  construireTableau('T2');
+  IDS_QCM.forEach(construireQCM);
+  construirePhrase();
+  document.getElementById('btn-bilan').onclick = afficherBilan;
+  document.getElementById('btn-reload').onclick = () => location.reload();
+  function renderMath(){
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+    else { setTimeout(renderMath, 100); }
+  }
+  renderMath();
+});
+</script>
+</body>
+</html>

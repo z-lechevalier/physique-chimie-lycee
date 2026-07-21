@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : les durées</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--eval:#1f6b54;--edl:#5b2a4e;--r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.disp.disp-sm{min-width:84px;text-align:right}
+.disp.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:100px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.decomp-ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:11px;font-family:'JetBrains Mono',monospace;font-size:1rem}
+.decomp-given{font-weight:600;color:var(--bleu)}
+.decomp-eq{color:#555;font-size:1.15rem}
+.dunit{font-weight:600;color:var(--texte);padding:0 1px}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.clavier.kd{grid-template-columns:repeat(3,44px)}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.k:disabled{opacity:.4;cursor:default}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .clavier.kd{grid-template-columns:repeat(3,40px)}
+  .k{height:32px;font-size:.74rem}
+}
+</style>
+</head>
+<body>
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> Les durées (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+<main>
+  <div class="consigne">
+  📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+</div>
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="contexte">
+    On convertit ici des <strong>durées</strong> : secondes, minutes, heures, jours, années. Attention, ce n'est <strong>pas</strong> comme les longueurs : on ne fait pas «&nbsp;glisser la virgule&nbsp;». On <strong>multiplie</strong> pour aller vers une plus petite unité, on <strong>divise</strong> pour aller vers une plus grande.<br>
+    Dans la partie A tu vas revoir les équivalences entre année, jour, heure, minute et seconde. Dans la partie B tu mettras en application pour convertir des durées.<br>
+    À chaque question la calculatrice NumWorks est disponible. Si tu utilises une Casio collège, celle-ci est disponible sur Éléa > 2PC0 > Calculatrices.<br>
+    Pour chaque question, clique sur la case que tu souhaites remplir, puis utilise le clavier scientifique fourni à l'écran pour les nombres et le clavier de l'ordinateur pour les unités.<br>
+    <em>De nouvelles valeurs et un nouvel ordre sont tirés au sort à chaque chargement de la page : tu peux recommencer autant de fois que tu veux pour t'entraîner&nbsp;!</em>
+  </div>
+  <div class="partie-titre">Partie A &#8212; Les &#233;quivalences &#224; conna&#238;tre</div>
+  <div class="qbloc" id="qA1"><div class="qenonce"><span class="qnum" id="num_qA1"></span><span id="en_qA1"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qA1')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qA1"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qA1"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qA1"></div><input class="sunit" id="unit_qA1" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qA1"></div><div class="fb" id="fb_qA1"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qA1" onclick="validerNum('qA1')">Valider</button><button class="btn-r" id="btnr_qA1" onclick="retryNum('qA1')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qA2"><div class="qenonce"><span class="qnum" id="num_qA2"></span><span id="en_qA2"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qA2')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qA2"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qA2"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qA2"></div><input class="sunit" id="unit_qA2" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qA2"></div><div class="fb" id="fb_qA2"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qA2" onclick="validerNum('qA2')">Valider</button><button class="btn-r" id="btnr_qA2" onclick="retryNum('qA2')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qA3"><div class="qenonce"><span class="qnum" id="num_qA3"></span><span id="en_qA3"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qA3')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qA3"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qA3"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qA3"></div><input class="sunit" id="unit_qA3" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qA3"></div><div class="fb" id="fb_qA3"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qA3" onclick="validerNum('qA3')">Valider</button><button class="btn-r" id="btnr_qA3" onclick="retryNum('qA3')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qA4"><div class="qenonce"><span class="qnum" id="num_qA4"></span><span id="en_qA4"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qA4')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qA4"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qA4"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qA4"></div><input class="sunit" id="unit_qA4" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qA4"></div><div class="fb" id="fb_qA4"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qA4" onclick="validerNum('qA4')">Valider</button><button class="btn-r" id="btnr_qA4" onclick="retryNum('qA4')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="partie-titre">Partie B &#8212; Convertir dans un sens et dans l'autre</div>
+  <div class="qbloc" id="qB1"><div class="qenonce"><span class="qnum" id="num_qB1"></span><span id="en_qB1"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB1')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB1"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB1"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB1"></div><input class="sunit" id="unit_qB1" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB1"></div><div class="fb" id="fb_qB1"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB1" onclick="validerNum('qB1')">Valider</button><button class="btn-r" id="btnr_qB1" onclick="retryNum('qB1')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB2"><div class="qenonce"><span class="qnum" id="num_qB2"></span><span id="en_qB2"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB2')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB2"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB2"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB2"></div><input class="sunit" id="unit_qB2" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB2"></div><div class="fb" id="fb_qB2"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB2" onclick="validerNum('qB2')">Valider</button><button class="btn-r" id="btnr_qB2" onclick="retryNum('qB2')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB3"><div class="qenonce"><span class="qnum" id="num_qB3"></span><span id="en_qB3"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB3')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB3"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB3"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB3"></div><input class="sunit" id="unit_qB3" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB3"></div><div class="fb" id="fb_qB3"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB3" onclick="validerNum('qB3')">Valider</button><button class="btn-r" id="btnr_qB3" onclick="retryNum('qB3')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB4"><div class="qenonce"><span class="qnum" id="num_qB4"></span><span id="en_qB4"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB4')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB4"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB4"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB4"></div><input class="sunit" id="unit_qB4" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB4"></div><div class="fb" id="fb_qB4"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB4" onclick="validerNum('qB4')">Valider</button><button class="btn-r" id="btnr_qB4" onclick="retryNum('qB4')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB5"><div class="qenonce"><span class="qnum" id="num_qB5"></span><span id="en_qB5"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB5')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB5"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB5"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB5"></div><input class="sunit" id="unit_qB5" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB5"></div><div class="fb" id="fb_qB5"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB5" onclick="validerNum('qB5')">Valider</button><button class="btn-r" id="btnr_qB5" onclick="retryNum('qB5')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB6"><div class="qenonce"><span class="qnum" id="num_qB6"></span><span id="en_qB6"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB6')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB6"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB6"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB6"></div><input class="sunit" id="unit_qB6" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB6"></div><div class="fb" id="fb_qB6"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB6" onclick="validerNum('qB6')">Valider</button><button class="btn-r" id="btnr_qB6" onclick="retryNum('qB6')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB7"><div class="qenonce"><span class="qnum" id="num_qB7"></span><span id="en_qB7"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB7')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB7"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB7"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB7"></div><input class="sunit" id="unit_qB7" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB7"></div><div class="fb" id="fb_qB7"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB7" onclick="validerNum('qB7')">Valider</button><button class="btn-r" id="btnr_qB7" onclick="retryNum('qB7')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qB8"><div class="qenonce"><span class="qnum" id="num_qB8"></span><span id="en_qB8"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qB8')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qB8"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="saisie-ligne"><span class="decomp-given" id="lhs_qB8"></span><span class="decomp-eq">=</span><div class="disp disp-sm" id="disp_qB8"></div><input class="sunit" id="unit_qB8" type="text" autocomplete="off" spellcheck="false"></div>
+    <div id="clav_qB8"></div><div class="fb" id="fb_qB8"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qB8" onclick="validerNum('qB8')">Valider</button><button class="btn-r" id="btnr_qB8" onclick="retryNum('qB8')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="partie-titre">Partie C &#8212; Remettre une dur&#233;e en min/s, h/min/s (ou ann&#233;es/jours)</div>
+  <div class="qbloc" id="qC1"><div class="qenonce"><span class="qnum" id="num_qC1"></span><span id="en_qC1"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC1')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC1"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC1"></div>
+    <div id="clav_qC1"></div><div class="fb" id="fb_qC1"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC1" onclick="validerDecomp('qC1')">Valider</button><button class="btn-r" id="btnr_qC1" onclick="retryDecomp('qC1')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC2"><div class="qenonce"><span class="qnum" id="num_qC2"></span><span id="en_qC2"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC2')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC2"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC2"></div>
+    <div id="clav_qC2"></div><div class="fb" id="fb_qC2"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC2" onclick="validerDecomp('qC2')">Valider</button><button class="btn-r" id="btnr_qC2" onclick="retryDecomp('qC2')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC3"><div class="qenonce"><span class="qnum" id="num_qC3"></span><span id="en_qC3"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC3')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC3"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC3"></div>
+    <div id="clav_qC3"></div><div class="fb" id="fb_qC3"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC3" onclick="validerDecomp('qC3')">Valider</button><button class="btn-r" id="btnr_qC3" onclick="retryDecomp('qC3')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC4"><div class="qenonce"><span class="qnum" id="num_qC4"></span><span id="en_qC4"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC4')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC4"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC4"></div>
+    <div id="clav_qC4"></div><div class="fb" id="fb_qC4"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC4" onclick="validerDecomp('qC4')">Valider</button><button class="btn-r" id="btnr_qC4" onclick="retryDecomp('qC4')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC5"><div class="qenonce"><span class="qnum" id="num_qC5"></span><span id="en_qC5"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC5')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC5"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC5"></div>
+    <div id="clav_qC5"></div><div class="fb" id="fb_qC5"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC5" onclick="validerDecomp('qC5')">Valider</button><button class="btn-r" id="btnr_qC5" onclick="retryDecomp('qC5')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC6"><div class="qenonce"><span class="qnum" id="num_qC6"></span><span id="en_qC6"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC6')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC6"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC6"></div>
+    <div id="clav_qC6"></div><div class="fb" id="fb_qC6"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC6" onclick="validerDecomp('qC6')">Valider</button><button class="btn-r" id="btnr_qC6" onclick="retryDecomp('qC6')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC7"><div class="qenonce"><span class="qnum" id="num_qC7"></span><span id="en_qC7"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC7')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC7"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC7"></div>
+    <div id="clav_qC7"></div><div class="fb" id="fb_qC7"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC7" onclick="validerDecomp('qC7')">Valider</button><button class="btn-r" id="btnr_qC7" onclick="retryDecomp('qC7')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="qbloc" id="qC8"><div class="qenonce"><span class="qnum" id="num_qC8"></span><span id="en_qC8"></span></div><div class="qcont">
+    <button class="nw-btn" onclick="toggleNW('nw_qC8')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+    <div class="nw-wrap" id="nw_qC8"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+    <div class="decomp-ligne" id="dl_qC8"></div>
+    <div id="clav_qC8"></div><div class="fb" id="fb_qC8"></div>
+    <div style="margin-top:10px"><button class="btn-v" id="btnv_qC8" onclick="validerDecomp('qC8')">Valider</button><button class="btn-r" id="btnr_qC8" onclick="retryDecomp('qC8')">2<sup>e</sup> essai</button></div>
+  </div></div>
+  <div class="barre-finale">
+    <button class="btn-global btn-valider-tout" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" onclick="location.reload()">&#8634; Recommencer</button>
+  </div>
+  <div id="bilan">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1&#7497;&#691; essai)<br><span class="score-res-val" id="bilan-n1">&#8212; / 20</span></div>
+      <div class="score-res-item">Note 2 (1&#7497;&#691; ou 2&#7497; essai)<br><span class="score-res-val" id="bilan-n2">&#8212; / 20</span></div>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+/* ====================================================================
+   QUIZ « Les durées » — Chapitre 0 · MAJ Seconde — MODE ENTRAÎNEMENT
+   20 questions :
+     A (4) équivalences de base fixes, ordre mélangé : an->j, j->h, h->min, min->s
+     B (8) conversions variées (s/min/h/jour, 2 sens, 2 pièges en ,5) + 1 année
+     C (8) décompositions : 4 en min/s, 3 en h/min/s, 1 en années/jours
+   Facteurs hétérogènes (60 / 60 / 24 / 365) — pas de notation scientifique.
+   ==================================================================== */
+
+const MODE_QUIZ = "entrainement";
+const PHASE = "bases";                        // "bases" | "competences" | "aucune"
+const FIGER_JUSTES = (PHASE === "bases");     // 2e essai differentiel : les cases justes restent figees
+
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+const TOUS_IDS = [
+  "qA1","qA2","qA3","qA4",
+  "qB1","qB2","qB3","qB4","qB5","qB6","qB7","qB8",
+  "qC1","qC2","qC3","qC4","qC5","qC6","qC7","qC8"
+];
+const IDS_NUM    = ["qA1","qA2","qA3","qA4","qB1","qB2","qB3","qB4","qB5","qB6","qB7","qB8"];
+const IDS_DECOMP = ["qC1","qC2","qC3","qC4","qC5","qC6","qC7","qC8"];
+const TOTAL = TOUS_IDS.length;
+
+const LABELS = {};
+["qA1","qA2","qA3","qA4"].forEach(function(q){ LABELS[q] = "Équivalence de base"; });
+["qB1","qB2","qB3","qB4","qB5","qB6","qB7","qB8"].forEach(function(q){ LABELS[q] = "Conversion de durée"; });
+["qC1","qC2","qC3","qC4","qC5","qC6","qC7","qC8"].forEach(function(q){ LABELS[q] = "Décomposition d'une durée"; });
+
+const etat = {};
+TOUS_IDS.forEach(function(id){ etat[id] = {resultat:null, tentative:0}; });
+
+/* Dictionnaires remplis dynamiquement au tirage */
+const NUMCFG = {};
+const DECOMP = {};
+const SCORM_IDS = {};
+const QMETA = {};
+
+/* ---------- Outils ---------- */
+const FACT  = { s:1, min:60, h:3600, jour:86400, an:31536000 };  // an = 365 jours
+const UNOMP = { s:"secondes", min:"minutes", h:"heures", jour:"jours", an:"années" };
+const UFORMS = {
+  s:["s","seconde","secondes"],
+  min:["min","mn","minute","minutes"],
+  h:["h","heure","heures"],
+  jour:["jour","jours","j"],
+  an:["an","ans","année","années","annee","annees"]
+};
+function sym(u,v){
+  if(u==="jour") return v>1?"jours":"jour";
+  if(u==="an")   return v>1?"ans":"an";
+  return u;
+}
+function melanger(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function rnd(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function frNum(x){
+  let s = (Math.round(x*1000)/1000).toString();
+  return s.replace(".", ",");
+}
+function pickN(pool, n, used){
+  const res=[]; const sh=melanger(pool);
+  for(let i=0;i<sh.length && res.length<n;i++){
+    const t=sh[i], key=t.from+">"+t.to;
+    if(!used.has(key)){ used.add(key); res.push(t); }
+  }
+  return res;
+}
+
+/* ---------- Conversion simple (Parties A & B) ---------- */
+function defConversion(qid, from, to, start){
+  const result = start * FACT[from] / FACT[to];
+  const ratio  = FACT[from] / FACT[to];
+  const lhs    = start + " " + sym(from, start);
+  const corr   = lhs + " = " + frNum(result) + " " + sym(to, result);
+  let fb1, fb2;
+  if(ratio > 1){
+    fb1 = "On va vers une plus petite unité : il faut <strong>multiplier</strong>. Quel est le facteur entre " +
+          UNOMP[from] + " et " + UNOMP[to] + " ?";
+    fb2 = "1 " + sym(from,1) + " = " + ratio + " " + sym(to,ratio) + ", donc " + lhs +
+          " = " + start + " × " + ratio + " = " + frNum(result) + " " + sym(to, result) + ".";
+  } else {
+    const inv = FACT[to] / FACT[from];
+    fb1 = "On va vers une plus grande unité : il faut <strong>diviser</strong> (on ne fait pas glisser la virgule). " +
+          "Combien de " + UNOMP[from] + " dans 1 " + sym(to,1) + " ?";
+    fb2 = "1 " + sym(to,1) + " = " + inv + " " + sym(from,inv) + ", donc " + lhs +
+          " = " + start + " ÷ " + inv + " = " + frNum(result) + " " + sym(to, result) + ".";
+  }
+  NUMCFG[qid] = {
+    val: result, tol: 1e-9, unites: UFORMS[to],
+    fb1: fb1, fb2: fb2, fbok: "&#10003; Exact ! " + corr + ".", corr: corr
+  };
+  QMETA[qid] = { lhs: lhs };
+  SCORM_IDS[qid] = "convertir_" + from + "_vers_" + to;
+  document.getElementById("lhs_"+qid).textContent = lhs;
+  document.getElementById("en_"+qid).innerHTML =
+    "Convertis <strong>" + lhs + "</strong> en " + UNOMP[to] + ".";
+}
+
+/* ---------- Décomposition (Partie C) ---------- */
+function decompParts(sec){
+  if(sec < 3600) return [ {u:"min", v:Math.floor(sec/60)}, {u:"s", v:sec%60} ];
+  const h = Math.floor(sec/3600), r = sec%3600;
+  return [ {u:"h", v:h}, {u:"min", v:Math.floor(r/60)}, {u:"s", v:r%60} ];
+}
+function defDecompSec(qid, sec){
+  const parts = decompParts(sec);
+  const corr = sec + " s = " + parts.map(function(p){ return p.v + " " + p.u; }).join(" ");
+  let fb1, fb2;
+  if(parts.length === 2){
+    fb1 = "Combien de fois 60 s tiennent dans " + sec + " s ? C'est le nombre de minutes ; le reste (inférieur à 60) donne les secondes.";
+    fb2 = "60 s = 1 min. " + parts[0].v + " × 60 = " + (parts[0].v*60) + " s, il reste " + parts[1].v + " s. Donc " + corr + ".";
+  } else {
+    fb1 = "Commence par les heures (paquets de 3 600 s), puis les minutes (paquets de 60 s) dans le reste, puis les secondes restantes.";
+    fb2 = "3 600 s = 1 h et 60 s = 1 min. " + sec + " s = " + parts[0].v + " h, " + parts[1].v + " min et " + parts[2].v + " s. Donc " + corr + ".";
+  }
+  DECOMP[qid] = { given: sec + " s", parts: parts, fb1: fb1, fb2: fb2, fbok: "&#10003; Exact ! " + corr + ".", corr: corr };
+  SCORM_IDS[qid] = (parts.length === 2) ? "decomposer_min_s" : "decomposer_h_min_s";
+  QMETA[qid] = { lhs: sec + " s" };
+  const unites = (parts.length === 2) ? "minutes et secondes" : "heures, minutes et secondes";
+  document.getElementById("en_"+qid).innerHTML =
+    "Un calcul a donné une durée de <strong>" + sec + " s</strong>. Exprime-la en " + unites +
+    (parts.length === 3 ? " (à la seconde près)" : "") + ".";
+}
+function defDecompAn(qid, days){
+  const an = Math.floor(days/365), j = days%365;
+  const parts = [ {u:"ans", v:an}, {u:"jours", v:j} ];
+  const corr = days + " jours = " + an + " ans " + j + " jours";
+  const fb1 = "Combien de fois 365 jours tiennent dans " + days + " jours ? C'est le nombre d'années ; le reste (inférieur à 365) donne les jours.";
+  const fb2 = "365 jours = 1 an. " + an + " × 365 = " + (an*365) + " jours, il reste " + j + " jours. Donc " + corr + ".";
+  DECOMP[qid] = { given: days + " jours", parts: parts, fb1: fb1, fb2: fb2, fbok: "&#10003; Exact ! " + corr + ".", corr: corr };
+  SCORM_IDS[qid] = "decomposer_an_jours";
+  QMETA[qid] = { lhs: days + " jours" };
+  document.getElementById("en_"+qid).innerHTML =
+    "Une durée vaut <strong>" + days + " jours</strong>. Exprime-la en années et jours (1 an = 365 jours).";
+}
+
+/* ---------- Tirage complet ---------- */
+function tirerTout(){
+  // Partie A : 4 maillons fixes, ordre mélangé, départ 1
+  const aLinks = melanger([
+    {from:"an",  to:"jour"},
+    {from:"jour",to:"h"},
+    {from:"h",   to:"min"},
+    {from:"min", to:"s"}
+  ]);
+  aLinks.forEach(function(l,i){ defConversion("qA"+(i+1), l.from, l.to, 1); });
+
+  // Partie B : 3 descendantes + 2 montantes entières + 2 pièges + 1 année (couples distincts)
+  const DESC = [
+    {from:"min", to:"s",   gen:function(){ return rnd(3,12); }},
+    {from:"h",   to:"min", gen:function(){ return rnd(2,9); }},
+    {from:"jour",to:"h",   gen:function(){ return rnd(2,6); }},
+    {from:"h",   to:"s",   gen:function(){ return rnd(2,4); }},
+    {from:"jour",to:"min", gen:function(){ return rnd(1,3); }}
+  ];
+  const ASC = [
+    {from:"s",  to:"min",  gen:function(){ return rnd(2,9)*60; }},
+    {from:"min",to:"h",    gen:function(){ return rnd(2,6)*60; }},
+    {from:"h",  to:"jour", gen:function(){ return rnd(2,5)*24; }},
+    {from:"s",  to:"h",    gen:function(){ return rnd(2,4)*3600; }},
+    {from:"min",to:"jour", gen:function(){ return rnd(1,3)*1440; }}
+  ];
+  const PIEG = [
+    {from:"min",to:"h",    gen:function(){ return pick([90,150,210,270,330]); }},
+    {from:"s",  to:"min",  gen:function(){ return pick([90,150,210,270]); }},
+    {from:"h",  to:"jour", gen:function(){ return pick([36,60,84]); }}
+  ];
+  const usedB = new Set();
+  const piegs = pickN(PIEG, 2, usedB);
+  const ascs  = pickN(ASC,  2, usedB);
+  const descs = pickN(DESC, 3, usedB);
+  let bT = descs.concat(ascs).concat(piegs);
+  const annee = (Math.random() < 0.5)
+    ? {from:"an",  to:"jour", gen:function(){ return rnd(2,5); }}
+    : {from:"jour",to:"an",   gen:function(){ return rnd(2,4)*365; }};
+  bT.push(annee);
+  melanger(bT).forEach(function(t,i){ defConversion("qB"+(i+1), t.from, t.to, t.gen()); });
+
+  // Partie C : 4 petites (min/s) + 3 grandes (h/min/s) + 1 année (jours -> an/jours), ordre mélangé
+  const cSpecs = [];
+  for(let i=0;i<4;i++){ cSpecs.push({ kind:"sec", v: rnd(1,59)*60 + rnd(1,59) }); }
+  for(let i=0;i<3;i++){ cSpecs.push({ kind:"sec", v: rnd(1,23)*3600 + rnd(0,59)*60 + rnd(1,59) }); }
+  cSpecs.push({ kind:"an", v: rnd(2,7)*365 + rnd(1,364) });
+  melanger(cSpecs).forEach(function(sp,i){
+    const qid = "qC"+(i+1);
+    if(sp.kind === "sec") defDecompSec(qid, sp.v); else defDecompAn(qid, sp.v);
+  });
+}
+
+/* ---------- Clavier conversions (chiffres + virgule + ⌫) ---------- */
+const TOUCHES = [
+  {l:"7",v:"7"},{l:"8",v:"8"},{l:"9",v:"9"},
+  {l:"4",v:"4"},{l:"5",v:"5"},{l:"6",v:"6"},
+  {l:"1",v:"1"},{l:"2",v:"2"},{l:"3",v:"3"},
+  {l:"0",v:"0"},{l:",",v:","},{l:"⌫",v:"DEL",del:true}
+];
+const saisi = {};
+IDS_NUM.forEach(function(id){ saisi[id] = ""; });
+
+function construireClavier(containerId, qid){
+  const div = document.getElementById(containerId);
+  if(!div) return;
+  const wrap = document.createElement("div");
+  wrap.className = "clavier kd";
+  TOUCHES.forEach(function(t){
+    const btn = document.createElement("button");
+    btn.className = "k" + (t.del ? " k-del" : "");
+    btn.textContent = t.l;
+    btn.addEventListener("click", function(){ toucheClavier(qid, t.v); });
+    wrap.appendChild(btn);
+  });
+  div.innerHTML = "";
+  div.appendChild(wrap);
+}
+function toucheClavier(qid, val){
+  if(val === "DEL"){ saisi[qid] = saisi[qid].slice(0,-1); }
+  else { saisi[qid] += val; }
+  renderDisp(qid);
+}
+function renderDisp(qid){
+  const el = document.getElementById("disp_"+qid);
+  if(el) el.innerHTML = saisi[qid] +
+    "<span style=\"border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite\">&thinsp;</span>";
+}
+
+/* ---------- Clavier multi-champs (décomposition, chiffres seuls) ---------- */
+const TOUCHES_D = [
+  {l:"7",v:"7"},{l:"8",v:"8"},{l:"9",v:"9"},
+  {l:"4",v:"4"},{l:"5",v:"5"},{l:"6",v:"6"},
+  {l:"1",v:"1"},{l:"2",v:"2"},{l:"3",v:"3"},
+  {l:"0",v:"0"},{l:"⌫",v:"DEL",del:true}
+];
+const saisiD = {};
+const actifD = {};
+IDS_DECOMP.forEach(function(id){ saisiD[id] = []; actifD[id] = 0; });
+
+function construireDecomp(qid){
+  const cfg = DECOMP[qid];
+  saisiD[qid] = cfg.parts.map(function(){ return ""; });
+  actifD[qid] = 0;
+  const dl = document.getElementById("dl_"+qid);
+  let html = "<span class=\"decomp-given\">" + cfg.given + "</span><span class=\"decomp-eq\">=</span>";
+  cfg.parts.forEach(function(p,i){
+    html += "<div class=\"disp disp-sm" + (i===0?" actif":"") + "\" id=\"dispD_"+qid+"_"+i+"\" " +
+            "onclick=\"dispClickD('"+qid+"',"+i+")\"></div><span class=\"dunit\">"+p.u+"</span>";
+  });
+  dl.innerHTML = html;
+  const div = document.getElementById("clav_"+qid);
+  const wrap = document.createElement("div");
+  wrap.className = "clavier kd";
+  TOUCHES_D.forEach(function(t){
+    const btn = document.createElement("button");
+    btn.className = "k" + (t.del ? " k-del" : "");
+    btn.textContent = t.l;
+    btn.addEventListener("click", function(){ toucheClavierD(qid, t.v); });
+    wrap.appendChild(btn);
+  });
+  div.innerHTML = "";
+  div.appendChild(wrap);
+  renderDispD(qid);
+}
+function dispClickD(qid, i){
+  if(etat[qid].resultat) return;
+  if(FIGER_JUSTES && document.getElementById("dispD_"+qid+"_"+i).classList.contains("ok")) return;   // champ acquis : non rejouable
+  actifD[qid] = i;
+  renderDispD(qid);
+}
+function toucheClavierD(qid, val){
+  const i = actifD[qid];
+  if(val === "DEL"){ saisiD[qid][i] = saisiD[qid][i].slice(0,-1); }
+  else { saisiD[qid][i] += val; }
+  renderDispD(qid);
+}
+function renderDispD(qid){
+  DECOMP[qid].parts.forEach(function(p,i){
+    const el = document.getElementById("dispD_"+qid+"_"+i);
+    if(!el) return;
+    const actif = (i === actifD[qid]);
+    el.classList.toggle("actif", actif);
+    el.innerHTML = saisiD[qid][i] + (actif ?
+      "<span style=\"border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite\">&thinsp;</span>" : "");
+  });
+}
+
+/* ---------- NumWorks ---------- */
+function toggleNW(id){
+  const w = document.getElementById(id);
+  w.style.display = (w.style.display === "block") ? "none" : "block";
+}
+
+/* ---------- Parsing ---------- */
+function parseVal(raw){
+  try{
+    let s = String(raw).replace(/,/g,".").replace(/\s/g,"").replace(/−/g,"-");
+    return parseFloat(s);
+  }catch(e){ return NaN; }
+}
+function normUnite(raw){
+  return String(raw).replace(/\s/g,"").replace(/·/g,".");
+}
+
+/* ---------- Validation conversion (Parties A & B) ---------- */
+function validerNum(qid){
+  const cfg = NUMCFG[qid];
+  const t = etat[qid]; t.tentative++;
+  const raw = saisi[qid];
+  const valeur = parseVal(raw);
+  const uniteRaw = document.getElementById("unit_"+qid).value;
+  const unite = normUnite(uniteRaw);
+  const resp = QMETA[qid].lhs + " = " + (raw || "?") + " " + (uniteRaw.trim() || "?");
+
+  const valOk = !isNaN(valeur) && Math.abs(valeur - cfg.val) <= cfg.tol * Math.max(1, Math.abs(cfg.val));
+  const uniteOk = cfg.unites.indexOf(unite) !== -1;
+  const isOk = valOk && uniteOk;
+
+  const disp = document.getElementById("disp_"+qid);
+  const uinp = document.getElementById("unit_"+qid);
+  const fb   = document.getElementById("fb_"+qid);
+  const btnv = document.getElementById("btnv_"+qid);
+  const btnr = document.getElementById("btnr_"+qid);
+  const bloc = document.getElementById(qid);
+  document.getElementById("clav_"+qid).querySelectorAll("button").forEach(function(b){ b.disabled = true; });
+  uinp.disabled = true;
+
+  if(isOk){
+    disp.classList.add("ok"); uinp.classList.add("ok");
+    fb.className = "fb ok"; fb.innerHTML = cfg.fbok; fb.style.display = "block";
+    t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+    scormInteraction(qid, true, resp, t.tentative);
+  } else {
+    bloc.classList.add("warn-bloc");
+    fb.className = "fb ko";
+    let msg = "";
+    if(!valOk){
+      disp.classList.add("ko");
+      if(!uniteOk) uinp.classList.add("ko");
+      msg = (t.tentative === 1) ? "✗ " + cfg.fb1
+            : "✗ " + cfg.fb2 + " &mdash; Réponse attendue : " + cfg.corr;
+    } else {
+      uinp.classList.add("ko");
+      msg = (t.tentative === 1) ? "La valeur est correcte, mais vérifie l'unité d'arrivée."
+            : "✗ L'unité d'arrivée est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    }
+    fb.innerHTML = msg; fb.style.display = "block";
+    if(t.tentative === 1){
+      btnv.disabled = true; btnr.style.display = "inline-block";
+    } else {
+      fb.className = "fb ko2"; t.resultat = "ko";
+      fb.innerHTML += (EN_CLASSE ? RELANCE_PROF : '');
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+      scormInteraction(qid, false, resp, 2);
+    }
+  }
+  verifierFin();
+}
+function retryNum(qid){
+  const disp = document.getElementById("disp_"+qid);
+  const uinp = document.getElementById("unit_"+qid);
+  saisi[qid] = "";
+  disp.classList.remove("ok","ko"); renderDisp(qid);
+  uinp.classList.remove("ok","ko"); uinp.value = ""; uinp.disabled = false;
+  document.getElementById("clav_"+qid).querySelectorAll("button").forEach(function(b){ b.disabled = false; });
+  document.getElementById("fb_"+qid).style.display = "none";
+  document.getElementById("btnr_"+qid).style.display = "none";
+  document.getElementById("btnv_"+qid).disabled = false;
+  document.getElementById(qid).classList.remove("warn-bloc");
+}
+
+/* ---------- Validation décomposition (Partie C) ---------- */
+function validerDecomp(qid){
+  const cfg = DECOMP[qid];
+  const t = etat[qid]; t.tentative++;
+  const saisies = cfg.parts.map(function(p,i){ return saisiD[qid][i]; });
+  const resp = cfg.given + " = " + cfg.parts.map(function(p,i){ return (saisies[i] || "?") + " " + p.u; }).join(" ");
+
+  const champOk = cfg.parts.map(function(p,i){
+    const v = parseInt(saisies[i], 10);
+    return (saisies[i] !== "" && !isNaN(v) && v === p.v);
+  });
+  const isOk = champOk.every(function(x){ return x; });
+
+  const fb   = document.getElementById("fb_"+qid);
+  const btnv = document.getElementById("btnv_"+qid);
+  const btnr = document.getElementById("btnr_"+qid);
+  const bloc = document.getElementById(qid);
+  document.getElementById("clav_"+qid).querySelectorAll("button").forEach(function(b){ b.disabled = true; });
+  cfg.parts.forEach(function(p,i){
+    const el = document.getElementById("dispD_"+qid+"_"+i);
+    el.classList.remove("actif");
+    el.classList.add(champOk[i] ? "ok" : "ko");
+  });
+
+  if(isOk){
+    fb.className = "fb ok"; fb.innerHTML = cfg.fbok; fb.style.display = "block";
+    t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+    scormInteraction(qid, true, resp, t.tentative);
+  } else {
+    bloc.classList.add("warn-bloc");
+    fb.className = "fb ko";
+    let msg = (t.tentative === 1) ? "✗ " + cfg.fb1
+            : "✗ " + cfg.fb2 + " &mdash; Réponse attendue : " + cfg.corr;
+    fb.innerHTML = msg; fb.style.display = "block";
+    if(t.tentative === 1){
+      btnv.disabled = true; btnr.style.display = "inline-block";
+    } else {
+      fb.className = "fb ko2"; t.resultat = "ko";
+      fb.innerHTML += (EN_CLASSE ? RELANCE_PROF : '');
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+      scormInteraction(qid, false, resp, 2);
+    }
+  }
+  verifierFin();
+}
+function retryDecomp(qid){
+  const cfg = DECOMP[qid];
+  let premierLibre = -1;
+  cfg.parts.forEach(function(p,i){
+    const el = document.getElementById("dispD_"+qid+"_"+i);
+    if(FIGER_JUSTES && el.classList.contains("ok")) return;    // acquis : on le garde
+    el.classList.remove("ok","ko","fige");
+    saisiD[qid][i] = "";
+    if(premierLibre < 0) premierLibre = i;
+  });
+  actifD[qid] = (premierLibre < 0) ? 0 : premierLibre;         // le curseur ne repart jamais dans un champ fige
+  renderDispD(qid);
+  document.getElementById("clav_"+qid).querySelectorAll("button").forEach(function(b){ b.disabled = false; });
+  document.getElementById("fb_"+qid).style.display = "none";
+  document.getElementById("btnr_"+qid).style.display = "none";
+  document.getElementById("btnv_"+qid).disabled = false;
+  document.getElementById(qid).classList.remove("warn-bloc");
+}
+
+/* ---------- Scores et bilan ---------- */
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(function(qid){
+    const r = etat[qid].resultat;
+    if(r === "ok1"){ n1++; n2++; }
+    else if(r === "ok2"){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+function majScores(){
+  const sc = calculerScores();
+  const e1 = document.getElementById('sval-n1'); if(e1) e1.textContent = sc.n1 + " / " + TOTAL;
+  const e2 = document.getElementById('sval-n2'); if(e2) e2.textContent = sc.n2 + " / " + TOTAL;
+}
+function verifierFin(){
+  majScores();
+  const fini = TOUS_IDS.every(function(qid){ return etat[qid].resultat !== null; });
+  if(fini) afficherBilan();
+}
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById("bilan-n1").textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById("bilan-n2").textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById("bilan").style.display = "block";
+  const fini = TOUS_IDS.every(function(qid){ return etat[qid].resultat !== null; });
+  if(fini) scormReport(sc.n1);
+}
+
+/* ---------- Couche SCORM 1.2 (mode entraînement) ---------- */
+var scormAPI = null, scormInit = false, scormNbInter = 0;
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    const pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    const po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+function scormEnd(){
+  try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){}
+}
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+/* ---------- Init ---------- */
+window.addEventListener("DOMContentLoaded", function(){
+  tirerTout();
+  TOUS_IDS.forEach(function(qid,i){ document.getElementById("num_"+qid).textContent = (i+1); });
+  IDS_NUM.forEach(function(qid){ construireClavier("clav_"+qid, qid); renderDisp(qid); });
+  IDS_DECOMP.forEach(function(qid){ construireDecomp(qid); });
+  scormStart();
+  function renderMath(){
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+    else { setTimeout(renderMath, 100); }
+  }
+  renderMath();
+});
+
+</script>
+</body>
+</html>

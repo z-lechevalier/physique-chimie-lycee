@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : Puissances de 10</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--eval:#1f6b54;--edl:#5b2a4e;--r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+.phrase-trous{font-size:.95rem;line-height:2.4}
+.phrase-trous select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:80px;cursor:pointer;transition:border-color .14s}
+.phrase-trous select:focus{border-color:var(--bleu-cl);outline:none}
+.phrase-trous select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.phrase-trous select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.phrase-trous select:disabled{cursor:default;opacity:.85}
+/* === Faux écran de calculatrice (net-neuf, bloc « La calculatrice ») === */
+.fecran{display:inline-flex;flex-direction:column;gap:6px;margin:2px 0 12px}
+.fecran-lcd{font-family:'JetBrains Mono',monospace;font-size:1.3rem;background:#10231a;color:#7ee2a4;padding:11px 18px;border-radius:6px;border:2px solid #2a3b30;min-width:190px;text-align:right;letter-spacing:.04em;box-shadow:inset 0 1px 4px rgba(0,0,0,.35)}
+.fecran-tog{align-self:flex-start;font-size:.78rem;padding:4px 11px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu-cl);cursor:pointer;font-family:'Source Serif 4',serif;transition:all .14s}
+.fecran-tog:hover{background:#eef4fa}
+.fecran-leg{font-size:.78rem;color:#888;font-style:italic}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+}
+</style>
+</head>
+<body>
+  <header class="mode-entrainement">
+    <div class="hg">
+      <div class="h-niveau">Seconde</div>
+      <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+      <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> Puissances de 10 (Entraînement)</div>
+    </div>
+    <div class="hd">
+      <div class="h-lycee">Lycée Henri Cornat</div>
+      <div class="h-ville">VALOGNES</div>
+      <div class="h-prof">Z. Lechevalier</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="consignes-titre">CONSIGNES</div>
+    <div class="contexte">
+      Les puissances de 10 servent très fréquemment en Physique-Chimie. C'est donc le moment de réactiver ce que tu sais et de compléter tes compétences avec l'utilisation de la calculatrice. Les questions du quiz sont adaptées aussi bien si tu utilises la calculatrice NumWorks que la Casio Collège.<br><br>
+      Tu peux refaire le quiz autant de fois que tu veux pour t'entraîner.
+    </div>
+
+    <!-- ============ BLOC 1 — LA CALCULATRICE ============ -->
+
+    <div class="qbloc" id="q01">
+      <div class="qenonce"><span class="qnum">01</span><span>Selon ta calculatrice, un même résultat peut s'afficher de deux façons. Que représentent ces deux affichages ?</span></div>
+      <div class="qcont">
+        <div class="fecran">
+          <div class="fecran-lcd" id="lcd_fe1">6.02E23</div>
+          <button type="button" class="fecran-tog" onclick="basculerEcran('fe1')">↻ Changer l'affichage</button>
+          <span class="fecran-leg">Clique pour voir l'autre écriture du même résultat.</span>
+        </div>
+        <ul class="opts" id="opts_q01"></ul>
+        <div class="fb" id="fb_q01"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q01">Valider</button>
+          <button class="btn-r" id="btnr_q01">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q02">
+      <div class="qenonce"><span class="qnum">02</span><span>Lis l'écran ci-dessous, puis complète l'exposant. Le « E » de la calculatrice signifie « ×10 puissance ».</span></div>
+      <div class="qcont">
+        <div class="fecran"><div class="fecran-lcd">3.5E-4</div></div>
+        <p class="phrase-trous">Cet affichage vaut \(3{,}5 \times 10^{n}\) avec \(n =\) <select id="q02_1"></select>.</p>
+        <div class="fb" id="fb_q02"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q02">Valider</button>
+          <button class="btn-r" id="btnr_q02">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q03">
+      <div class="qenonce"><span class="qnum">03</span><span>Tu veux obtenir \(5\times10^{-6}\) à la calculatrice (touche ×10ˣ). Quel affichage dois-tu lire à l'écran ?</span></div>
+      <div class="qcont">
+        <ul class="opts" id="opts_q03"></ul>
+        <div class="fb" id="fb_q03"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q03">Valider</button>
+          <button class="btn-r" id="btnr_q03">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BLOC 2 — DÉCIMALE ↔ PUISSANCE DE 10 ============ -->
+
+    <div class="qbloc" id="q04">
+      <div class="qenonce"><span class="qnum">04</span><span>Associe chaque puissance de 10 à son écriture décimale.</span></div>
+      <div class="qcont">
+        <table class="assoc-table">
+          <thead><tr><th>Puissance</th><th>Écriture décimale</th></tr></thead>
+          <tbody>
+            <tr><td>\(10^{4}\)</td><td><select id="q04_1"></select></td></tr>
+            <tr><td>\(10^{-3}\)</td><td><select id="q04_2"></select></td></tr>
+            <tr><td>\(10^{0}\)</td><td><select id="q04_3"></select></td></tr>
+            <tr><td>\(10^{-1}\)</td><td><select id="q04_4"></select></td></tr>
+            <tr><td>\(10^{2}\)</td><td><select id="q04_5"></select></td></tr>
+          </tbody>
+        </table>
+        <div class="fb" id="fb_q04"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q04">Valider</button>
+          <button class="btn-r" id="btnr_q04">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q05">
+      <div class="qenonce"><span class="qnum">05</span><span>Écris \(10^{-4}\) en écriture décimale.</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(10^{-4} =\)</label>
+          <div class="disp" id="disp_q05"></div>
+          <input class="sunit" id="unit_q05" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q05"></div>
+        <div class="fb" id="fb_q05"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q05" onclick="validerNum('q05')">Valider</button>
+          <button class="btn-r" id="btnr_q05" onclick="retryNum('q05')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q06">
+      <div class="qenonce"><span class="qnum">06</span><span>On a \(100\,000 = 10^{n}\). Donne l'exposant \(n\).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q06"></div>
+          <input class="sunit" id="unit_q06" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q06"></div>
+        <div class="fb" id="fb_q06"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q06" onclick="validerNum('q06')">Valider</button>
+          <button class="btn-r" id="btnr_q06" onclick="retryNum('q06')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q07">
+      <div class="qenonce"><span class="qnum">07</span><span>On a \(0{,}000\,01 = 10^{n}\). Donne l'exposant \(n\).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q07"></div>
+          <input class="sunit" id="unit_q07" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q07"></div>
+        <div class="fb" id="fb_q07"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q07" onclick="validerNum('q07')">Valider</button>
+          <button class="btn-r" id="btnr_q07" onclick="retryNum('q07')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BLOC 3 — CONNAISSANCES + APPLICATIONS ============ -->
+
+    <div class="qbloc" id="q08">
+      <div class="qenonce"><span class="qnum">08</span><span>Combien vaut \(10^{0}\) ?</span></div>
+      <div class="qcont">
+        <ul class="opts" id="opts_q08"></ul>
+        <div class="fb" id="fb_q08"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q08">Valider</button>
+          <button class="btn-r" id="btnr_q08">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q09">
+      <div class="qenonce"><span class="qnum">09</span><span>Combien vaut \(10^{1}\) ?</span></div>
+      <div class="qcont">
+        <ul class="opts" id="opts_q09"></ul>
+        <div class="fb" id="fb_q09"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q09">Valider</button>
+          <button class="btn-r" id="btnr_q09">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q10">
+      <div class="qenonce"><span class="qnum">10</span><span>À quoi est égal \(10^{-n}\) (avec \(n\) entier positif) ?</span></div>
+      <div class="qcont">
+        <ul class="opts" id="opts_q10"></ul>
+        <div class="fb" id="fb_q10"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q10">Valider</button>
+          <button class="btn-r" id="btnr_q10">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q11">
+      <div class="qenonce"><span class="qnum">11</span><span>Complète la règle du <strong>produit</strong> de deux puissances de 10.</span></div>
+      <div class="qcont">
+        <p class="phrase-trous">\(10^{a} \times 10^{b} = 10^{(a \;?\; b)}\)&nbsp;&nbsp; où l'opération \(?\) est <select id="q11_1"></select>.</p>
+        <div class="fb" id="fb_q11"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q11">Valider</button>
+          <button class="btn-r" id="btnr_q11">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q12">
+      <div class="qenonce"><span class="qnum">12</span><span>Complète la règle du <strong>quotient</strong> de deux puissances de 10.</span></div>
+      <div class="qcont">
+        <p class="phrase-trous">\(10^{a} \div 10^{b} = 10^{(a \;?\; b)}\)&nbsp;&nbsp; où l'opération \(?\) est <select id="q12_1"></select>.</p>
+        <div class="fb" id="fb_q12"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q12">Valider</button>
+          <button class="btn-r" id="btnr_q12">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q13">
+      <div class="qenonce"><span class="qnum">13</span><span>On a \(10^{3} \times 10^{5} = 10^{n}\). Donne l'exposant \(n\).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q13"></div>
+          <input class="sunit" id="unit_q13" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q13"></div>
+        <div class="fb" id="fb_q13"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q13" onclick="validerNum('q13')">Valider</button>
+          <button class="btn-r" id="btnr_q13" onclick="retryNum('q13')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q14">
+      <div class="qenonce"><span class="qnum">14</span><span>On a \(10^{7} \div 10^{2} = 10^{n}\). Donne l'exposant \(n\).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q14"></div>
+          <input class="sunit" id="unit_q14" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q14"></div>
+        <div class="fb" id="fb_q14"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q14" onclick="validerNum('q14')">Valider</button>
+          <button class="btn-r" id="btnr_q14" onclick="retryNum('q14')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q15">
+      <div class="qenonce"><span class="qnum">15</span><span>On a \(10^{4} \times 10^{-6} = 10^{n}\). Donne l'exposant \(n\) (attention au signe).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q15"></div>
+          <input class="sunit" id="unit_q15" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q15"></div>
+        <div class="fb" id="fb_q15"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q15" onclick="validerNum('q15')">Valider</button>
+          <button class="btn-r" id="btnr_q15" onclick="retryNum('q15')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q16">
+      <div class="qenonce"><span class="qnum">16</span><span>On a \(10^{-3} \div 10^{2} = 10^{n}\). Donne l'exposant \(n\) (attention au signe).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(n =\)</label>
+          <div class="disp" id="disp_q16"></div>
+          <input class="sunit" id="unit_q16" type="text" autocomplete="off" style="display:none">
+        </div>
+        <div id="clav_q16"></div>
+        <div class="fb" id="fb_q16"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q16" onclick="validerNum('q16')">Valider</button>
+          <button class="btn-r" id="btnr_q16" onclick="retryNum('q16')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BLOC 4 — TRÈS GRANDS / TRÈS PETITS NOMBRES ============ -->
+
+    <div class="qbloc" id="q17">
+      <div class="qenonce"><span class="qnum">17</span><span>Une bactérie mesure environ \(0{,}000\,002\) m. Écris cette longueur sous la forme \(a\times10^{n}\) m (touche ×10ˣ).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(\ell =\)</label>
+          <div class="disp" id="disp_q17"></div>
+          <label>Unité :</label>
+          <input class="sunit" id="unit_q17" type="text" autocomplete="off">
+        </div>
+        <div id="clav_q17"></div>
+        <div class="fb" id="fb_q17"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q17" onclick="validerNum('q17')">Valider</button>
+          <button class="btn-r" id="btnr_q17" onclick="retryNum('q17')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="qbloc" id="q18">
+      <div class="qenonce"><span class="qnum">18</span><span>La lumière se déplace à environ \(300\,000\,000\) m/s. Écris cette vitesse sous la forme \(a\times10^{n}\) m/s (touche ×10ˣ).</span></div>
+      <div class="qcont">
+        <div class="saisie-ligne">
+          <label>\(v =\)</label>
+          <div class="disp" id="disp_q18"></div>
+          <label>Unité :</label>
+          <input class="sunit" id="unit_q18" type="text" autocomplete="off">
+        </div>
+        <div id="clav_q18"></div>
+        <div class="fb" id="fb_q18"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q18" onclick="validerNum('q18')">Valider</button>
+          <button class="btn-r" id="btnr_q18" onclick="retryNum('q18')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="barre-finale">
+      <button class="btn-global btn-valider-tout" id="btn-bilan">Calculer les scores</button>
+      <button class="btn-global btn-recommencer" id="btn-reload">&#8634; Recommencer</button>
+    </div>
+
+    <div id="bilan">
+      <h2>Bilan</h2>
+      <div class="score-res">
+        <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 18</span></div>
+        <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 18</span></div>
+      </div>
+      <table class="btable">
+        <thead><tr><th>#</th><th>Question</th><th>Résultat</th></tr></thead>
+        <tbody id="btable-body"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+  /* ===================== CONSTANTES ===================== */
+  const MODE_QUIZ = "entrainement";
+  const PHASE = "bases";                        // "bases" | "competences" | "aucune"
+  const FIGER_JUSTES = (PHASE === "bases");     // 2e essai differentiel : les cases justes restent figees
+  const EN_CLASSE = true;
+  const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+  const CS_MODE = "tolérant";
+
+  const LABELS = {
+    q01: "Calculatrice : deux affichages, même nombre",
+    q02: "Calculatrice : lire l'exposant (E → ×10ⁿ)",
+    q03: "Calculatrice : saisir 5×10⁻⁶ (affichage E)",
+    q04: "Associer puissance de 10 ↔ écriture décimale",
+    q05: "10⁻⁴ en écriture décimale",
+    q06: "100 000 sous la forme 10ⁿ",
+    q07: "0,000 01 sous la forme 10ⁿ",
+    q08: "Connaissance : 10⁰",
+    q09: "Connaissance : 10¹",
+    q10: "Connaissance : 10⁻ⁿ",
+    q11: "Règle du produit (exposants)",
+    q12: "Règle du quotient (exposants)",
+    q13: "Application produit : 10³ × 10⁵",
+    q14: "Application quotient : 10⁷ ÷ 10²",
+    q15: "Application produit (négatif) : 10⁴ × 10⁻⁶",
+    q16: "Application quotient (négatif) : 10⁻³ ÷ 10²",
+    q17: "Très petit nombre : bactérie (a×10ⁿ)",
+    q18: "Très grand nombre : vitesse de la lumière (a×10ⁿ)"
+  };
+
+  const SCORM_IDS = {
+    q01: "calc_deux_affichages",
+    q02: "calc_lire_exposant",
+    q03: "calc_saisie_affichage",
+    q04: "assoc_puiss_decimal",
+    q05: "decimal_de_10m4",
+    q06: "puiss_de_100000",
+    q07: "puiss_de_0_00001",
+    q08: "conn_10p0",
+    q09: "conn_10p1",
+    q10: "conn_10mn",
+    q11: "regle_produit",
+    q12: "regle_quotient",
+    q13: "app_produit_3_5",
+    q14: "app_quotient_7_2",
+    q15: "app_produit_neg",
+    q16: "app_quotient_neg",
+    q17: "app_bacterie",
+    q18: "app_lumiere"
+  };
+
+  const IDS_QCM   = ["q01","q03","q08","q09","q10"];
+  const IDS_ASSOC = ["q02","q04","q11","q12"];
+  const IDS_NUM   = ["q05","q06","q07","q13","q14","q15","q16","q17","q18"];
+
+  const TOUS_IDS = ["q01","q02","q03","q04","q05","q06","q07","q08","q09","q10","q11","q12","q13","q14","q15","q16","q17","q18"];
+  const TOTAL = TOUS_IDS.length;
+
+  const etat = {};
+  TOUS_IDS.forEach(id => { etat[id] = {resultat:null, tentative:0}; });
+
+  /* ===================== DICTS DE DONNÉES ===================== */
+
+  const QCM = {
+    q01: {
+      props: [
+        { html: "le même nombre, \\(6{,}02\\times10^{23}\\)", correct: true },
+        { html: "deux nombres différents l'un de l'autre", correct: false },
+        { html: "le nombre \\(6{,}02\\) élevé à la puissance \\(23\\)", correct: false },
+        { html: "le produit du nombre \\(6{,}02\\) par \\(23\\)", correct: false }
+      ],
+      fb1: "Souviens-toi de ce que la touche « E » (ou ×10ˣ) remplace sur la calculatrice.",
+      fb2: "Le « E » abrège « ×10 puissance » : \\(6.02\\text{E}23\\) et \\(6{,}02\\times10^{23}\\) sont deux écritures du même nombre.",
+      fbok: "&#10003; Exact ! Le « E » signifie « ×10 puissance » : les deux affichages désignent le même nombre."
+    },
+    q03: {
+      props: [
+        { html: "l'affichage <strong>5E-6</strong>", correct: true },
+        { html: "l'affichage <strong>5E6</strong>", correct: false },
+        { html: "l'affichage <strong>6E-5</strong>", correct: false },
+        { html: "l'affichage <strong>5^-6</strong>", correct: false }
+      ],
+      fb1: "La touche ×10ˣ note l'exposant juste après le E. Quel est l'exposant de \\(5\\times10^{-6}\\) ?",
+      fb2: "On tape 5, puis ×10ˣ, puis \\(-6\\) : l'écran affiche alors 5E-6.",
+      fbok: "&#10003; Exact ! \\(5\\times10^{-6}\\) s'affiche 5E-6."
+    },
+    q08: {
+      props: [
+        { html: "\\(1\\)", correct: true },
+        { html: "\\(0\\)", correct: false },
+        { html: "\\(10\\)", correct: false },
+        { html: "cela n'existe pas", correct: false }
+      ],
+      fb1: "Que vaut n'importe quel nombre (non nul) élevé à la puissance 0 ?",
+      fb2: "Par convention, \\(10^{0}=1\\).",
+      fbok: "&#10003; Exact ! \\(10^{0}=1\\)."
+    },
+    q09: {
+      props: [
+        { html: "\\(10\\)", correct: true },
+        { html: "\\(1\\)", correct: false },
+        { html: "\\(0\\)", correct: false },
+        { html: "\\(100\\)", correct: false }
+      ],
+      fb1: "Un nombre élevé à la puissance 1, c'est ce nombre lui-même.",
+      fb2: "\\(10^{1}=10\\).",
+      fbok: "&#10003; Exact ! \\(10^{1}=10\\)."
+    },
+    q10: {
+      props: [
+        { html: "\\(\\dfrac{1}{10^{n}}\\)", correct: true },
+        { html: "\\(-10^{n}\\)", correct: false },
+        { html: "\\(-\\dfrac{1}{10^{n}}\\)", correct: false },
+        { html: "\\(10^{n}\\)", correct: false }
+      ],
+      fb1: "Un exposant négatif ne rend pas le nombre négatif : il indique un inverse. \\(10^{-n}\\) est positif.",
+      fb2: "\\(10^{-n}=\\dfrac{1}{10^{n}}\\) : c'est un petit nombre positif, l'inverse de \\(10^{n}\\).",
+      fbok: "&#10003; Exact ! \\(10^{-n}=\\dfrac{1}{10^{n}}\\), un nombre positif."
+    }
+  };
+
+  const ASSOC = {
+    q02: {
+      selects: [
+        { label: "n", id: "q02_1", options: ["4","−4","3","−3","5"], good: "−4" }
+      ],
+      fb1: "Le nombre écrit juste après le « E » est l'exposant, signe compris.",
+      fb2: "\\(3.5\\text{E}{-}4 = 3{,}5\\times10^{-4}\\) : l'exposant est \\(-4\\).",
+      fbok: "&#10003; Exact ! \\(3.5\\text{E}{-}4 = 3{,}5\\times10^{-4}\\)."
+    },
+    q04: {
+      paires: [
+        { item: "\\(10^{4}\\)",  id: "q04_1", good: "10 000" },
+        { item: "\\(10^{-3}\\)", id: "q04_2", good: "0,001" },
+        { item: "\\(10^{0}\\)",  id: "q04_3", good: "1" },
+        { item: "\\(10^{-1}\\)", id: "q04_4", good: "0,1" },
+        { item: "\\(10^{2}\\)",  id: "q04_5", good: "100" }
+      ],
+      options: ["10 000","0,001","1","0,1","100","0,0001","10"],
+      fb1: "Un exposant positif donne un grand nombre (des zéros avant la virgule), un exposant négatif un petit nombre (des zéros après la virgule).",
+      fb2: "\\(10^{4}=10\\,000\\), \\(10^{-3}=0{,}001\\), \\(10^{0}=1\\), \\(10^{-1}=0{,}1\\), \\(10^{2}=100\\).",
+      fbok: "&#10003; Exact ! Toutes les associations sont correctes."
+    },
+    q11: {
+      selects: [
+        { label: "opération", id: "q11_1", options: ["+","−","×","÷"], good: "+" }
+      ],
+      fb1: "Quand on multiplie deux puissances de 10, que deviennent les exposants ?",
+      fb2: "Pour un produit, on additionne les exposants : \\(10^{a}\\times10^{b}=10^{a+b}\\).",
+      fbok: "&#10003; Exact ! \\(10^{a}\\times10^{b}=10^{a+b}\\)."
+    },
+    q12: {
+      selects: [
+        { label: "opération", id: "q12_1", options: ["+","−","×","÷"], good: "−" }
+      ],
+      fb1: "Quand on divise deux puissances de 10, que deviennent les exposants ?",
+      fb2: "Pour un quotient, on soustrait les exposants : \\(10^{a}\\div10^{b}=10^{a-b}\\).",
+      fbok: "&#10003; Exact ! \\(10^{a}\\div10^{b}=10^{a-b}\\)."
+    }
+  };
+
+  const NUMCFG = {
+    q05: {
+      val: 0.0001, tol: 0.01, unites: [""],
+      fb1: "\\(10^{-4}\\), c'est \\(\\dfrac{1}{10^{4}}\\). Combien de zéros après la virgule avant le 1 ?",
+      fb2: "\\(10^{-4}=0{,}0001\\) : le 1 est à la 4ᵉ décimale.",
+      fbok: "&#10003; Exact ! \\(10^{-4}=0{,}0001\\).",
+      corr: "0,0001"
+    },
+    q06: {
+      val: 5, tol: 0.001, unites: [""],
+      fb1: "Compte les zéros de \\(100\\,000\\).",
+      fb2: "\\(100\\,000\\) possède 5 zéros, donc \\(100\\,000=10^{5}\\).",
+      fbok: "&#10003; Exact ! \\(100\\,000=10^{5}\\).",
+      corr: "n = 5"
+    },
+    q07: {
+      val: -5, tol: 0.001, unites: [""],
+      fb1: "Dans \\(0{,}000\\,01\\), à quelle décimale se trouve le 1 ?",
+      fb2: "Le 1 est à la 5ᵉ décimale, donc \\(0{,}000\\,01=10^{-5}\\).",
+      fbok: "&#10003; Exact ! \\(0{,}000\\,01=10^{-5}\\).",
+      corr: "n = −5"
+    },
+    q13: {
+      val: 8, tol: 0.001, unites: [""],
+      fb1: "Pour un produit de puissances de 10, que fait-on des exposants ?",
+      fb2: "On additionne : \\(3+5=8\\), donc \\(10^{3}\\times10^{5}=10^{8}\\).",
+      fbok: "&#10003; Exact ! \\(10^{3}\\times10^{5}=10^{8}\\).",
+      corr: "n = 8"
+    },
+    q14: {
+      val: 5, tol: 0.001, unites: [""],
+      fb1: "Pour un quotient de puissances de 10, que fait-on des exposants ?",
+      fb2: "On soustrait : \\(7-2=5\\), donc \\(10^{7}\\div10^{2}=10^{5}\\).",
+      fbok: "&#10003; Exact ! \\(10^{7}\\div10^{2}=10^{5}\\).",
+      corr: "n = 5"
+    },
+    q15: {
+      val: -2, tol: 0.001, unites: [""],
+      fb1: "Additionne les exposants en gardant le signe de chacun.",
+      fb2: "\\(4+(-6)=-2\\), donc \\(10^{4}\\times10^{-6}=10^{-2}\\).",
+      fbok: "&#10003; Exact ! \\(10^{4}\\times10^{-6}=10^{-2}\\).",
+      corr: "n = −2"
+    },
+    q16: {
+      val: -5, tol: 0.001, unites: [""],
+      fb1: "Soustrais les exposants : \\(-3-2\\), attention aux signes.",
+      fb2: "\\(-3-2=-5\\), donc \\(10^{-3}\\div10^{2}=10^{-5}\\).",
+      fbok: "&#10003; Exact ! \\(10^{-3}\\div10^{2}=10^{-5}\\).",
+      corr: "n = −5"
+    },
+    q17: {
+      val: 2e-6, tol: 0.02, cs: 1, sci: true, unites: ["m"],
+      fb1: "Place la virgule juste après le premier chiffre non nul, puis compte les rangs jusqu'à la position de départ. Utilise la touche ×10ˣ.",
+      fb2: "\\(0{,}000\\,002 = 2\\times10^{-6}\\) m.",
+      fbok: "&#10003; Exact ! \\(0{,}000\\,002\\ \\text{m}=2\\times10^{-6}\\ \\text{m}\\).",
+      corr: "2 × 10⁻⁶ m"
+    },
+    q18: {
+      val: 3e8, tol: 0.02, cs: 1, sci: true, unites: ["m/s","m.s-1"],
+      fb1: "Place la virgule juste après le 3, puis compte les rangs jusqu'au bout du nombre. Utilise la touche ×10ˣ.",
+      fb2: "\\(300\\,000\\,000 = 3\\times10^{8}\\) m/s.",
+      fbok: "&#10003; Exact ! \\(300\\,000\\,000\\ \\text{m/s}=3\\times10^{8}\\ \\text{m/s}\\).",
+      corr: "3 × 10⁸ m/s"
+    }
+  };
+
+  /* Faux écran de calculatrice (bloc 1) */
+  const FECRANS = { fe1: { e: "6.02E23", sci: "6,02×10²³", cur: "e" } };
+
+  /* ===================== MÉLANGE ===================== */
+  function melanger(arr){
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  /* ===================== FAUX ÉCRAN ===================== */
+  function basculerEcran(id){
+    const lcd = document.getElementById("lcd_"+id);
+    const st = FECRANS[id];
+    st.cur = (st.cur === "sci") ? "e" : "sci";
+    lcd.textContent = st[st.cur];
+  }
+
+  /* ===================== MOTEUR QCM (Type 1a) ===================== */
+  function construireQCM(qid){
+    const q = QCM[qid];
+    const ul = document.getElementById("opts_"+qid);
+    ul.innerHTML = "";
+    melanger(q.props).forEach(p => {
+      const li = document.createElement("li");
+      li.innerHTML = `<button class="opt-btn" data-correct="${p.correct}">${p.html}</button>`;
+      ul.appendChild(li);
+    });
+    ul.querySelectorAll(".opt-btn").forEach(btn => {
+      btn.addEventListener("click", function(){
+        ul.querySelectorAll(".opt-btn").forEach(b => b.classList.remove("sel"));
+        this.classList.add("sel");
+      });
+    });
+    document.getElementById("btnv_"+qid).onclick = () => validerQCM(qid);
+    document.getElementById("btnr_"+qid).onclick = () => retryQCM(qid);
+  }
+
+  function validerQCM(qid){
+    const ul = document.getElementById("opts_"+qid);
+    const sel = ul.querySelector(".opt-btn.sel");
+    if(!sel){ alert("Sélectionne une réponse."); return; }
+    const repEleve = sel.textContent.trim();
+    const isOk = sel.dataset.correct === "true";
+    const t = etat[qid]; t.tentative++;
+    ul.querySelectorAll(".opt-btn").forEach(b => b.disabled = true);
+    const fb   = document.getElementById("fb_"+qid);
+    const btnv = document.getElementById("btnv_"+qid);
+    const btnr = document.getElementById("btnr_"+qid);
+    const bloc = document.getElementById(qid);
+    if(isOk){
+      sel.classList.add("ok");
+      fb.className = "fb ok"; fb.innerHTML = QCM[qid].fbok; fb.style.display = "block";
+      t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+      scormInteraction(qid, true, repEleve, t.tentative);
+    } else {
+      sel.classList.add("ko");
+      fb.className = "fb ko"; bloc.classList.add("warn-bloc");
+      if(t.tentative === 1){
+        fb.innerHTML = "&#10007; " + QCM[qid].fb1; fb.style.display = "block";
+        btnv.disabled = true; btnr.style.display = "inline-block";
+      } else {
+        ul.querySelectorAll(".opt-btn").forEach(b => {
+          if(b.dataset.correct === "true") b.classList.add("show-ok");
+        });
+        fb.className = "fb ko2"; fb.innerHTML = "&#10007; " + QCM[qid].fb2 + (EN_CLASSE ? RELANCE_PROF : ""); fb.style.display = "block";
+        t.resultat = "ko";
+        btnv.disabled = true; btnr.style.display = "none";
+        bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+        scormInteraction(qid, false, repEleve, t.tentative);
+      }
+    }
+    MathJax.typesetPromise([fb]);
+    verifierFin();
+  }
+
+  function retryQCM(qid){
+    const ul = document.getElementById("opts_"+qid);
+    ul.querySelectorAll(".opt-btn").forEach(b => {
+      b.disabled = false;
+      b.classList.remove("sel","ok","ko","show-ok");
+    });
+    document.getElementById("fb_"+qid).style.display = "none";
+    document.getElementById("btnr_"+qid).style.display = "none";
+    document.getElementById("btnv_"+qid).disabled = false;
+    document.getElementById(qid).classList.remove("warn-bloc");
+  }
+
+  /* ===================== MOTEUR ASSOCIATION (Type 1bis-a et 1bis-b) ===================== */
+  function remplirSelect(selectId, options){
+    const sel = document.getElementById(selectId);
+    sel.innerHTML = "";
+    const opt0 = document.createElement("option");
+    opt0.value = ""; opt0.textContent = "—";
+    sel.appendChild(opt0);
+    melanger(options).forEach(v => {
+      const o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+    sel.value = "";
+  }
+
+  function assocLignes(cfg){
+    // Renvoie un descripteur homogène : [{id, good, etiquette}]
+    if(cfg.selects){
+      return cfg.selects.map(s => ({ id: s.id, good: s.good, etiquette: s.label }));
+    }
+    return cfg.paires.map(p => ({ id: p.id, good: p.good, etiquette: p.item }));
+  }
+
+  function construireAssoc(qid){
+    const cfg = ASSOC[qid];
+    if(!cfg) return;
+    if(cfg.selects){
+      cfg.selects.forEach(s => remplirSelect(s.id, s.options));
+    } else if(cfg.paires){
+      cfg.paires.forEach(p => remplirSelect(p.id, cfg.options));
+    }
+    document.getElementById("btnv_"+qid).onclick = () => validerAssoc(qid);
+    document.getElementById("btnr_"+qid).onclick = () => retryAssoc(qid);
+  }
+
+  function validerAssoc(qid){
+    const cfg = ASSOC[qid];
+    if(!cfg) return;
+    const lignes = assocLignes(cfg);
+    for(const l of lignes){
+      if(document.getElementById(l.id).value === ""){
+        alert("Complète toutes les listes avant de valider.");
+        return;
+      }
+    }
+    const t = etat[qid]; t.tentative++;
+    let toutBon = true;
+    const repParts = [];
+    lignes.forEach(l => {
+      const sel = document.getElementById(l.id);
+      const ok = (sel.value === l.good);
+      sel.classList.remove("ok","ko");
+      sel.classList.add(ok ? "ok" : "ko");
+      if(!ok) toutBon = false;
+      repParts.push(sel.value);
+    });
+    const repEleve = repParts.join(" | ");
+    lignes.forEach(l => { document.getElementById(l.id).disabled = true; });
+    const fb   = document.getElementById("fb_"+qid);
+    const btnv = document.getElementById("btnv_"+qid);
+    const btnr = document.getElementById("btnr_"+qid);
+    const bloc = document.getElementById(qid);
+    if(toutBon){
+      fb.className = "fb ok";
+      fb.innerHTML = cfg.fbok;
+      fb.style.display = "block";
+      t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+      scormInteraction(qid, true, repEleve, t.tentative);
+    } else {
+      bloc.classList.add("warn-bloc");
+      fb.className = "fb ko";
+      if(t.tentative === 1){
+        fb.innerHTML = "&#10007; " + cfg.fb1;
+        fb.style.display = "block";
+        btnv.disabled = true; btnr.style.display = "inline-block";
+      } else {
+        let corr = "&#10007; " + cfg.fb2 + "<ul style='margin:6px 0 0 18px'>";
+        lignes.forEach(l => {
+          corr += "<li>" + l.etiquette + " &rarr; <strong>" + l.good + "</strong></li>";
+        });
+        corr += "</ul>";
+        fb.className = "fb ko2";
+        fb.innerHTML = corr + (EN_CLASSE ? RELANCE_PROF : "");
+        fb.style.display = "block";
+        t.resultat = "ko";
+        btnv.disabled = true; btnr.style.display = "none";
+        bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+        scormInteraction(qid, false, repEleve, t.tentative);
+      }
+    }
+    MathJax.typesetPromise([fb]);
+    verifierFin();
+  }
+
+  function retryAssoc(qid){
+    const cfg = ASSOC[qid];
+    if(!cfg) return;
+    assocLignes(cfg).forEach(l => {
+      const s = document.getElementById(l.id);
+      if(FIGER_JUSTES && s.classList.contains("ok")) return;   // acquis : on le garde (vert, non rejouable)
+      s.classList.remove("ko","ok","fige");
+      s.disabled = false;
+      s.value = "";
+    });
+    document.getElementById("fb_"+qid).style.display = "none";
+    document.getElementById("btnr_"+qid).style.display = "none";
+    document.getElementById("btnv_"+qid).disabled = false;
+    document.getElementById(qid).classList.remove("warn-bloc");
+  }
+
+  /* ===================== CLAVIER SCIENTIFIQUE + NUMÉRIQUE (Type 2) ===================== */
+  const TOUCHES = [
+    {l:"7",t:"ch",v:"7"},{l:"8",t:"ch",v:"8"},{l:"9",t:"ch",v:"9"},{l:"(",t:"op",v:"("},{l:")",t:"op",v:")"},
+    {l:"4",t:"ch",v:"4"},{l:"5",t:"ch",v:"5"},{l:"6",t:"ch",v:"6"},{l:"×",t:"op",v:"×"},{l:"÷",t:"op",v:"÷"},
+    {l:"1",t:"ch",v:"1"},{l:"2",t:"ch",v:"2"},{l:"3",t:"ch",v:"3"},{l:"+",t:"op",v:"+"},{l:"−",t:"op",v:"−"},
+    {l:"0",t:"ch",v:"0"},{l:",",t:"ch",v:","},{l:".",t:"ch",v:"."},{l:"×10ˣ",t:"sp",v:"EXP"},{l:"⌫",t:"del",v:"DEL"}
+  ];
+
+  const saisi = {};
+  IDS_NUM.forEach(id => { saisi[id] = ""; });
+
+  function construireClavier(containerId, qid){
+    const div = document.getElementById(containerId);
+    if(!div) return;
+    const wrap = document.createElement("div");
+    wrap.className = "clavier";
+    TOUCHES.forEach(t => {
+      const btn = document.createElement("button");
+      btn.className = "k" + (t.t==="op" ? " k-op" : t.t==="sp" ? " k-spec" : t.t==="del" ? " k-del" : "");
+      btn.textContent = t.l;
+      btn.addEventListener("click", () => toucheClavier(qid, t.v));
+      wrap.appendChild(btn);
+    });
+    div.innerHTML = "";
+    div.appendChild(wrap);
+  }
+
+  function toucheClavier(qid, val){
+    if(val === "DEL"){
+      let c = saisi[qid];
+      const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+      if(m){
+        if(m[4].length > 0) c = m[1] + m[2] + m[3] + m[4].slice(0,-1);
+        else if(m[3].length > 0) c = m[1] + m[2];
+        else c = m[1];
+      } else { c = c.slice(0,-1); }
+      saisi[qid] = c;
+    } else if(val === "EXP"){
+      saisi[qid] += "×10^";
+    } else {
+      saisi[qid] += val;
+    }
+    renderDisp(qid);
+  }
+
+  function renderDisp(qid){
+    const raw = saisi[qid];
+    const rendu = raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => "×10<sup>" + sg + exp + "</sup>");
+    const el = document.getElementById("disp_"+qid);
+    if(el) el.innerHTML = rendu + '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+  }
+
+  function parseVal(raw){
+    try {
+      let s = raw
+        .replace(/,/g, ".")
+        .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => "e-" + e)
+        .replace(/×10\^(\d+)/g, (_, e) => "e+" + e)
+        .replace(/[×x]/g, "*")
+        .replace(/÷/g, "/")
+        .replace(/−/g, "-");
+      return parseFloat(s);
+    } catch(e) { return NaN; }
+  }
+
+  function compteCS(raw){
+    if(!raw) return 0;
+    let s = raw.replace(/,/g, ".").replace(/−/g, "-").replace(/\s/g, "");
+    const mSci = s.match(/^(-?\d+(?:\.\d+)?)×10\^(-?\d+)$/);
+    if(mSci){ s = mSci[1]; }
+    s = s.replace(/^-/, "");
+    if(s.includes(".")){
+      const parts = s.split(".");
+      const intP = parts[0]; const decP = parts[1];
+      const intClean = intP.replace(/^0+/, "");
+      if(intClean === ""){
+        const decClean = decP.replace(/^0+/, "");
+        return decClean.length;
+      } else {
+        return intClean.length + decP.length;
+      }
+    } else {
+      const clean = s.replace(/^0+/, "");
+      return clean.length || (s === "0" ? 1 : 0);
+    }
+  }
+
+  function validerNum(qid){
+    const cfg = NUMCFG[qid];
+    const t = etat[qid]; t.tentative++;
+    const raw = saisi[qid];
+    const valeur = parseVal(raw);
+
+    const uniteBrute = document.getElementById("unit_"+qid).value;
+    const unite = uniteBrute
+      .replace(/\s/g, "")
+      .replace(/⁻¹/g, "-1")
+      .replace(/\^-1/g, "-1")
+      .replace(/·/g, ".");
+
+    const repEleve = (raw || "∅") + (uniteBrute ? (" " + uniteBrute) : "");
+
+    // Forme imposée (net-neuf) : bloc 4, écriture a×10ⁿ obligatoire
+    const formeOk = cfg.sci ? /×10\^/.test(raw) : true;
+
+    let valOk = !isNaN(valeur) && Math.abs(valeur - cfg.val) / Math.abs(cfg.val) <= cfg.tol;
+    let uniteOk = cfg.unites.some(u => unite.includes(u));
+
+    let csOk = true, csCount = 0, csIssue = null;
+    if(typeof cfg.cs === "number"){
+      csCount = compteCS(raw);
+      csOk = (csCount === cfg.cs);
+      if(!csOk) csIssue = (csCount > cfg.cs) ? "trop" : "pas-assez";
+    }
+
+    let tolereCS = false;
+    if(typeof CS_MODE !== "undefined" && CS_MODE === "tolérant" && valOk && uniteOk && formeOk && csIssue === "trop"){
+      tolereCS = true;
+      csOk = true;
+    }
+
+    const isOk = formeOk && valOk && uniteOk && csOk;
+
+    const disp = document.getElementById("disp_"+qid);
+    const uinp = document.getElementById("unit_"+qid);
+    const fb   = document.getElementById("fb_"+qid);
+    const btnv = document.getElementById("btnv_"+qid);
+    const btnr = document.getElementById("btnr_"+qid);
+    const bloc = document.getElementById(qid);
+    document.getElementById("clav_"+qid).querySelectorAll("button").forEach(b => b.disabled = true);
+    uinp.disabled = true;
+
+    if(isOk){
+      disp.classList.add("ok"); if(uinp.style.display !== "none") uinp.classList.add("ok");
+      fb.className = "fb ok";
+      if(tolereCS){
+        fb.innerHTML = cfg.fbok +
+          '<br><span style="font-size:.9em;color:#5a4a1f">' +
+          "&#128161; Pour une meilleure précision, la forme attendue est : " + cfg.corr +
+          " (" + cfg.cs + " chiffre significatif).</span>";
+      } else {
+        fb.innerHTML = cfg.fbok;
+      }
+      fb.style.display = "block";
+      t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+      scormInteraction(qid, true, repEleve, t.tentative);
+    } else {
+      bloc.classList.add("warn-bloc");
+      fb.className = "fb ko";
+      let msg = "";
+      if(!formeOk){
+        disp.classList.add("ko");
+        msg = (t.tentative === 1)
+          ? "&#10007; Écris ta réponse sous la forme \\(a\\times10^{n}\\) à l'aide de la touche ×10ˣ du clavier."
+          : "&#10007; " + cfg.fb2 + " &mdash; Réponse attendue : " + cfg.corr;
+      } else if(!valOk){
+        disp.classList.add("ko");
+        if(!uniteOk && uinp.style.display !== "none") uinp.classList.add("ko");
+        msg = (t.tentative === 1)
+          ? "&#10007; " + cfg.fb1
+          : "&#10007; " + cfg.fb2 + " &mdash; Réponse attendue : " + cfg.corr;
+      } else if(!uniteOk){
+        uinp.classList.add("ko");
+        msg = (t.tentative === 1)
+          ? "La valeur est correcte, mais vérifie l'unité."
+          : "&#10007; L'unité est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+      } else if(!csOk){
+        disp.classList.add("ko");
+        if(t.tentative === 1){
+          if(csIssue === "trop"){
+            msg = "La valeur et l'unité sont correctes, mais tu as donné plus de précision que ce qui est attendu ("
+                + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+          } else {
+            msg = "La valeur et l'unité sont correctes, mais tu as arrondi trop fortement ("
+                + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+          }
+        } else {
+          msg = "&#10007; Nombre de chiffres significatifs incorrect ("
+              + csCount + " au lieu de " + cfg.cs + "). &mdash; Réponse attendue : " + cfg.corr;
+        }
+      }
+      fb.innerHTML = msg;
+      fb.style.display = "block";
+
+      if(t.tentative === 1){
+        btnv.disabled = true; btnr.style.display = "inline-block";
+      } else {
+        fb.className = "fb ko2";
+        t.resultat = "ko";
+        if(EN_CLASSE) fb.innerHTML += RELANCE_PROF;
+        btnv.disabled = true; btnr.style.display = "none";
+        bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+        scormInteraction(qid, false, repEleve, t.tentative);
+      }
+    }
+    MathJax.typesetPromise([fb]);
+    verifierFin();
+  }
+
+  function retryNum(qid){
+    const disp = document.getElementById("disp_"+qid);
+    const uinp = document.getElementById("unit_"+qid);
+    saisi[qid] = "";
+    disp.classList.remove("ok","ko");
+    renderDisp(qid);
+    uinp.classList.remove("ok","ko");
+    uinp.value = "";
+    uinp.disabled = false;
+    document.getElementById("clav_"+qid).querySelectorAll("button").forEach(b => b.disabled = false);
+    document.getElementById("fb_"+qid).style.display = "none";
+    document.getElementById("btnr_"+qid).style.display = "none";
+    document.getElementById("btnv_"+qid).disabled = false;
+    document.getElementById(qid).classList.remove("warn-bloc");
+  }
+
+  /* ===================== SCORE / BILAN (socle) ===================== */
+  function calculerScores(){
+    let n1 = 0, n2 = 0;
+    TOUS_IDS.forEach(id => {
+      const r = etat[id].resultat;
+      if(r === "ok1"){ n1++; n2++; }
+      else if(r === "ok2"){ n2++; }
+    });
+    return { n1: n1, n2: n2 };
+  }
+
+  function majScores(){
+    const sc = calculerScores();
+    const e1 = document.getElementById("sval-n1"); if(e1) e1.textContent = sc.n1 + " / " + TOTAL;
+    const e2 = document.getElementById("sval-n2"); if(e2) e2.textContent = sc.n2 + " / " + TOTAL;
+  }
+
+  function ordreAffichage(){ return TOUS_IDS; }
+
+  function verifierFin(){
+    majScores();
+    const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+    if(fini) afficherBilan();
+  }
+
+  function afficherBilan(){
+    const tbody = document.getElementById("btable-body");
+    tbody.innerHTML = "";
+    ordreAffichage().forEach((id, i) => {
+      const r = etat[id].resultat;
+      let badge;
+      if(r === "ok1"){ badge = '<span class="badge b-ok">Réussie (1ᵉʳ essai)</span>'; }
+      else if(r === "ok2"){ badge = '<span class="badge b-ok2">Réussie (2ᵉ essai)</span>'; }
+      else if(r === "ko"){ badge = '<span class="badge b-ko">Non réussie</span>'; }
+      else { badge = '<span class="badge">Non traitée</span>'; }
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + (i + 1) + "</td><td>" + LABELS[id] + "</td><td>" + badge + "</td>";
+      tbody.appendChild(tr);
+    });
+    const sc = calculerScores();
+    document.getElementById("bilan-n1").textContent = sc.n1 + " / " + TOTAL;
+    document.getElementById("bilan-n2").textContent = sc.n2 + " / " + TOTAL;
+    document.getElementById("bilan").style.display = "block";
+    const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+    if(fini) scormReport(sc.n1);
+  }
+
+  /* ===================== COUCHE SCORM 1.2 (entraînement) ===================== */
+  var scormAPI = null, scormInit = false;
+  var scormNbInter = 0;
+
+  function scormFindAPI(win){
+    let tries = 0;
+    while(win && !win.API && tries < 10){
+      if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+      tries++;
+    }
+    return (win && win.API) ? win.API : null;
+  }
+
+  function scormEnd(){
+    try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){}
+  }
+  window.addEventListener("beforeunload", scormEnd);
+  window.addEventListener("unload", scormEnd);
+
+  function scormStart(){
+    try{
+      scormAPI = scormFindAPI(window);
+      if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+      if(scormAPI){
+        scormAPI.LMSInitialize("");
+        scormInit = true;
+        scormAPI.LMSSetValue("cmi.core.score.min", "0");
+        scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+        scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+        scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        scormAPI.LMSCommit("");
+      }
+    }catch(e){ /* hors LMS : silencieux */ }
+  }
+
+  function scormInteraction(qid, ok, repEleve, tentative){
+    try{
+      if(!scormInit) return;
+      const n = scormNbInter++;
+      const pre = "cmi.interactions." + n + ".";
+      scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+      scormAPI.LMSSetValue(pre + "type", "performance");
+      scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+      scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+      scormAPI.LMSSetValue(pre + "weighting", "1");
+      var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+      var po = "cmi.objectives." + n + ".";
+      scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+      scormAPI.LMSSetValue(po + "score.min", "0");
+      scormAPI.LMSSetValue(po + "score.max", "1");
+      scormAPI.LMSSetValue(po + "score.raw", pts);
+      scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+      scormAPI.LMSCommit("");
+    }catch(e){ /* silencieux */ }
+  }
+
+  function scormReport(note){
+    try{
+      if(!scormInit) return;
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+      scormAPI.LMSCommit("");
+    }catch(e){ /* silencieux */ }
+  }
+
+  /* ===================== INIT ===================== */
+  window.addEventListener("DOMContentLoaded", () => {
+    scormStart();
+    IDS_QCM.forEach(construireQCM);
+    IDS_ASSOC.forEach(construireAssoc);
+    IDS_NUM.forEach(qid => { construireClavier("clav_"+qid, qid); renderDisp(qid); });
+    Object.keys(FECRANS).forEach(id => {
+      const lcd = document.getElementById("lcd_"+id);
+      if(lcd){ FECRANS[id].cur = "e"; lcd.textContent = FECRANS[id].e; }
+    });
+    document.getElementById("btn-bilan").onclick = afficherBilan;
+    document.getElementById("btn-reload").onclick = () => location.reload();
+    function renderMath(){
+      if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+      else { setTimeout(renderMath, 100); }
+    }
+    renderMath();
+  });
+  </script>
+</body>
+</html>

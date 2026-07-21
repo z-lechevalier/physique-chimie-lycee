@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : Proportionnalité</title>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]]},startup:{typeset:false}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{--bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;--blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;--vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--eval:#1f6b54;--edl:#5b2a4e;--activite:#ffe000;--r:6px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+header.type-activite{background:var(--activite);color:var(--texte);border-bottom-color:var(--texte)}
+header.type-activite .h-phase{background:var(--texte);color:var(--activite)}
+header.type-activite .h-niveau,
+header.type-activite .h-sous,
+header.type-activite .h-prof{opacity:.72}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.activite-entete{border:2px solid var(--bleu);border-radius:var(--r);background:var(--blanc);padding:0 0 16px;margin-bottom:26px;box-shadow:0 1px 7px rgba(26,58,92,.13);overflow:hidden}
+.activite-bandeau{background:var(--texte);color:var(--activite);text-align:center;padding:5px 0;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em}
+.activite-titre{font-size:1.18rem;font-weight:700;color:var(--bleu);text-align:center;letter-spacing:.02em;padding:14px 18px 12px;margin:0 16px 14px;border-bottom:2px solid var(--or)}
+.activite-regles{font-size:.93rem;line-height:1.55;color:var(--texte);padding:0 20px;display:flex;flex-direction:column;gap:9px}
+.activite-regles>div{display:flex;gap:9px;align-items:flex-start}
+.activite-regles .ico{flex:0 0 auto;font-size:1.05rem;line-height:1.4}
+.activite-regles strong{color:var(--bleu)}
+.section-titre{font-size:1.12rem;font-weight:700;color:var(--bleu);margin:32px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.section-titre .num{color:var(--or);margin-right:.45em}
+.soussection-titre{font-size:1rem;font-weight:600;color:var(--bleu-cl);margin:24px 0 12px;padding-bottom:4px;border-bottom:1px solid var(--gris-m)}
+.soussection-titre .num{color:var(--or);margin-right:.45em}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.qcont p{line-height:2;font-size:.95rem}
+.consigne-calc{font-size:.9rem;line-height:1.6;margin-bottom:12px}
+.consigne-calc .warn{color:var(--orange);font-weight:600}
+.rappel-feuille{color:var(--orange);font-weight:600;font-size:.9rem;margin:6px 0 14px}
+.check-feuille label{display:inline-flex;align-items:center;gap:8px;font-size:.95rem}
+.check-feuille .qenonce{margin-bottom:6px}
+.situation.verrouillee{opacity:.5;pointer-events:none}
+.verrou-note{color:var(--orange);font-weight:600;font-size:.92rem;margin:6px 0 10px;border-left:3px solid var(--orange);padding-left:10px}
+.situation:not(.verrouillee) .verrou-note{display:none}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.a-recopier{margin-top:9px;padding:8px 12px;background:#fff;border:1px dashed var(--bleu-cl);border-radius:var(--r);color:var(--texte);font-size:.9rem;line-height:1.55}
+.a-recopier strong{color:var(--bleu)}
+.fb.info{background:#eef4fa;color:var(--bleu);border-left:3px solid var(--bleu-cl)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:140px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text;display:inline-block}
+.disp.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.usel{font-family:'JetBrains Mono',monospace;font-size:.95rem;padding:7px 9px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);color:var(--texte);cursor:pointer}
+.usel:focus{border-color:var(--bleu-cl);outline:none}
+.usel.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.usel.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.aide-btn{background:none;border:1px dashed var(--bleu-cl);color:var(--bleu-cl);padding:4px 10px;border-radius:var(--r);font-size:.78rem;cursor:pointer;font-family:'Source Serif 4',serif;margin-top:4px}
+.aide-box{display:none;background:#eef4fa;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:9px 13px;margin-top:8px;font-size:.86rem;line-height:1.55;color:var(--bleu)}
+.qcont select.trou{font-family:'Source Serif 4',serif;font-size:.9rem;padding:4px 7px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);cursor:pointer;margin:2px 1px}
+.qcont select.trou:focus{border-color:var(--bleu-cl);outline:none}
+.qcont select.trou.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.qcont select.trou.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.demarche{background:var(--blanc);border:1px solid var(--gris-l);border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:15px 17px;margin-bottom:24px}
+.demarche h3{font-size:.98rem;color:var(--bleu);margin-bottom:8px}
+.ex-table{border-collapse:collapse;margin:10px 0;font-size:.9rem}
+.ex-table td{border:1px solid var(--gris-l);padding:6px 12px;text-align:center;font-family:'JetBrains Mono',monospace}
+.ex-table td:first-child{font-family:'Source Serif 4',serif;font-weight:600;text-align:left;background:#f8f6f2;color:var(--bleu)}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}.b-ok2{background:#fff3e0;color:var(--orange)}.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.ct-scroll{overflow-x:auto;margin:6px 0 12px}
+.ct-table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.ct-table td{border:1px solid var(--gris-l);padding:6px 8px;text-align:center;white-space:nowrap}
+.ct-gr{font-weight:600;text-align:left!important;background:#f8f6f2;color:var(--bleu);position:sticky;left:0}
+.ct-gr .ct-sym{color:#888;font-weight:400}
+.ct-val{font-family:'JetBrains Mono',monospace}
+.ct-calc-row td{background:#fbfaf6}
+.ct-head-cell{background:#eef4fa!important;min-width:78px}
+.ct-cell-input{width:74px;font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:5px 4px;border:1.5px solid #ccc;border-radius:4px;text-align:center;background:var(--blanc);color:var(--texte)}
+.ct-cell-input:focus{border-color:var(--bleu-cl);outline:none}
+.ct-cell-input:disabled{background:#f0f0f0;cursor:not-allowed}
+.ct-cell-input.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.ct-cell-input.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.fdrop{position:relative;display:inline-block;font-family:'Source Serif 4',serif}
+.fdrop-cur{min-width:62px;min-height:46px;padding:4px 22px 4px 10px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--bleu)}
+.fdrop-cur::after{content:'▾';position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--bleu-cl)}
+.fdrop-cur.placeholder{color:#aaa;font-style:italic;font-size:.82rem}
+.fdrop-cur.figee{border-color:var(--vert);background:#e6f4eb;cursor:default}
+.fdrop-cur.figee::after{display:none}
+.fdrop-menu{display:none;position:absolute;z-index:20;top:50px;left:0;background:var(--blanc);border:1.5px solid var(--bleu-cl);border-radius:var(--r);box-shadow:0 3px 12px rgba(0,0,0,.14);padding:5px;min-width:150px}
+.fdrop-menu.open{display:flex;flex-wrap:wrap;gap:5px}
+.fdrop-opt{flex:1 1 40%;min-height:44px;padding:4px 8px;border:1px solid var(--gris-l);border-radius:4px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bleu)}
+.fdrop-opt:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){main{padding:16px 12px 50px}.clavier{grid-template-columns:repeat(5,38px)}.k{height:32px;font-size:.74rem}}
+</style>
+</head>
+<body>
+<header class="mode-entrainement type-activite">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> Activité 1 — Proportionnalité (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+<main>
+  <div class="activite-entete">
+    <div class="activite-bandeau">Activité en classe</div>
+    <div class="activite-titre">2PC0 · Les Bases — Activité 1 : Proportionnalité en tableau</div>
+    <div class="activite-regles">
+      <div><span class="ico">📄</span><span><strong>Cette activité est à rédiger entièrement sur une feuille</strong> correctement présentée (nom, prénom, classe, date) : <strong>une feuille par élève</strong>, et non une feuille pour deux.</span></div>
+      <div><span class="ico">✍️</span><span><strong>Le titre de l'activité (ci-dessus) doit être recopié en entier.</strong> Les titres des parties (1., 2., …) doivent eux aussi être recopiés, ainsi que les sous-titres (1.1, 1.2…) — même si tu n'as rien à écrire dedans.</span></div>
+      <div><span class="ico">🔢</span><span><strong>Les questions ne se recopient pas</strong>, mais <strong>leur numéro, si</strong>.</span></div>
+      <div><span class="ico">🧮</span><span><strong>La calculatrice est disponible à chaque question</strong> : NumWorks intégrée à l'écran, ou ta Casio collège sur Éléa &gt; 2PC0 &gt; Calculatrices.</span></div>
+    </div>
+  </div>
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="contexte">
+    Tu as déjà entendu parler de la proportionnalité au collège, en mathématiques. En physique-chimie, cette propriété est elle aussi très souvent utilisée. Cette activité va te permettre de <b>réactiver</b> ce que tu sais déjà.<br><br>
+    Dans chacune des 4 situations, le tableau te donne <b>trois grandeurs</b>. À toi de découvrir à quoi est proportionnel le prix dans chacune des situations.
+  </div>
+
+  <div class="section-titre"><span class="num">1.</span>D&eacute;marche</div>
+  <div class="demarche">
+    <p style="font-size:.92rem;line-height:1.6;margin-bottom:4px">Voici un exemple simple :</p>
+    <table class="ex-table">
+      <tr><td>Temps (s)</td><td>2</td><td>3</td><td>5</td><td>8</td><td>10</td></tr>
+      <tr><td>Distance (m)</td><td>30</td><td>45</td><td>75</td><td>120</td><td>150</td></tr>
+    </table>
+    <p style="font-size:.92rem;line-height:1.6"><b>Comment v&eacute;rifier que la distance est proportionnelle au temps ?</b> &Eacute;cris ta d&eacute;marche sur ta feuille avant de v&eacute;rifier. <i>(Cette question ne rapporte pas de point : inutile de tricher.)</i></p>
+    <button class="aide-btn" onclick="toggleAide('demarche')">Voir la m&eacute;thode</button>
+    <div class="aide-box" id="aide_demarche">
+      Pour v&eacute;rifier que deux grandeurs sont proportionnelles, on calcule le <b>quotient</b> d'une grandeur par l'autre dans <b>chaque colonne</b>, et on regarde s'il reste <b>constant</b>. Ici : 30 &divide; 2 = 15 ; 45 &divide; 3 = 15 ; 75 &divide; 5 = 15&hellip; le quotient vaut toujours <b>15</b>. La distance est donc proportionnelle au temps, et ce quotient constant (15 m/s, une vitesse !) est le <b>coefficient de proportionnalit&eacute;</b>.
+    </div>
+  </div>
+
+  <div id="zone-questions">
+<div class="situation" id="sit_insta">
+  <div class="section-titre"><span class="num">2.</span>Sponsorisations Instagram</div>
+  <div class="contexte">Un annonceur veut payer &laquo; juste ce qu'il faut &raquo; pour un post. Entre nombre de vues et nombre d'abonn&eacute;s, qu'est-ce qui fait grimper la note&nbsp;?</div>
+  <div class="rappel-feuille">✍️ Recopie le tableau sur ta feuille, complète-le, puis vérifie tes réponses à l'aide du quiz.</div>
+
+  <div class="qbloc" id="cInsta">
+    <div class="qenonce"><span class="qnum">1</span><span>Tableau de calcul</span></div>
+    <div class="qcont">
+      <div class="consigne-calc"><span class="warn">&#9888;&#65039; Recopie ce tableau sur ta feuille.</span> Choisis la formule &agrave; tester pour chaque ligne de calcul, clique sur &laquo;&nbsp;V&eacute;rifier mes formules&nbsp;&raquo;, puis calcule chaque colonne <b>à l'aide de la calculatrice</b>, complète le tableau <b>sur ta feuille</b> et vérifie à l'aide du quiz.</div>
+      <div class="ct-scroll"><table class="ct-table" id="cttab_cInsta"></table></div>
+      <button class="nw-btn" onclick="toggleNW('nw_cInsta')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_cInsta"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div>
+        <button class="btn-v" id="btnf_cInsta" onclick="verifFormulesCT('cInsta')">V&eacute;rifier mes formules</button>
+        <button class="btn-v" id="btnt_cInsta" onclick="validerCalctab('cInsta')" style="display:none">Valider le tableau</button>
+        <button class="btn-r" id="btnr_cInsta" onclick="retryCalctab('cInsta')">2<sup>e</sup> essai</button>
+      </div>
+      <div class="fb" id="fb_cInsta"></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="idInsta">
+    <div class="qenonce"><span class="qnum">2</span><span>Complète les deux phrases : l'une affirme une proportionnalité, l'autre une non-proportionnalité (ordre libre).</span></div>
+    <div class="qcont">
+      <p class="rappel-feuille">✍️ Recopie les deux phrases complétées sur ta feuille.</p>
+      <p>1. Le tarif <select id="idInsta_1v" class="trou"></select> proportionnel <select id="idInsta_1g" class="trou"></select>, car le rapport <select id="idInsta_1r" class="trou"></select> <select id="idInsta_1c" class="trou"></select> constant.</p>
+      <p>2. Le tarif <select id="idInsta_2v" class="trou"></select> proportionnel <select id="idInsta_2g" class="trou"></select>, car le rapport <select id="idInsta_2r" class="trou"></select> <select id="idInsta_2c" class="trou"></select> constant.</p>
+      <div class="fb" id="fb_idInsta"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_idInsta">Valider</button><button class="btn-r" id="btnr_idInsta">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="relInsta" style="display:none">
+    <div class="qenonce"><span class="qnum">3</span><span>&Eacute;cris la relation de proportionnalité. ✍️ Écris-la d'abord sur ta feuille.</span></div>
+    <div class="qcont">
+      <p>T = <select id="relInsta_k" class="trou"></select> &times; <select id="relInsta_g" class="trou"></select></p>
+      <div class="fb" id="fb_relInsta"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_relInsta">Valider</button><button class="btn-r" id="btnr_relInsta">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="coInsta">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est la valeur du coefficient de proportionnalit&eacute; ?</span></div>
+    <div class="qcont">
+      <button class="nw-btn" onclick="toggleNW('nw_coInsta')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_coInsta"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div class="saisie-ligne">
+        <label>k =</label>
+        <div class="disp" id="disp_coInsta"></div>
+        <label>Unit&eacute; :</label>
+        <select class="usel" id="unit_coInsta"><option value="">&mdash;</option><option>vue/&euro;</option><option>&euro;/vue</option><option>&euro;</option><option>&euro;&middot;vue</option></select>
+      </div>
+      <div id="clav_coInsta"></div>
+      <button class="aide-btn" onclick="toggleAide('coInsta')">Aide : trouver l'unit&eacute;</button>
+      <div class="aide-box" id="aide_coInsta">Le coefficient = tarif &divide; nombre de vues. Son unit&eacute; se construit pareil : (unit&eacute; du tarif) &divide; (unit&eacute; des vues) = &euro; &divide; vue = &euro;/vue.</div>
+      <div class="fb" id="fb_coInsta"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_coInsta" onclick="validerNum('coInsta')">Valider</button><button class="btn-r" id="btnr_coInsta" onclick="retryNum('coInsta')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="qbloc check-feuille">
+    <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+    <label><input type="checkbox" id="chk_insta" onchange="checkFeuille('insta')"> Oui, j'ai recopié et corrigé ma feuille.</label>
+  </div>
+</div>
+<div class="situation" id="sit_cloud">
+  <div class="section-titre"><span class="num">3.</span>Cloud (stockage en ligne)</div>
+  <div class="verrou-note">🔒 Termine la partie précédente et coche « Oui, j'ai recopié et corrigé ma feuille. » pour débloquer cette partie.</div>
+  <div class="contexte">Des dossiers, des photos, des vid&eacute;os. Le prix de l'abonnement mensuel d&eacute;pend d'un indicateur&hellip; lequel&nbsp;?</div>
+  <div class="rappel-feuille">✍️ Recopie le tableau sur ta feuille, complète-le, puis vérifie tes réponses à l'aide du quiz.</div>
+
+  <div class="qbloc" id="cCloud">
+    <div class="qenonce"><span class="qnum">1</span><span>Tableau de calcul</span></div>
+    <div class="qcont">
+      <div class="consigne-calc"><span class="warn">&#9888;&#65039; Recopie ce tableau sur ta feuille.</span> Choisis la formule &agrave; tester pour chaque ligne de calcul, clique sur &laquo;&nbsp;V&eacute;rifier mes formules&nbsp;&raquo;, puis calcule chaque colonne <b>à l'aide de la calculatrice</b>, complète le tableau <b>sur ta feuille</b> et vérifie à l'aide du quiz.</div>
+      <div class="ct-scroll"><table class="ct-table" id="cttab_cCloud"></table></div>
+      <button class="nw-btn" onclick="toggleNW('nw_cCloud')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_cCloud"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div>
+        <button class="btn-v" id="btnf_cCloud" onclick="verifFormulesCT('cCloud')">V&eacute;rifier mes formules</button>
+        <button class="btn-v" id="btnt_cCloud" onclick="validerCalctab('cCloud')" style="display:none">Valider le tableau</button>
+        <button class="btn-r" id="btnr_cCloud" onclick="retryCalctab('cCloud')">2<sup>e</sup> essai</button>
+      </div>
+      <div class="fb" id="fb_cCloud"></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="idCloud">
+    <div class="qenonce"><span class="qnum">2</span><span>Complète les deux phrases : l'une affirme une proportionnalité, l'autre une non-proportionnalité (ordre libre).</span></div>
+    <div class="qcont">
+      <p class="rappel-feuille">✍️ Recopie les deux phrases complétées sur ta feuille.</p>
+      <p>1. Le prix <select id="idCloud_1v" class="trou"></select> proportionnel <select id="idCloud_1g" class="trou"></select>, car le rapport <select id="idCloud_1r" class="trou"></select> <select id="idCloud_1c" class="trou"></select> constant.</p>
+      <p>2. Le prix <select id="idCloud_2v" class="trou"></select> proportionnel <select id="idCloud_2g" class="trou"></select>, car le rapport <select id="idCloud_2r" class="trou"></select> <select id="idCloud_2c" class="trou"></select> constant.</p>
+      <div class="fb" id="fb_idCloud"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_idCloud">Valider</button><button class="btn-r" id="btnr_idCloud">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="relCloud" style="display:none">
+    <div class="qenonce"><span class="qnum">3</span><span>&Eacute;cris la relation de proportionnalité. ✍️ Écris-la d'abord sur ta feuille.</span></div>
+    <div class="qcont">
+      <p>P = <select id="relCloud_k" class="trou"></select> &times; <select id="relCloud_g" class="trou"></select></p>
+      <div class="fb" id="fb_relCloud"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_relCloud">Valider</button><button class="btn-r" id="btnr_relCloud">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="coCloud">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est la valeur du coefficient de proportionnalit&eacute; ?</span></div>
+    <div class="qcont">
+      <button class="nw-btn" onclick="toggleNW('nw_coCloud')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_coCloud"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div class="saisie-ligne">
+        <label>k =</label>
+        <div class="disp" id="disp_coCloud"></div>
+        <label>Unit&eacute; :</label>
+        <select class="usel" id="unit_coCloud"><option value="">&mdash;</option><option>Go/&euro;</option><option>&euro;</option><option>&euro;/Go</option><option>&euro;&middot;Go</option></select>
+      </div>
+      <div id="clav_coCloud"></div>
+      <button class="aide-btn" onclick="toggleAide('coCloud')">Aide : trouver l'unit&eacute;</button>
+      <div class="aide-box" id="aide_coCloud">Le coefficient = prix &divide; stockage. Son unit&eacute; : (unit&eacute; du prix) &divide; (unit&eacute; du stockage) = &euro; &divide; Go = &euro;/Go.</div>
+      <div class="fb" id="fb_coCloud"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_coCloud" onclick="validerNum('coCloud')">Valider</button><button class="btn-r" id="btnr_coCloud" onclick="retryNum('coCloud')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="qbloc check-feuille">
+    <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+    <label><input type="checkbox" id="chk_cloud" onchange="checkFeuille('cloud')"> Oui, j'ai recopié et corrigé ma feuille.</label>
+  </div>
+</div>
+<div class="situation" id="sit_aff">
+  <div class="section-titre"><span class="num">4.</span>Affiches publicitaires</div>
+  <div class="verrou-note">🔒 Termine la partie précédente et coche « Oui, j'ai recopié et corrigé ma feuille. » pour débloquer cette partie.</div>
+  <div class="contexte">Certaines affiches co&ucirc;tent plus cher que d'autres. De quel param&egrave;tre d&eacute;pend le prix d'une affiche&nbsp;?</div>
+  <div class="rappel-feuille">✍️ Recopie le tableau sur ta feuille, complète-le, puis vérifie tes réponses à l'aide du quiz.</div>
+
+  <div class="qbloc" id="cAff">
+    <div class="qenonce"><span class="qnum">1</span><span>Tableau de calcul</span></div>
+    <div class="qcont">
+      <div class="consigne-calc"><span class="warn">&#9888;&#65039; Recopie ce tableau sur ta feuille.</span> Choisis la formule &agrave; tester pour chaque ligne de calcul, clique sur &laquo;&nbsp;V&eacute;rifier mes formules&nbsp;&raquo;, puis calcule chaque colonne <b>à l'aide de la calculatrice</b>, complète le tableau <b>sur ta feuille</b> et vérifie à l'aide du quiz.</div>
+      <div class="ct-scroll"><table class="ct-table" id="cttab_cAff"></table></div>
+      <button class="nw-btn" onclick="toggleNW('nw_cAff')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_cAff"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div>
+        <button class="btn-v" id="btnf_cAff" onclick="verifFormulesCT('cAff')">V&eacute;rifier mes formules</button>
+        <button class="btn-v" id="btnt_cAff" onclick="validerCalctab('cAff')" style="display:none">Valider le tableau</button>
+        <button class="btn-r" id="btnr_cAff" onclick="retryCalctab('cAff')">2<sup>e</sup> essai</button>
+      </div>
+      <div class="fb" id="fb_cAff"></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="idAff">
+    <div class="qenonce"><span class="qnum">2</span><span>Complète les deux phrases : l'une affirme une proportionnalité, l'autre une non-proportionnalité (ordre libre).</span></div>
+    <div class="qcont">
+      <p class="rappel-feuille">✍️ Recopie les deux phrases complétées sur ta feuille.</p>
+      <p>1. Le coût <select id="idAff_1v" class="trou"></select> proportionnel <select id="idAff_1g" class="trou"></select>, car le rapport <select id="idAff_1r" class="trou"></select> <select id="idAff_1c" class="trou"></select> constant.</p>
+      <p>2. Le coût <select id="idAff_2v" class="trou"></select> proportionnel <select id="idAff_2g" class="trou"></select>, car le rapport <select id="idAff_2r" class="trou"></select> <select id="idAff_2c" class="trou"></select> constant.</p>
+      <div class="fb" id="fb_idAff"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_idAff">Valider</button><button class="btn-r" id="btnr_idAff">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="relAff" style="display:none">
+    <div class="qenonce"><span class="qnum">3</span><span>&Eacute;cris la relation de proportionnalité. ✍️ Écris-la d'abord sur ta feuille.</span></div>
+    <div class="qcont">
+      <p>C = <select id="relAff_k" class="trou"></select> &times; <select id="relAff_g" class="trou"></select></p>
+      <div class="fb" id="fb_relAff"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_relAff">Valider</button><button class="btn-r" id="btnr_relAff">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="coAff">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est la valeur du coefficient de proportionnalit&eacute; ?</span></div>
+    <div class="qcont">
+      <button class="nw-btn" onclick="toggleNW('nw_coAff')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_coAff"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div class="saisie-ligne">
+        <label>k =</label>
+        <div class="disp" id="disp_coAff"></div>
+        <label>Unit&eacute; :</label>
+        <select class="usel" id="unit_coAff"><option value="">&mdash;</option><option>m&sup2;/&euro;</option><option>&euro;</option><option>&euro;/m&sup2;</option><option>&euro;&middot;m&sup2;</option></select>
+      </div>
+      <div id="clav_coAff"></div>
+      <button class="aide-btn" onclick="toggleAide('coAff')">Aide : trouver l'unit&eacute;</button>
+      <div class="aide-box" id="aide_coAff">Le coefficient = co&ucirc;t &divide; surface. Son unit&eacute; : (unit&eacute; du co&ucirc;t) &divide; (unit&eacute; de la surface) = &euro; &divide; m&sup2; = &euro;/m&sup2;.</div>
+      <div class="fb" id="fb_coAff"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_coAff" onclick="validerNum('coAff')">Valider</button><button class="btn-r" id="btnr_coAff" onclick="retryNum('coAff')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="qbloc check-feuille">
+    <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+    <label><input type="checkbox" id="chk_aff" onchange="checkFeuille('aff')"> Oui, j'ai recopié et corrigé ma feuille.</label>
+  </div>
+</div>
+<div class="situation" id="sit_boi">
+  <div class="section-titre"><span class="num">5.</span>Boissons au caf&eacute;</div>
+  <div class="verrou-note">🔒 Termine la partie précédente et coche « Oui, j'ai recopié et corrigé ma feuille. » pour débloquer cette partie.</div>
+  <div class="contexte">Trois gobelets, trois prix. Est-ce la hauteur, le volume ou autre chose qui explique la facture&nbsp;?</div>
+  <div class="rappel-feuille">✍️ Recopie le tableau sur ta feuille, complète-le, puis vérifie tes réponses à l'aide du quiz.</div>
+
+  <div class="qbloc" id="cBoi">
+    <div class="qenonce"><span class="qnum">1</span><span>Tableau de calcul</span></div>
+    <div class="qcont">
+      <div class="consigne-calc"><span class="warn">&#9888;&#65039; Recopie ce tableau sur ta feuille.</span> Choisis la formule &agrave; tester pour chaque ligne de calcul, clique sur &laquo;&nbsp;V&eacute;rifier mes formules&nbsp;&raquo;, puis calcule chaque colonne <b>à l'aide de la calculatrice</b>, complète le tableau <b>sur ta feuille</b> et vérifie à l'aide du quiz.</div>
+      <div class="ct-scroll"><table class="ct-table" id="cttab_cBoi"></table></div>
+      <button class="nw-btn" onclick="toggleNW('nw_cBoi')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_cBoi"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div>
+        <button class="btn-v" id="btnf_cBoi" onclick="verifFormulesCT('cBoi')">V&eacute;rifier mes formules</button>
+        <button class="btn-v" id="btnt_cBoi" onclick="validerCalctab('cBoi')" style="display:none">Valider le tableau</button>
+        <button class="btn-r" id="btnr_cBoi" onclick="retryCalctab('cBoi')">2<sup>e</sup> essai</button>
+      </div>
+      <div class="fb" id="fb_cBoi"></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="idBoi">
+    <div class="qenonce"><span class="qnum">2</span><span>Complète les deux phrases : l'une affirme une proportionnalité, l'autre une non-proportionnalité (ordre libre).</span></div>
+    <div class="qcont">
+      <p class="rappel-feuille">✍️ Recopie les deux phrases complétées sur ta feuille.</p>
+      <p>1. Le prix <select id="idBoi_1v" class="trou"></select> proportionnel <select id="idBoi_1g" class="trou"></select>, car le rapport <select id="idBoi_1r" class="trou"></select> <select id="idBoi_1c" class="trou"></select> constant.</p>
+      <p>2. Le prix <select id="idBoi_2v" class="trou"></select> proportionnel <select id="idBoi_2g" class="trou"></select>, car le rapport <select id="idBoi_2r" class="trou"></select> <select id="idBoi_2c" class="trou"></select> constant.</p>
+      <div class="fb" id="fb_idBoi"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_idBoi">Valider</button><button class="btn-r" id="btnr_idBoi">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="relBoi" style="display:none">
+    <div class="qenonce"><span class="qnum">3</span><span>&Eacute;cris la relation de proportionnalité. ✍️ Écris-la d'abord sur ta feuille.</span></div>
+    <div class="qcont">
+      <p>P = <select id="relBoi_k" class="trou"></select> &times; <select id="relBoi_g" class="trou"></select></p>
+      <div class="fb" id="fb_relBoi"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_relBoi">Valider</button><button class="btn-r" id="btnr_relBoi">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+
+  <div class="qbloc" id="coBoi">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est la valeur du coefficient de proportionnalit&eacute; ?</span></div>
+    <div class="qcont">
+      <button class="nw-btn" onclick="toggleNW('nw_coBoi')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>
+      <div class="nw-wrap" id="nw_coBoi"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>
+      <div class="saisie-ligne">
+        <label>k =</label>
+        <div class="disp" id="disp_coBoi"></div>
+        <label>Unit&eacute; :</label>
+        <select class="usel" id="unit_coBoi"><option value="">&mdash;</option><option>mL/&euro;</option><option>&euro;</option><option>&euro;/mL</option><option>&euro;&middot;mL</option></select>
+      </div>
+      <div id="clav_coBoi"></div>
+      <button class="aide-btn" onclick="toggleAide('coBoi')">Aide : trouver l'unit&eacute;</button>
+      <div class="aide-box" id="aide_coBoi">Le coefficient = prix &divide; volume. Son unit&eacute; : (unit&eacute; du prix) &divide; (unit&eacute; du volume) = &euro; &divide; mL = &euro;/mL.</div>
+      <div class="fb" id="fb_coBoi"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_coBoi" onclick="validerNum('coBoi')">Valider</button><button class="btn-r" id="btnr_coBoi" onclick="retryNum('coBoi')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="qbloc check-feuille">
+    <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+    <label><input type="checkbox" id="chk_boi" onchange="checkFeuille('boi')"> Oui, j'ai recopié et corrigé ma feuille.</label>
+  </div>
+</div>
+  </div>
+
+  <div class="barre-finale">
+    <button class="btn-global btn-valider-tout" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" onclick="basculerJeu()">&#8634; Recommencer avec d'autres situations</button>
+  </div>
+
+  <div id="bilan">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 16</span></div>
+      <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 16</span></div>
+    </div>
+  </div>
+</main>
+<script>
+"use strict";
+const MODE_QUIZ="entrainement";
+const PHASE = "bases";                        // "bases" | "competences" | "aucune"
+const FIGER_JUSTES = (PHASE === "bases");     // 2e essai differentiel : les cases justes restent figees
+const EN_CLASSE = true;
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+const CS_MODE="tolérant";
+
+function melanger(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function toggleNW(id){const w=document.getElementById(id);w.style.display=(w.style.display==='block')?'none':'block';}
+function toggleAide(id){const b=document.getElementById('aide_'+id);b.style.display=(b.style.display==='block')?'none':'block';}
+
+/* ===== Type 8 : tableaux de calcul ===== */
+let CALCTAB = {
+  cInsta:{
+    grandeurs:{A:{nom:"Abonnés",sym:"A",unite:"nb"},V:{nom:"Vues",sym:"V",unite:"nb"},T:{nom:"Tarif",sym:"T",unite:"€"}},
+    ordreGr:["A","V","T"],
+    cols:[{A:248000,V:24000,T:168},{A:125000,V:76000,T:532},{A:462000,V:154000,T:1078},{A:179000,V:94000,T:658},{A:416000,V:366000,T:2562},{A:302000,V:203000,T:1421},{A:123000,V:105000,T:735},{A:404000,V:280000,T:1960}],
+    prix:"T",candidates:["V","A"],
+    formules:[{key:"T/V",tex:"\\dfrac{T}{V}",calc:c=>c.T/c.V},{key:"T/A",tex:"\\dfrac{T}{A}",calc:c=>c.T/c.A},{key:"V/T",tex:"\\dfrac{V}{T}",calc:c=>c.V/c.T},{key:"A/T",tex:"\\dfrac{A}{T}",calc:c=>c.A/c.T},{key:"TxV",tex:"T\\times V",calc:c=>c.T*c.V},{key:"TxA",tex:"T\\times A",calc:c=>c.T*c.A}],
+    formOk:["T/V","T/A"],tol:0.02,cs:3,
+    fbok:"✓ Exact ! La ligne \\(\\frac{T}{V}\\) donne toujours 0,007 : quotient constant → le tarif est proportionnel au nombre de vues. La ligne \\(\\frac{T}{A}\\) varie → pas proportionnel au nombre d'abonnés.",
+    fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+    fbko2:"Observe : la ligne \\(\\frac{T}{V}\\) est constante (0,007) → proportionnel ; la ligne \\(\\frac{T}{A}\\) varie → non proportionnel.",
+    fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+  },
+  cCloud:{
+    grandeurs:{S:{nom:"Stockage",sym:"S",unite:"Go"},F:{nom:"Fichiers",sym:"F",unite:"nb"},P:{nom:"Prix",sym:"P",unite:"€"}},
+    ordreGr:["S","F","P"],
+    cols:[{S:158,F:329,P:3.16},{S:453,F:3228,P:9.06},{S:66,F:631,P:1.32},{S:1106,F:3382,P:22.12},{S:2420,F:6101,P:48.40},{S:894,F:6441,P:17.88},{S:3077,F:7826,P:61.54},{S:1203,F:4187,P:24.06}],
+    prix:"P",candidates:["S","F"],
+    formules:[{key:"P/S",tex:"\\dfrac{P}{S}",calc:c=>c.P/c.S},{key:"P/F",tex:"\\dfrac{P}{F}",calc:c=>c.P/c.F},{key:"S/P",tex:"\\dfrac{S}{P}",calc:c=>c.S/c.P},{key:"F/P",tex:"\\dfrac{F}{P}",calc:c=>c.F/c.P},{key:"PxS",tex:"P\\times S",calc:c=>c.P*c.S},{key:"PxF",tex:"P\\times F",calc:c=>c.P*c.F}],
+    formOk:["P/S","P/F"],tol:0.02,cs:3,
+    fbok:"✓ Exact ! La ligne \\(\\frac{P}{S}\\) donne toujours 0,02 : quotient constant → le prix est proportionnel à la quantité de stockage. La ligne \\(\\frac{P}{F}\\) varie → pas proportionnel au nombre de fichiers.",
+    fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+    fbko2:"Observe : la ligne \\(\\frac{P}{S}\\) est constante (0,02) → proportionnel ; la ligne \\(\\frac{P}{F}\\) varie → non proportionnel.",
+    fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+  },
+  cAff:{
+    grandeurs:{C:{nom:"Coût",sym:"C",unite:"€"},S:{nom:"Surface",sym:"S",unite:"m²"},D:{nom:"Diagonale",sym:"D",unite:"cm"}},
+    ordreGr:["C","S","D"],
+    cols:[{C:5.76,S:0.48,D:100},{C:12.96,S:1.08,D:150},{C:3.60,S:0.30,D:104.4},{C:9.00,S:0.75,D:158.1},{C:1.92,S:0.16,D:56.6},{C:7.20,S:0.60,D:130},{C:17.28,S:1.44,D:197},{C:6.48,S:0.54,D:108.2}],
+    prix:"C",candidates:["S","D"],
+    formules:[{key:"C/S",tex:"\\dfrac{C}{S}",calc:c=>c.C/c.S},{key:"C/D",tex:"\\dfrac{C}{D}",calc:c=>c.C/c.D},{key:"S/C",tex:"\\dfrac{S}{C}",calc:c=>c.S/c.C},{key:"D/C",tex:"\\dfrac{D}{C}",calc:c=>c.D/c.C},{key:"CxS",tex:"C\\times S",calc:c=>c.C*c.S},{key:"CxD",tex:"C\\times D",calc:c=>c.C*c.D}],
+    formOk:["C/S","C/D"],tol:0.02,cs:3,
+    fbok:"✓ Exact ! La ligne \\(\\frac{C}{S}\\) donne toujours 12 : quotient constant → le coût est proportionnel à la surface. La ligne \\(\\frac{C}{D}\\) varie → pas proportionnel à la diagonale.",
+    fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+    fbko2:"Observe : la ligne \\(\\frac{C}{S}\\) est constante (12) → proportionnel ; la ligne \\(\\frac{C}{D}\\) varie → non proportionnel.",
+    fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+  },
+  cBoi:{
+    grandeurs:{H:{nom:"Hauteur",sym:"H",unite:"cm"},P:{nom:"Prix",sym:"P",unite:"€"},V:{nom:"Volume",sym:"V",unite:"mL"}},
+    ordreGr:["H","P","V"],
+    cols:[{H:11.4,P:1.8,V:120},{H:8.3,P:2.7,V:180},{H:15.5,P:3.0,V:200},{H:7.1,P:3.6,V:240},{H:10.8,P:3.9,V:260},{H:13.3,P:4.5,V:300},{H:9.2,P:4.95,V:330},{H:17.3,P:5.4,V:360}],
+    prix:"P",candidates:["V","H"],
+    formules:[{key:"P/V",tex:"\\dfrac{P}{V}",calc:c=>c.P/c.V},{key:"P/H",tex:"\\dfrac{P}{H}",calc:c=>c.P/c.H},{key:"V/P",tex:"\\dfrac{V}{P}",calc:c=>c.V/c.P},{key:"H/P",tex:"\\dfrac{H}{P}",calc:c=>c.H/c.P},{key:"PxV",tex:"P\\times V",calc:c=>c.P*c.V},{key:"PxH",tex:"P\\times H",calc:c=>c.P*c.H}],
+    formOk:["P/V","P/H"],tol:0.02,cs:3,
+    fbok:"✓ Exact ! La ligne \\(\\frac{P}{V}\\) donne toujours 0,015 : quotient constant → le prix est proportionnel au volume. La ligne \\(\\frac{P}{H}\\) varie → pas proportionnel à la hauteur.",
+    fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+    fbko2:"Observe : la ligne \\(\\frac{P}{V}\\) est constante (0,015) → proportionnel ; la ligne \\(\\frac{P}{H}\\) varie → non proportionnel.",
+    fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+  }
+};
+const IDS_CALCTAB=["cInsta","cCloud","cAff","cBoi"];
+
+/* ===== Type 1bis-b : phrases à trous (identification + relation) ===== */
+let ASSOC = {
+  idInsta:{selects:[
+    {id:"idInsta_a",options:["est","n'est pas"],good:"est"},
+    {id:"idInsta_b",options:["au nombre de vues","au nombre d'abonnés"],good:"au nombre de vues"},
+    {id:"idInsta_c",options:["tarif ÷ vues","tarif ÷ abonnés"],good:"tarif ÷ vues"},
+    {id:"idInsta_d",options:["est","n'est pas"],good:"est"}],
+    fbok:"&#10003; Exact ! Le tarif est proportionnel au nombre de vues : le rapport tarif ÷ vues reste constant.",
+    fb1:"Repère dans ton tableau de calcul quel rapport reste constant.",
+    fb2:"Le tarif est proportionnel au nombre de vues, car le rapport tarif ÷ vues est constant."},
+  relInsta:{selects:[
+    {id:"relInsta_k",options:["0,007","0,015","0,02","12"],good:"0,007"},
+    {id:"relInsta_g",options:["V","A"],good:"V"}],
+    fbok:"&#10003; Exact ! \\(T = 0{,}007 \\times V\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(T = 0{,}007 \\times V\\).&nbsp;&raquo;</div>",
+    fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le tarif est proportionnel.",
+    fb2:"\\(T = 0{,}007 \\times V\\) (tarif = coefficient × nombre de vues).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(T = 0{,}007 \\times V\\).&nbsp;&raquo;</div>"},
+  idCloud:{selects:[
+    {id:"idCloud_a",options:["est","n'est pas"],good:"est"},
+    {id:"idCloud_b",options:["à la quantité de stockage","au nombre de fichiers"],good:"à la quantité de stockage"},
+    {id:"idCloud_c",options:["prix ÷ stockage","prix ÷ fichiers"],good:"prix ÷ stockage"},
+    {id:"idCloud_d",options:["est","n'est pas"],good:"est"}],
+    fbok:"&#10003; Exact ! Le prix est proportionnel à la quantité de stockage : le rapport prix ÷ stockage reste constant.",
+    fb1:"Repère dans ton tableau de calcul quel rapport reste constant.",
+    fb2:"Le prix est proportionnel à la quantité de stockage, car le rapport prix ÷ stockage est constant."},
+  relCloud:{selects:[
+    {id:"relCloud_k",options:["0,02","0,007","0,015","12"],good:"0,02"},
+    {id:"relCloud_g",options:["S","F"],good:"S"}],
+    fbok:"&#10003; Exact ! \\(P = 0{,}02 \\times S\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}02 \\times S\\).&nbsp;&raquo;</div>",
+    fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+    fb2:"\\(P = 0{,}02 \\times S\\) (prix = coefficient × stockage).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}02 \\times S\\).&nbsp;&raquo;</div>"},
+  idAff:{selects:[
+    {id:"idAff_a",options:["est","n'est pas"],good:"est"},
+    {id:"idAff_b",options:["à la surface","à la diagonale"],good:"à la surface"},
+    {id:"idAff_c",options:["coût ÷ surface","coût ÷ diagonale"],good:"coût ÷ surface"},
+    {id:"idAff_d",options:["est","n'est pas"],good:"est"}],
+    fbok:"&#10003; Exact ! Le coût est proportionnel à la surface : le rapport coût ÷ surface reste constant.",
+    fb1:"Repère dans ton tableau de calcul quel rapport reste constant.",
+    fb2:"Le coût est proportionnel à la surface, car le rapport coût ÷ surface est constant."},
+  relAff:{selects:[
+    {id:"relAff_k",options:["12","0,007","0,02","0,015"],good:"12"},
+    {id:"relAff_g",options:["S","D"],good:"S"}],
+    fbok:"&#10003; Exact ! \\(C = 12 \\times S\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(C = 12 \\times S\\).&nbsp;&raquo;</div>",
+    fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le coût est proportionnel.",
+    fb2:"\\(C = 12 \\times S\\) (coût = coefficient × surface).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(C = 12 \\times S\\).&nbsp;&raquo;</div>"},
+  idBoi:{selects:[
+    {id:"idBoi_a",options:["est","n'est pas"],good:"est"},
+    {id:"idBoi_b",options:["au volume","à la hauteur"],good:"au volume"},
+    {id:"idBoi_c",options:["prix ÷ volume","prix ÷ hauteur"],good:"prix ÷ volume"},
+    {id:"idBoi_d",options:["est","n'est pas"],good:"est"}],
+    fbok:"&#10003; Exact ! Le prix est proportionnel au volume : le rapport prix ÷ volume reste constant.",
+    fb1:"Repère dans ton tableau de calcul quel rapport reste constant.",
+    fb2:"Le prix est proportionnel au volume, car le rapport prix ÷ volume est constant."},
+  relBoi:{selects:[
+    {id:"relBoi_k",options:["0,015","0,007","0,02","12"],good:"0,015"},
+    {id:"relBoi_g",options:["V","H"],good:"V"}],
+    fbok:"&#10003; Exact ! \\(P = 0{,}015 \\times V\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}015 \\times V\\).&nbsp;&raquo;</div>",
+    fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+    fb2:"\\(P = 0{,}015 \\times V\\) (prix = coefficient × volume).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}015 \\times V\\).&nbsp;&raquo;</div>"}
+};
+const IDS_ASSOC=["relInsta","relCloud","relAff","relBoi"];
+const REVEAL={idInsta:"relInsta",idCloud:"relCloud",idAff:"relAff",idBoi:"relBoi"};
+
+/* ===== Type 2 : coefficient (valeur + unité au menu) ===== */
+let NUMCFG = {
+  coInsta:{val:0.007,tol:0.02,unites:["€/vue"],fb1:"Le coefficient est la valeur constante du rapport tarif ÷ vues. N'oublie pas son unité.",fb2:"k = 0,007 €/vue.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,007 €/vue.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,007 €/vue.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,007 €/vue.&nbsp;&raquo;</div>",corr:"0,007 €/vue"},
+  coCloud:{val:0.02,tol:0.02,unites:["€/Go"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ stockage. N'oublie pas son unité.",fb2:"k = 0,02 €/Go.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,02 €/Go.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,02 €/Go.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,02 €/Go.&nbsp;&raquo;</div>",corr:"0,02 €/Go"},
+  coAff:{val:12,tol:0.02,unites:["€/m²"],fb1:"Le coefficient est la valeur constante du rapport coût ÷ surface. N'oublie pas son unité.",fb2:"k = 12 €/m².<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 12 €/m².&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 12 €/m².<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 12 €/m².&nbsp;&raquo;</div>",corr:"12 €/m²"},
+  coBoi:{val:0.015,tol:0.02,unites:["€/mL"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ volume. N'oublie pas son unité.",fb2:"k = 0,015 €/mL.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,015 €/mL.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,015 €/mL.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,015 €/mL.&nbsp;&raquo;</div>",corr:"0,015 €/mL"}
+};
+const IDS_NUM=["coInsta","coCloud","coAff","coBoi"];
+
+const IDS_QCM=[],IDS_QCM_MULTI=[],IDS_EXPR=[],IDS_CONSTR=[];
+
+const TOUS_IDS=["cInsta","idInsta","relInsta","coInsta","cCloud","idCloud","relCloud","coCloud","cAff","idAff","relAff","coAff","cBoi","idBoi","relBoi","coBoi"];
+const TOTAL=TOUS_IDS.length;
+
+let LABELS={
+  cInsta:"Instagram — tableau de calcul",idInsta:"Instagram — proportionnalité",relInsta:"Instagram — relation",coInsta:"Instagram — coefficient",
+  cCloud:"Cloud — tableau de calcul",idCloud:"Cloud — proportionnalité",relCloud:"Cloud — relation",coCloud:"Cloud — coefficient",
+  cAff:"Affiches — tableau de calcul",idAff:"Affiches — proportionnalité",relAff:"Affiches — relation",coAff:"Affiches — coefficient",
+  cBoi:"Boissons — tableau de calcul",idBoi:"Boissons — proportionnalité",relBoi:"Boissons — relation",coBoi:"Boissons — coefficient"
+};
+let SCORM_IDS={
+  cInsta:"insta_tableau_calcul",idInsta:"insta_proportionnalite",relInsta:"insta_relation",coInsta:"insta_coefficient",
+  cCloud:"cloud_tableau_calcul",idCloud:"cloud_proportionnalite",relCloud:"cloud_relation",coCloud:"cloud_coefficient",
+  cAff:"affiches_tableau_calcul",idAff:"affiches_proportionnalite",relAff:"affiches_relation",coAff:"affiches_coefficient",
+  cBoi:"boissons_tableau_calcul",idBoi:"boissons_proportionnalite",relBoi:"boissons_relation",coBoi:"boissons_coefficient"
+};
+const etat={};
+TOUS_IDS.forEach(id=>{etat[id]={resultat:null,tentative:0};});
+
+/* ===== Clavier scientifique ===== */
+const TOUCHES = [
+  {l:'7',t:'ch',v:'7'},{l:'8',t:'ch',v:'8'},{l:'9',t:'ch',v:'9'},{l:'(',t:'op',v:'('},{l:')',t:'op',v:')'},
+  {l:'4',t:'ch',v:'4'},{l:'5',t:'ch',v:'5'},{l:'6',t:'ch',v:'6'},{l:'×',t:'op',v:'×'},{l:'÷',t:'op',v:'÷'},
+  {l:'1',t:'ch',v:'1'},{l:'2',t:'ch',v:'2'},{l:'3',t:'ch',v:'3'},{l:'+',t:'op',v:'+'},{l:'−',t:'op',v:'−'},
+  {l:'0',t:'ch',v:'0'},{l:',',t:'ch',v:','},{l:'.',t:'ch',v:'.'},{l:'×10ˣ',t:'sp',v:'EXP'},{l:'⌫',t:'del',v:'DEL'},
+];
+
+const saisi = {};
+IDS_NUM.forEach(id => { saisi[id] = ''; });
+
+function construireClavier(containerId, qid){
+  const div = document.getElementById(containerId);
+  if(!div) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'clavier';
+  TOUCHES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'k' + (t.t==='op' ? ' k-op' : t.t==='sp' ? ' k-spec' : t.t==='del' ? ' k-del' : '');
+    btn.textContent = t.l;
+    btn.addEventListener('click', () => toucheClavier(qid, t.v));
+    wrap.appendChild(btn);
+  });
+  div.innerHTML = '';
+  div.appendChild(wrap);
+}
+
+function toucheClavier(qid, val){
+  if(val === 'DEL'){
+    let c = saisi[qid];
+    const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+    if(m){
+      if(m[4].length > 0) c = m[1] + m[2] + m[3] + m[4].slice(0,-1);
+      else if(m[3].length > 0) c = m[1] + m[2];
+      else c = m[1];
+    } else { c = c.slice(0,-1); }
+    saisi[qid] = c;
+  } else if(val === 'EXP'){
+    saisi[qid] += '×10^';
+  } else {
+    saisi[qid] += val;
+  }
+  renderDisp(qid);
+}
+
+function renderDisp(qid){
+  const raw = saisi[qid];
+  const rendu = raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => '×10<sup>' + sg + exp + '</sup>');
+  const el = document.getElementById('disp_'+qid);
+  if(el) el.innerHTML = rendu + '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+}
+// Renvoie le nombre de CS d'une saisie utilisateur.
+function compteCS(raw){
+  if(!raw) return 0;
+  let s = raw.replace(/,/g, '.').replace(/−/g, '-').replace(/\s/g, '');
+  // Détecter notation scientifique a×10^n
+  const mSci = s.match(/^(-?\d+(?:\.\d+)?)×10\^(-?\d+)$/);
+  if(mSci){
+    s = mSci[1];   // CS de la mantisse uniquement
+  }
+  s = s.replace(/^-/, '');
+  if(s.includes('.')){
+    const [intP, decP] = s.split('.');
+    const intClean = intP.replace(/^0+/, '');
+    if(intClean === ''){
+      // Cas '0.0030' : zéros de tête ignorés, le reste compte
+      const decClean = decP.replace(/^0+/, '');
+      return decClean.length;
+    } else {
+      // Cas '2.00' : tous les chiffres comptent
+      return intClean.length + decP.length;
+    }
+  } else {
+    // Cas entier sans virgule : option A stricte
+    const clean = s.replace(/^0+/, '');
+    return clean.length || (s === '0' ? 1 : 0);
+  }
+}
+/* ===== Type 8 : moteur tableau de calcul ===== */
+/* ===== Type 8 : tableau de calcul ===== */
+const ctChoix={}, ctFormulesOk={}, ctOrdreGr={}, ctOrdreCol={};
+// L'état (résultat / nb d'essais) est porté par etat[qid] du socle, comme pour tous les types.
+
+function ctFr(x){ return String(x).replace(".", ","); }   // formatage français des valeurs du tableau
+
+function initCalctab(){
+  IDS_CALCTAB.forEach(qid=>{
+    const cfg=CALCTAB[qid];
+    ctChoix[qid]=[null,null]; ctFormulesOk[qid]=false;
+    // Entraînement : ordres mélangés à chaque chargement.
+    // Évaluation : restaurer ctOrdreGr/ctOrdreCol/ctChoix/cellules depuis cmi.suspend_data si une sauvegarde existe.
+    ctOrdreGr[qid]=melanger(cfg.ordreGr);
+    ctOrdreCol[qid]=melanger(cfg.cols.map((_,i)=>i));
+    construireCalctab(qid);
+  });
+}
+function construireCalctab(qid){
+  const cfg=CALCTAB[qid], gr=cfg.grandeurs;
+  let html="";
+  ctOrdreGr[qid].forEach(g=>{
+    html+="<tr><td class='ct-gr'>"+gr[g].nom+" <span class='ct-sym'>"+gr[g].sym+" ("+gr[g].unite+")</span></td>";
+    ctOrdreCol[qid].forEach(ci=>{ html+="<td class='ct-val'>"+ctFr(cfg.cols[ci][g])+"</td>"; });
+    html+="</tr>";
+  });
+  for(let r=0;r<2;r++){
+    html+="<tr class='ct-calc-row'><td class='ct-head-cell'>"+menuCalctabHTML(qid,r)+"</td>";
+    ctOrdreCol[qid].forEach(ci=>{ html+="<td><input class='ct-cell-input' id='ct_"+qid+"_"+r+"_"+ci+"' type='text' inputmode='decimal' autocomplete='off' disabled></td>"; });
+    html+="</tr>";
+  }
+  document.getElementById("cttab_"+qid).innerHTML=html;
+}
+function menuCalctabHTML(qid,r){
+  let opts="";
+  melanger(CALCTAB[qid].formules).forEach(f=>{
+    opts+="<div class='fdrop-opt' onclick=\"choisirFormuleCT('"+qid+"',"+r+",'"+f.key+"')\">\\("+f.tex+"\\)</div>";
+  });
+  return "<div class='fdrop'>"+
+    "<div class='fdrop-cur placeholder' id='fdc_"+qid+"_"+r+"' onclick=\"ouvrirMenuCT('"+qid+"',"+r+")\">choisir…</div>"+
+    "<div class='fdrop-menu' id='fdm_"+qid+"_"+r+"'>"+opts+"</div></div>";
+}
+let ctMenuOuvert=null;
+function ouvrirMenuCT(qid,r){
+  if(ctFormulesOk[qid]) return;
+  const m=document.getElementById("fdm_"+qid+"_"+r), open=m.classList.contains("open");
+  document.querySelectorAll(".fdrop-menu").forEach(x=>x.classList.remove("open"));
+  if(!open){ m.classList.add("open"); ctMenuOuvert=qid+"_"+r; } else { ctMenuOuvert=null; }
+}
+function choisirFormuleCT(qid,r,key){
+  ctChoix[qid][r]=key;
+  const f=CALCTAB[qid].formules.find(x=>x.key===key), cur=document.getElementById("fdc_"+qid+"_"+r);
+  cur.classList.remove("placeholder"); cur.innerHTML="\\("+f.tex+"\\)";
+  document.getElementById("fdm_"+qid+"_"+r).classList.remove("open"); ctMenuOuvert=null;
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([cur]);}
+}
+document.addEventListener("click",function(e){
+  if(ctMenuOuvert!==null && !e.target.closest(".fdrop")){
+    document.querySelectorAll(".fdrop-menu").forEach(x=>x.classList.remove("open")); ctMenuOuvert=null;
+  }
+});
+function verifFormulesCT(qid){
+  const cfg=CALCTAB[qid], fb=document.getElementById("fb_"+qid), ch=ctChoix[qid];
+  if(ch[0]===null||ch[1]===null){ alert("Choisis une formule pour chacune des deux lignes."); return; }
+  const ok = (new Set(ch).size===2) && ch.every(k=>cfg.formOk.includes(k));
+  if(!ok){ fb.className="fb ko"; fb.style.display="block"; fb.innerHTML=cfg.fbFormulesKo; return; }
+  ctFormulesOk[qid]=true;
+  [0,1].forEach(r=>document.getElementById("fdc_"+qid+"_"+r).classList.add("figee"));
+  for(let r=0;r<2;r++) ctOrdreCol[qid].forEach(ci=>{ document.getElementById("ct_"+qid+"_"+r+"_"+ci).disabled=false; });
+  document.getElementById("btnf_"+qid).style.display="none";
+  document.getElementById("btnt_"+qid).style.display="inline-block";
+  fb.className="fb info"; fb.style.display="block";
+  fb.innerHTML="✓ Bonnes formules. Calcule chaque colonne (arrondis à "+cfg.cs+" chiffres significatifs) puis valide.";
+}
+function ctAttendue(qid,r,ci){ const f=CALCTAB[qid].formules.find(x=>x.key===ctChoix[qid][r]); return f.calc(CALCTAB[qid].cols[ci]); }
+function ctJuste(qid,r,ci){
+  const v=parseVal(document.getElementById("ct_"+qid+"_"+r+"_"+ci).value); if(isNaN(v)) return false;
+  const a=ctAttendue(qid,r,ci); return a===0?Math.abs(v)<1e-9:Math.abs(v-a)/Math.abs(a)<=CALCTAB[qid].tol;
+}
+function reponseCalctab(qid){            // réponse élève en texte lisible pour le SCORM (capturée avant toute révélation)
+  const parts=[];
+  for(let r=0;r<2;r++){
+    const vals=ctOrdreCol[qid].map(ci=>document.getElementById("ct_"+qid+"_"+r+"_"+ci).value.trim());
+    parts.push((ctChoix[qid][r]||"?")+"="+vals.join(";"));
+  }
+  return parts.join(" | ").slice(0,250);
+}
+function validerCalctab(qid){
+  if(!ctFormulesOk[qid]) return;
+  for(let r=0;r<2;r++) for(const ci of ctOrdreCol[qid]) if(isNaN(parseVal(document.getElementById("ct_"+qid+"_"+r+"_"+ci).value))){ alert("Complète toutes les cases avant de valider."); return; }
+  const cfg=CALCTAB[qid], fb=document.getElementById("fb_"+qid), bloc=document.getElementById(qid), t=etat[qid];
+  t.tentative++;
+  let nbFaux=0;
+  for(let r=0;r<2;r++) for(const ci of ctOrdreCol[qid]){
+    const inp=document.getElementById("ct_"+qid+"_"+r+"_"+ci); inp.classList.remove("ok","ko");
+    if(ctJuste(qid,r,ci)) inp.classList.add("ok"); else { inp.classList.add("ko"); nbFaux++; }
+  }
+  if(nbFaux===0){
+    t.resultat=(t.tentative===1)?"ok1":"ok2"; bloc.className="qbloc ok-bloc";
+    fb.className="fb ok"; fb.style.display="block"; fb.innerHTML=cfg.fbok; figerCalctab(qid);
+  } else if(t.tentative===1 && MODE_QUIZ==="entrainement"){
+    bloc.className="qbloc warn-bloc"; fb.className="fb ko"; fb.style.display="block";
+    fb.innerHTML=nbFaux+" case(s) incorrecte(s). "+cfg.fbko1;
+    document.getElementById("btnr_"+qid).style.display="inline-block";
+  } else {
+    t.resultat="ko"; bloc.className="qbloc ko-bloc"; fb.className="fb ko2"; fb.style.display="block";
+    fb.innerHTML=cfg.fbko2+(EN_CLASSE?RELANCE_PROF:''); figerCalctab(qid);
+  }
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([fb]);}
+  // INTÉGRATION SOCLE : report SCORM par question + mise à jour bilan, comme validerNum / validerConstr.
+  if(t.resultat){
+    const rep=reponseCalctab(qid);
+    if(MODE_QUIZ==="evaluation") scormInteractionEval(qid, t.resultat!=="ko", rep);
+    else scormInteraction(qid, t.resultat!=="ko", rep, t.tentative);
+    verifierFin();
+  }
+}
+function figerCalctab(qid){
+  for(let r=0;r<2;r++) ctOrdreCol[qid].forEach(ci=>{ document.getElementById("ct_"+qid+"_"+r+"_"+ci).disabled=true; });
+  const t=document.getElementById("btnt_"+qid); if(t) t.disabled=true;
+  const rr=document.getElementById("btnr_"+qid); if(rr) rr.style.display="none";
+}
+function retryCalctab(qid){      // entraînement uniquement
+  document.getElementById("fb_"+qid).style.display="none";
+  document.getElementById(qid).className="qbloc";
+  document.getElementById("btnr_"+qid).style.display="none";
+  for(let r=0;r<2;r++) ctOrdreCol[qid].forEach(ci=>{
+    const inp=document.getElementById("ct_"+qid+"_"+r+"_"+ci);
+    if(FIGER_JUSTES && inp.classList.contains("ok")){ inp.disabled=true; return; }   // acquis : on le garde
+    inp.classList.remove("ok","ko","fige");
+    inp.disabled=false;
+  });
+}
+/* ===== Moteur phrase à trous (Type 1bis-b) ===== */
+function construireAssoc(qid){
+  const cfg=ASSOC[qid]; if(!cfg) return;
+  cfg.selects.forEach(s=>{
+    const sel=document.getElementById(s.id); sel.innerHTML='';
+    const o0=document.createElement('option'); o0.value=''; o0.textContent='—'; sel.appendChild(o0);
+    melanger(s.options).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
+    sel.value='';
+  });
+  document.getElementById('btnv_'+qid).onclick=()=>validerAssoc(qid);
+  document.getElementById('btnr_'+qid).onclick=()=>retryAssoc(qid);
+}
+function reponseAssoc(qid){
+  return ASSOC[qid].selects.map(s=>document.getElementById(s.id).value||'?').join(' | ').slice(0,250);
+}
+function validerAssoc(qid){
+  const cfg=ASSOC[qid]; if(!cfg) return;
+  for(const s of cfg.selects){ if(document.getElementById(s.id).value===''){ alert("Complète toutes les listes avant de valider."); return; } }
+  const t=etat[qid]; t.tentative++;
+  const rep=reponseAssoc(qid);
+  let toutBon=true;
+  cfg.selects.forEach(s=>{ const sel=document.getElementById(s.id); const ok=(sel.value===s.good); sel.classList.remove('ok','ko'); sel.classList.add(ok?'ok':'ko'); if(!ok) toutBon=false; });
+  cfg.selects.forEach(s=>{ document.getElementById(s.id).disabled=true; });
+  const fb=document.getElementById('fb_'+qid),btnv=document.getElementById('btnv_'+qid),btnr=document.getElementById('btnr_'+qid),bloc=document.getElementById(qid);
+  if(toutBon){
+    fb.className='fb ok'; fb.innerHTML=cfg.fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else {
+    bloc.classList.add('warn-bloc'); fb.className='fb ko';
+    if(t.tentative===1){
+      fb.innerHTML='✗ '+cfg.fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block';
+    } else {
+      cfg.selects.forEach(s=>{ const sel=document.getElementById(s.id); sel.value=s.good; sel.classList.remove('ko'); sel.classList.add('ok'); });
+      fb.className='fb ko2'; fb.innerHTML='✗ '+cfg.fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+    }
+  }
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([fb]);}
+  if(t.resultat){
+    scormInteraction(qid, t.resultat!=='ko', rep, t.tentative);
+    if(REVEAL[qid]){ const rb=document.getElementById(REVEAL[qid]); if(rb) rb.style.display=''; }
+  }
+  verifierFin();
+}
+function retryAssoc(qid){
+  const cfg=ASSOC[qid];
+  cfg.selects.forEach(s=>{
+    const sel=document.getElementById(s.id);
+    if(FIGER_JUSTES && sel.classList.contains('ok')) return;   // acquis : on le garde (vert, non rejouable)
+    sel.classList.remove('ko','ok','fige');
+    sel.disabled=false; sel.value='';
+  });
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+
+/* ===== Moteur Q2 : 2 phrases prop / non-prop, ordre indifférent ===== */
+let PROP2 = {
+  idAff:{prix:"coût", grProp:"à la surface", grNon:"à la diagonale", raProp:"coût ÷ surface", raNon:"coût ÷ diagonale",
+    fbok:"&#10003; Exact&nbsp;! Le coût est proportionnel à la surface (rapport coût ÷ surface constant) et n'est pas proportionnel à la diagonale (rapport coût ÷ diagonale qui varie).",
+    fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+    fb2:"Le coût est proportionnel à la surface (coût ÷ surface constant)&nbsp;; il n'est pas proportionnel à la diagonale (coût ÷ diagonale varie)."},
+  idInsta:{prix:"tarif", grProp:"au nombre de vues", grNon:"au nombre d'abonnés", raProp:"tarif ÷ vues", raNon:"tarif ÷ abonnés",
+    fbok:"&#10003; Exact&nbsp;! Le tarif est proportionnel au nombre de vues (rapport tarif ÷ vues constant) et n'est pas proportionnel au nombre d'abonnés (rapport tarif ÷ abonnés qui varie).",
+    fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+    fb2:"Le tarif est proportionnel au nombre de vues (tarif ÷ vues constant)&nbsp;; il n'est pas proportionnel au nombre d'abonnés (tarif ÷ abonnés varie)."},
+  idCloud:{prix:"prix", grProp:"à la quantité de stockage", grNon:"au nombre de fichiers", raProp:"prix ÷ stockage", raNon:"prix ÷ fichiers",
+    fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel à la quantité de stockage (rapport prix ÷ stockage constant) et n'est pas proportionnel au nombre de fichiers (rapport prix ÷ fichiers qui varie).",
+    fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+    fb2:"Le prix est proportionnel à la quantité de stockage (prix ÷ stockage constant)&nbsp;; il n'est pas proportionnel au nombre de fichiers (prix ÷ fichiers varie)."},
+  idBoi:{prix:"prix", grProp:"au volume", grNon:"à la hauteur", raProp:"prix ÷ volume", raNon:"prix ÷ hauteur",
+    fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel au volume (rapport prix ÷ volume constant) et n'est pas proportionnel à la hauteur (rapport prix ÷ hauteur qui varie).",
+    fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+    fb2:"Le prix est proportionnel au volume (prix ÷ volume constant)&nbsp;; il n'est pas proportionnel à la hauteur (prix ÷ hauteur varie)."}
+};
+const IDS_PROP2=["idInsta","idCloud","idAff","idBoi"];
+function remplirSelP2(id, options){
+  const sel=document.getElementById(id); sel.innerHTML='';
+  const o0=document.createElement('option'); o0.value=''; o0.textContent='—'; sel.appendChild(o0);
+  melanger(options).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
+  sel.value='';
+}
+function construireProp2(qid){
+  const cfg=PROP2[qid]; if(!cfg) return;
+  ['1','2'].forEach(n=>{
+    remplirSelP2(qid+'_'+n+'v', ["est","n'est pas"]);
+    remplirSelP2(qid+'_'+n+'g', [cfg.grProp, cfg.grNon]);
+    remplirSelP2(qid+'_'+n+'r', [cfg.raProp, cfg.raNon]);
+    remplirSelP2(qid+'_'+n+'c', ["est","n'est pas"]);
+  });
+  document.getElementById('btnv_'+qid).onclick=()=>validerProp2(qid);
+  document.getElementById('btnr_'+qid).onclick=()=>retryProp2(qid);
+}
+function lirePhraseP2(qid,n){
+  return { v:document.getElementById(qid+'_'+n+'v').value, g:document.getElementById(qid+'_'+n+'g').value,
+           r:document.getElementById(qid+'_'+n+'r').value, c:document.getElementById(qid+'_'+n+'c').value };
+}
+function evalPhraseP2(cfg,p){
+  if(p.v==="est"       && p.g===cfg.grProp && p.r===cfg.raProp && p.c==="est")       return "prop";
+  if(p.v==="n'est pas" && p.g===cfg.grNon  && p.r===cfg.raNon  && p.c==="n'est pas") return "non";
+  return null;
+}
+function selsProp2(qid){ return ['1v','1g','1r','1c','2v','2g','2r','2c'].map(x=>qid+'_'+x); }
+function validerProp2(qid){
+  const cfg=PROP2[qid]; if(!cfg) return;
+  const ids=selsProp2(qid);
+  for(const id of ids){ if(document.getElementById(id).value===''){ alert("Complète toutes les listes avant de valider."); return; } }
+  const t=etat[qid]; t.tentative++;
+  const A=lirePhraseP2(qid,'1'), B=lirePhraseP2(qid,'2');
+  const ea=evalPhraseP2(cfg,A), eb=evalPhraseP2(cfg,B);
+  const toutBon=(ea==="prop"&&eb==="non")||(ea==="non"&&eb==="prop");
+  const rep=("P1:"+A.v+" "+A.g+"/"+A.r+" "+A.c+" | P2:"+B.v+" "+B.g+"/"+B.r+" "+B.c).slice(0,250);
+  const fb=document.getElementById('fb_'+qid),btnv=document.getElementById('btnv_'+qid),btnr=document.getElementById('btnr_'+qid),bloc=document.getElementById(qid);
+  ids.forEach(id=>document.getElementById(id).disabled=true);
+  if(toutBon){
+    fb.className='fb ok'; fb.innerHTML=cfg.fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else {
+    bloc.classList.add('warn-bloc'); fb.className='fb ko';
+    if(t.tentative===1){
+      fb.innerHTML='✗ '+cfg.fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block';
+    } else {
+      document.getElementById(qid+'_1v').value="est"; document.getElementById(qid+'_1g').value=cfg.grProp; document.getElementById(qid+'_1r').value=cfg.raProp; document.getElementById(qid+'_1c').value="est";
+      document.getElementById(qid+'_2v').value="n'est pas"; document.getElementById(qid+'_2g').value=cfg.grNon; document.getElementById(qid+'_2r').value=cfg.raNon; document.getElementById(qid+'_2c').value="n'est pas";
+      ids.forEach(id=>{ const sel=document.getElementById(id); sel.classList.remove('ko'); sel.classList.add('ok'); });
+      fb.className='fb ko2'; fb.innerHTML='✗ '+cfg.fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+    }
+  }
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([fb]);}
+  if(t.resultat){
+    scormInteraction(qid, t.resultat!=='ko', rep, t.tentative);
+    if(REVEAL[qid]){ const rb=document.getElementById(REVEAL[qid]); if(rb) rb.style.display=''; }
+  }
+  verifierFin();
+}
+function retryProp2(qid){
+  selsProp2(qid).forEach(id=>{ const sel=document.getElementById(id); sel.disabled=false; sel.classList.remove('ok','ko'); sel.value=''; });
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===== Moteur numérique (Type 2) ===== */
+function parseVal(raw){
+  try {
+    let s = raw
+      .replace(/,/g, '.')
+      .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => 'e-' + e)
+      .replace(/×10\^(\d+)/g, (_, e) => 'e+' + e)
+      .replace(/[×x]/g, '*')
+      .replace(/÷/g, '/')
+      .replace(/−/g, '-');
+    return parseFloat(s);
+  } catch(e) { return NaN; }
+}
+
+function validerNum(qid){
+  const cfg = NUMCFG[qid];
+  const t = etat[qid]; t.tentative++;
+  const repNum = (saisi[qid]||'') + ' ' + (document.getElementById('unit_'+qid).value||'');
+  const raw = saisi[qid];
+  const valeur = parseVal(raw);
+  
+  // Normalisation de l'unité (CASSE SENSIBLE — pas de toLowerCase)
+  // Cf. règle commune : mJ ≠ MJ, kJ ≠ Kj, etc.
+  const unite = document.getElementById('unit_'+qid).value
+    .replace(/\s/g, '')
+    .replace(/⁻¹/g, '-1')
+    .replace(/\^-1/g, '-1')
+    .replace(/·/g, '.');
+
+  // Tests successifs
+  let valOk, uniteOk;
+  if(cfg.multi){
+    // Mode unité libre : tri par préfixe décroissant pour éviter le piège de sous-chaîne
+    let f = null;
+    for(const grp of cfg.unites){ 
+      if(grp.forms.some(fm => unite.includes(fm))){ f = grp.f; break; } 
+    }
+    uniteOk = (f !== null);
+    valOk = uniteOk && !isNaN(valeur) && Math.abs(valeur*f - cfg.base)/Math.abs(cfg.base) <= cfg.tol;
+  } else {
+    valOk = !isNaN(valeur) && Math.abs(valeur - cfg.val) / Math.abs(cfg.val) <= cfg.tol;
+    uniteOk = cfg.unites.some(u => unite.includes(u));
+  }
+  
+  // Vérification des CS
+  let csOk = true, csCount = 0, csIssue = null;
+  if(typeof cfg.cs === 'number'){
+    csCount = compteCS(raw);
+    csOk = (csCount === cfg.cs);
+    if(!csOk) csIssue = (csCount > cfg.cs) ? "trop" : "pas-assez";
+  }
+  
+  // Mode tolérant : si valeur + unité OK et excès de CS, on accepte avec un message informatif.
+  // Pas d'indulgence pour l'arrondi trop fort (toujours faux).
+  let tolereCS = false;
+  if(typeof CS_MODE !== 'undefined' && CS_MODE === "tolérant" && valOk && uniteOk && csIssue === "trop"){
+    tolereCS = true;
+    csOk = true;
+  }
+  
+  const isOk = valOk && uniteOk && csOk;
+
+  const disp = document.getElementById('disp_'+qid);
+  const uinp = document.getElementById('unit_'+qid);
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b => b.disabled = true);
+  uinp.disabled = true;
+
+  if(isOk){
+    disp.classList.add('ok'); uinp.classList.add('ok');
+    fb.className = 'fb ok';
+    if(tolereCS){
+      // Mode tolérant : réponse acceptée malgré excès de CS, message informatif ajouté
+      fb.innerHTML = cfg.fbok + 
+        '<br><span style="font-size:.9em;color:#5a4a1f">' +
+        '💡 Pour une meilleure précision physique, la forme attendue est : ' + cfg.corr +
+        ' (' + cfg.cs + ' chiffres significatifs).</span>';
+    } else {
+      fb.innerHTML = cfg.fbok;
+    }
+    fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else {
+    // Cascade : valeur > unité > CS
+    bloc.classList.add('warn-bloc');
+    fb.className = 'fb ko';
+    let msg = '';
+    if(!valOk){
+      disp.classList.add('ko');
+      if(!uniteOk) uinp.classList.add('ko');
+      msg = (t.tentative === 1)
+        ? '✗ ' + cfg.fb1
+        : '✗ ' + cfg.fb2 + ' &mdash; Réponse attendue : ' + cfg.corr + (EN_CLASSE?RELANCE_PROF:'');
+    } else if(!uniteOk){
+      uinp.classList.add('ko');
+      msg = (t.tentative === 1)
+        ? "La valeur est correcte, mais vérifie l'unité."
+        : "✗ L'unité est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    } else if(!csOk){
+      // En mode tolérant, ce cas ne se produit que pour "pas-assez" (arrondi trop fort)
+      disp.classList.add('ko');
+      if(t.tentative === 1){
+        if(csIssue === "trop"){
+          msg = "La valeur et l'unité sont correctes, mais tu as donné plus de précision que ce qui est attendu ("
+              + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+        } else {
+          msg = "La valeur et l'unité sont correctes, mais tu as arrondi trop fortement ("
+              + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+        }
+      } else {
+        msg = "✗ Nombre de chiffres significatifs incorrect ("
+            + csCount + " au lieu de " + cfg.cs + "). &mdash; Réponse attendue : " + cfg.corr;
+      }
+    }
+    fb.innerHTML = msg;
+    fb.style.display = 'block';
+
+    if(t.tentative === 1){
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      fb.className = 'fb ko2';
+      fb.innerHTML = msg + (EN_CLASSE ? RELANCE_PROF : '');
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+    }
+  }
+  if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([fb]);}
+  if(t.resultat){ scormInteraction(qid, t.resultat!=='ko', repNum, t.tentative); }
+  verifierFin();
+}
+
+function retryNum(qid){
+  const disp = document.getElementById('disp_'+qid);
+  const uinp = document.getElementById('unit_'+qid);
+  saisi[qid] = '';
+  disp.classList.remove('ok','ko');
+  renderDisp(qid);
+  uinp.classList.remove('ok','ko');
+  uinp.value = '';
+  uinp.disabled = false;
+  document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b => b.disabled = false);
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+// ============================================================
+// Bilan, scores, fin
+// ============================================================
+function verifierFin(){
+  majScores();
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if (fini) afficherBilan();
+}
+function majScores(){
+  const sc = calculerScores();
+  const e1 = document.getElementById('sval-n1'); if(e1) e1.textContent = sc.n1 + " / " + TOTAL;
+  const e2 = document.getElementById('sval-n2'); if(e2) e2.textContent = sc.n2 + " / " + TOTAL;
+}
+function checkFeuille(part){
+  const c = document.getElementById('chk_'+part);
+  if(!c || !c.checked) return;
+  c.disabled = true;
+  const suivant = {insta:'sit_cloud', cloud:'sit_aff', aff:'sit_boi'}[part];
+  if(suivant){ const sx = document.getElementById(suivant); if(sx){ sx.classList.remove('verrouillee'); sx.scrollIntoView({behavior:'smooth',block:'start'}); } }
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", part + "_feuille_recopiee");
+    scormAPI.LMSSetValue(pre + "type", "true-false");
+    scormAPI.LMSSetValue(pre + "student_response", "true");
+    scormAPI.LMSSetValue(pre + "result", "neutral");
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if (r === "ok1"){ n1++; n2++; }
+    else if (r === "ok2"){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById("bilan-n1").textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById("bilan-n2").textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById("bilan").style.display = "block";
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if (fini) scormReport(sc.n1);
+}
+
+// ============================================================
+//  SCORM 1.2 — remontée de la Note 1 + notes question par question
+//  (sans effet si le fichier est ouvert hors LMS)
+// ============================================================
+
+var scormAPI = null;
+var scormInit = false;
+
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; }
+    else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+
+var scormNbInter = 0;
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [tentative " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    // Note chiffrée de la question via un objectif SCORM dédié
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    const sc = calculerScores();
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(sc.n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormReport(note1){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note1));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormEnd(){
+  try{
+    if(scormInit){
+      scormAPI.LMSFinish("");
+      scormInit = false;
+    }
+  }catch(e){ /* silencieux */ }
+}
+
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+/* ===== Jeu B : 4 autres situations (recharge VE, impression 3D, livraison, pellets) ===== */
+const BANK_B = {
+  CALCTAB: {
+    cInsta:{
+      grandeurs:{D:{nom:"Durée",sym:"D",unite:"min"},E:{nom:"Énergie",sym:"E",unite:"kWh"},P:{nom:"Prix",sym:"P",unite:"€"}},
+      ordreGr:["D","E","P"],
+      cols:[{D:22,E:8,P:1.76},{D:40,E:15,P:3.30},{D:18,E:22,P:4.84},{D:55,E:30,P:6.60},{D:33,E:37,P:8.14},{D:60,E:44,P:9.68},{D:28,E:52,P:11.44},{D:47,E:60,P:13.20}],
+      prix:"P",candidates:["E","D"],
+      formules:[{key:"P/E",tex:"\\dfrac{P}{E}",calc:c=>c.P/c.E},{key:"P/D",tex:"\\dfrac{P}{D}",calc:c=>c.P/c.D},{key:"E/P",tex:"\\dfrac{E}{P}",calc:c=>c.E/c.P},{key:"D/P",tex:"\\dfrac{D}{P}",calc:c=>c.D/c.P},{key:"PxE",tex:"P\\times E",calc:c=>c.P*c.E},{key:"PxD",tex:"P\\times D",calc:c=>c.P*c.D}],
+      formOk:["P/E","P/D"],tol:0.02,cs:3,
+      fbok:"✓ Exact ! La ligne \\(\\frac{P}{E}\\) donne toujours 0,22 : quotient constant → le prix est proportionnel à l'énergie. La ligne \\(\\frac{P}{D}\\) varie → pas proportionnel à la durée.",
+      fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+      fbko2:"Observe : la ligne \\(\\frac{P}{E}\\) est constante (0,22) → proportionnel ; la ligne \\(\\frac{P}{D}\\) varie → non proportionnel.",
+      fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+    },
+    cCloud:{
+      grandeurs:{V:{nom:"Volume",sym:"V",unite:"cm³"},M:{nom:"Masse",sym:"M",unite:"g"},P:{nom:"Prix",sym:"P",unite:"€"}},
+      ordreGr:["V","M","P"],
+      cols:[{V:40,M:35,P:2.80},{V:95,M:60,P:4.80},{V:70,M:85,P:6.80},{V:150,M:110,P:8.80},{V:120,M:140,P:11.20},{V:210,M:175,P:14.00},{V:180,M:210,P:16.80},{V:260,M:250,P:20.00}],
+      prix:"P",candidates:["M","V"],
+      formules:[{key:"P/M",tex:"\\dfrac{P}{M}",calc:c=>c.P/c.M},{key:"P/V",tex:"\\dfrac{P}{V}",calc:c=>c.P/c.V},{key:"M/P",tex:"\\dfrac{M}{P}",calc:c=>c.M/c.P},{key:"V/P",tex:"\\dfrac{V}{P}",calc:c=>c.V/c.P},{key:"PxM",tex:"P\\times M",calc:c=>c.P*c.M},{key:"PxV",tex:"P\\times V",calc:c=>c.P*c.V}],
+      formOk:["P/M","P/V"],tol:0.02,cs:3,
+      fbok:"✓ Exact ! La ligne \\(\\frac{P}{M}\\) donne toujours 0,08 : quotient constant → le prix est proportionnel à la masse de filament. La ligne \\(\\frac{P}{V}\\) varie → pas proportionnel au volume de l'objet.",
+      fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+      fbko2:"Observe : la ligne \\(\\frac{P}{M}\\) est constante (0,08) → proportionnel ; la ligne \\(\\frac{P}{V}\\) varie → non proportionnel.",
+      fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+    },
+    cAff:{
+      grandeurs:{T:{nom:"Durée",sym:"T",unite:"min"},D:{nom:"Distance",sym:"D",unite:"km"},P:{nom:"Prix",sym:"P",unite:"€"}},
+      ordreGr:["T","D","P"],
+      cols:[{T:12,D:5,P:4.00},{T:25,D:9,P:7.20},{T:18,D:14,P:11.20},{T:40,D:20,P:16.00},{T:30,D:27,P:21.60},{T:55,D:35,P:28.00},{T:38,D:42,P:33.60},{T:48,D:50,P:40.00}],
+      prix:"P",candidates:["D","T"],
+      formules:[{key:"P/D",tex:"\\dfrac{P}{D}",calc:c=>c.P/c.D},{key:"P/T",tex:"\\dfrac{P}{T}",calc:c=>c.P/c.T},{key:"D/P",tex:"\\dfrac{D}{P}",calc:c=>c.D/c.P},{key:"T/P",tex:"\\dfrac{T}{P}",calc:c=>c.T/c.P},{key:"PxD",tex:"P\\times D",calc:c=>c.P*c.D},{key:"PxT",tex:"P\\times T",calc:c=>c.P*c.T}],
+      formOk:["P/D","P/T"],tol:0.02,cs:3,
+      fbok:"✓ Exact ! La ligne \\(\\frac{P}{D}\\) donne toujours 0,80 : quotient constant → le prix est proportionnel à la distance. La ligne \\(\\frac{P}{T}\\) varie → pas proportionnel à la durée du trajet.",
+      fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+      fbko2:"Observe : la ligne \\(\\frac{P}{D}\\) est constante (0,80) → proportionnel ; la ligne \\(\\frac{P}{T}\\) varie → non proportionnel.",
+      fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+    },
+    cBoi:{
+      grandeurs:{V:{nom:"Volume",sym:"V",unite:"L"},M:{nom:"Masse",sym:"M",unite:"kg"},P:{nom:"Prix",sym:"P",unite:"€"}},
+      ordreGr:["V","M","P"],
+      cols:[{V:16,M:10,P:3.50},{V:30,M:18,P:6.30},{V:22,M:25,P:8.75},{V:45,M:32,P:11.20},{V:38,M:40,P:14.00},{V:60,M:55,P:19.25},{V:52,M:70,P:24.50},{V:75,M:90,P:31.50}],
+      prix:"P",candidates:["M","V"],
+      formules:[{key:"P/M",tex:"\\dfrac{P}{M}",calc:c=>c.P/c.M},{key:"P/V",tex:"\\dfrac{P}{V}",calc:c=>c.P/c.V},{key:"M/P",tex:"\\dfrac{M}{P}",calc:c=>c.M/c.P},{key:"V/P",tex:"\\dfrac{V}{P}",calc:c=>c.V/c.P},{key:"PxM",tex:"P\\times M",calc:c=>c.P*c.M},{key:"PxV",tex:"P\\times V",calc:c=>c.P*c.V}],
+      formOk:["P/M","P/V"],tol:0.02,cs:3,
+      fbok:"✓ Exact ! La ligne \\(\\frac{P}{M}\\) donne toujours 0,35 : quotient constant → le prix est proportionnel à la masse. La ligne \\(\\frac{P}{V}\\) varie → pas proportionnel au volume.",
+      fbko1:"Vérifie tes divisions à la calculatrice et arrondis à 3 chiffres significatifs.",
+      fbko2:"Observe : la ligne \\(\\frac{P}{M}\\) est constante (0,35) → proportionnel ; la ligne \\(\\frac{P}{V}\\) varie → non proportionnel.",
+      fbFormulesKo:"Ce ne sont pas les deux bons quotients. Pour savoir si le prix dépend d'une grandeur, on calcule le quotient du <b>prix par cette grandeur</b>, et on teste les <b>deux</b> grandeurs possibles."
+    }
+  },
+  ASSOC: {
+    relInsta:{selects:[
+      {id:"relInsta_k",options:["0,22","0,08","0,80","0,35"],good:"0,22"},
+      {id:"relInsta_g",options:["E","D"],good:"E"}],
+      fbok:"&#10003; Exact ! \\(P = 0{,}22 \\times E\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}22 \\times E\\).&nbsp;&raquo;</div>",
+      fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+      fb2:"\\(P = 0{,}22 \\times E\\) (prix = coefficient × énergie).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}22 \\times E\\).&nbsp;&raquo;</div>"},
+    relCloud:{selects:[
+      {id:"relCloud_k",options:["0,08","0,22","0,80","0,35"],good:"0,08"},
+      {id:"relCloud_g",options:["M","V"],good:"M"}],
+      fbok:"&#10003; Exact ! \\(P = 0{,}08 \\times M\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}08 \\times M\\).&nbsp;&raquo;</div>",
+      fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+      fb2:"\\(P = 0{,}08 \\times M\\) (prix = coefficient × masse).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}08 \\times M\\).&nbsp;&raquo;</div>"},
+    relAff:{selects:[
+      {id:"relAff_k",options:["0,80","0,22","0,08","0,35"],good:"0,80"},
+      {id:"relAff_g",options:["D","T"],good:"D"}],
+      fbok:"&#10003; Exact ! \\(P = 0{,}80 \\times D\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}80 \\times D\\).&nbsp;&raquo;</div>",
+      fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+      fb2:"\\(P = 0{,}80 \\times D\\) (prix = coefficient × distance).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}80 \\times D\\).&nbsp;&raquo;</div>"},
+    relBoi:{selects:[
+      {id:"relBoi_k",options:["0,35","0,22","0,08","0,80"],good:"0,35"},
+      {id:"relBoi_g",options:["M","V"],good:"M"}],
+      fbok:"&#10003; Exact ! \\(P = 0{,}35 \\times M\\).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}35 \\times M\\).&nbsp;&raquo;</div>",
+      fb1:"Le coefficient est la valeur constante trouvée ; la grandeur est celle à laquelle le prix est proportionnel.",
+      fb2:"\\(P = 0{,}35 \\times M\\) (prix = coefficient × masse).<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;La relation de proportionnalité est \\(P = 0{,}35 \\times M\\).&nbsp;&raquo;</div>"}
+  },
+  PROP2: {
+    idInsta:{prix:"prix", grProp:"à l'énergie reçue", grNon:"à la durée de branchement", raProp:"prix ÷ énergie", raNon:"prix ÷ durée",
+      fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel à l'énergie reçue (rapport prix ÷ énergie constant) et n'est pas proportionnel à la durée de branchement (rapport prix ÷ durée qui varie).",
+      fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+      fb2:"Le prix est proportionnel à l'énergie reçue (prix ÷ énergie constant)&nbsp;; il n'est pas proportionnel à la durée de branchement (prix ÷ durée varie)."},
+    idCloud:{prix:"prix", grProp:"à la masse de filament", grNon:"au volume de l'objet", raProp:"prix ÷ masse", raNon:"prix ÷ volume",
+      fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel à la masse de filament (rapport prix ÷ masse constant) et n'est pas proportionnel au volume de l'objet (rapport prix ÷ volume qui varie).",
+      fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+      fb2:"Le prix est proportionnel à la masse de filament (prix ÷ masse constant)&nbsp;; il n'est pas proportionnel au volume de l'objet (prix ÷ volume varie)."},
+    idAff:{prix:"prix", grProp:"à la distance", grNon:"à la durée du trajet", raProp:"prix ÷ distance", raNon:"prix ÷ durée",
+      fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel à la distance (rapport prix ÷ distance constant) et n'est pas proportionnel à la durée du trajet (rapport prix ÷ durée qui varie).",
+      fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+      fb2:"Le prix est proportionnel à la distance (prix ÷ distance constant)&nbsp;; il n'est pas proportionnel à la durée du trajet (prix ÷ durée varie)."},
+    idBoi:{prix:"prix", grProp:"à la masse", grNon:"au volume", raProp:"prix ÷ masse", raNon:"prix ÷ volume",
+      fbok:"&#10003; Exact&nbsp;! Le prix est proportionnel à la masse (rapport prix ÷ masse constant) et n'est pas proportionnel au volume (rapport prix ÷ volume qui varie).",
+      fb1:"Une phrase doit affirmer la proportionnalité (rapport constant), l'autre la non-proportionnalité (rapport qui varie). Repère dans ton tableau quel rapport reste constant.",
+      fb2:"Le prix est proportionnel à la masse (prix ÷ masse constant)&nbsp;; il n'est pas proportionnel au volume (prix ÷ volume varie)."}
+  },
+  NUMCFG: {
+    coInsta:{val:0.22,tol:0.02,unites:["€/kWh"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ énergie. N'oublie pas son unité.",fb2:"k = 0,22 €/kWh.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,22 €/kWh.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,22 €/kWh.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,22 €/kWh.&nbsp;&raquo;</div>",corr:"0,22 €/kWh"},
+    coCloud:{val:0.08,tol:0.02,unites:["€/g"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ masse. N'oublie pas son unité.",fb2:"k = 0,08 €/g.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,08 €/g.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,08 €/g.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,08 €/g.&nbsp;&raquo;</div>",corr:"0,08 €/g"},
+    coAff:{val:0.80,tol:0.02,unites:["€/km"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ distance. N'oublie pas son unité.",fb2:"k = 0,80 €/km.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,80 €/km.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,80 €/km.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,80 €/km.&nbsp;&raquo;</div>",corr:"0,80 €/km"},
+    coBoi:{val:0.35,tol:0.02,unites:["€/kg"],fb1:"Le coefficient est la valeur constante du rapport prix ÷ masse. N'oublie pas son unité.",fb2:"k = 0,35 €/kg.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,35 €/kg.&nbsp;&raquo;</div>",fbok:"&#10003; Exact ! k = 0,35 €/kg.<div class='a-recopier'>✍️ <strong>À recopier sur ta feuille :</strong> &laquo;&nbsp;Le coefficient de proportionnalité est k = 0,35 €/kg.&nbsp;&raquo;</div>",corr:"0,35 €/kg"}
+  },
+  LABELS:{
+    cInsta:"Recharge VE — tableau de calcul",idInsta:"Recharge VE — proportionnalité",relInsta:"Recharge VE — relation",coInsta:"Recharge VE — coefficient",
+    cCloud:"Impression 3D — tableau de calcul",idCloud:"Impression 3D — proportionnalité",relCloud:"Impression 3D — relation",coCloud:"Impression 3D — coefficient",
+    cAff:"Livraison — tableau de calcul",idAff:"Livraison — proportionnalité",relAff:"Livraison — relation",coAff:"Livraison — coefficient",
+    cBoi:"Pellets — tableau de calcul",idBoi:"Pellets — proportionnalité",relBoi:"Pellets — relation",coBoi:"Pellets — coefficient"
+  },
+  SCORM_IDS:{
+    cInsta:"recharge_tableau_calcul",idInsta:"recharge_proportionnalite",relInsta:"recharge_relation",coInsta:"recharge_coefficient",
+    cCloud:"impression3d_tableau_calcul",idCloud:"impression3d_proportionnalite",relCloud:"impression3d_relation",coCloud:"impression3d_coefficient",
+    cAff:"livraison_tableau_calcul",idAff:"livraison_proportionnalite",relAff:"livraison_relation",coAff:"livraison_coefficient",
+    cBoi:"pellets_tableau_calcul",idBoi:"pellets_proportionnalite",relBoi:"pellets_relation",coBoi:"pellets_coefficient"
+  },
+  HTML:{
+    insta:{titre:"Recharge d'une voiture électrique",
+      teaser:"À une borne, on paie pour recharger sa voiture. Entre l'énergie reçue et le temps passé branché, qu'est-ce qui fait grimper la facture&nbsp;?",
+      prixNom:"prix", prixSym:"P", unitOptions:["kWh/€","€/kWh","€","€&middot;kWh"],
+      aide:"Le coefficient = prix &divide; énergie. Son unité&nbsp;: (unité du prix) &divide; (unité de l'énergie) = &euro; &divide; kWh = &euro;/kWh."},
+    cloud:{titre:"Impression 3D en ligne",
+      teaser:"Un service imprime ton objet en plastique. Entre la masse de filament utilisée et le volume de l'objet, qu'est-ce qui fixe le prix&nbsp;?",
+      prixNom:"prix", prixSym:"P", unitOptions:["g/€","€/g","€","€&middot;g"],
+      aide:"Le coefficient = prix &divide; masse. Son unité&nbsp;: (unité du prix) &divide; (unité de la masse) = &euro; &divide; g = &euro;/g."},
+    aff:{titre:"Livraison express",
+      teaser:"Un coursier facture une course. Entre la distance parcourue et la durée du trajet, qu'est-ce qui détermine le prix&nbsp;?",
+      prixNom:"prix", prixSym:"P", unitOptions:["km/€","€/km","€","€&middot;km"],
+      aide:"Le coefficient = prix &divide; distance. Son unité&nbsp;: (unité du prix) &divide; (unité de la distance) = &euro; &divide; km = &euro;/km."},
+    boi:{titre:"Granulés de bois (pellets)",
+      teaser:"Un magasin vend des granulés de chauffage. Entre la masse et le volume d'un sac, qu'est-ce qui fixe le prix&nbsp;?",
+      prixNom:"prix", prixSym:"P", unitOptions:["kg/€","€/kg","€","€&middot;kg"],
+      aide:"Le coefficient = prix &divide; masse. Son unité&nbsp;: (unité du prix) &divide; (unité de la masse) = &euro; &divide; kg = &euro;/kg."}
+  }
+};
+
+function lireJeu(){ try{ return (sessionStorage.getItem('jeuProp')==='B') ? 'B' : 'A'; }catch(e){ return 'A'; } }
+function basculerJeu(){ try{ const n=(lireJeu()==='B')?'A':'B'; sessionStorage.setItem('jeuProp', n); }catch(e){} location.reload(); }
+
+function appliquerJeu(jeu){
+  if(jeu!=='B') return;            /* Jeu A = HTML statique + dictionnaires par défaut */
+  CALCTAB=BANK_B.CALCTAB; ASSOC=BANK_B.ASSOC; PROP2=BANK_B.PROP2; NUMCFG=BANK_B.NUMCFG; LABELS=BANK_B.LABELS; SCORM_IDS=BANK_B.SCORM_IDS;
+  const H=BANK_B.HTML;
+  const slots=[
+    {k:"insta",num:"2.",sit:"sit_insta",id:"idInsta",rel:"relInsta",co:"coInsta"},
+    {k:"cloud",num:"3.",sit:"sit_cloud",id:"idCloud",rel:"relCloud",co:"coCloud"},
+    {k:"aff",num:"4.",sit:"sit_aff",id:"idAff",rel:"relAff",co:"coAff"},
+    {k:"boi",num:"5.",sit:"sit_boi",id:"idBoi",rel:"relBoi",co:"coBoi"}
+  ];
+  slots.forEach(function(s){
+    const h=H[s.k];
+    const tit=document.querySelector("#"+s.sit+" .section-titre"); if(tit) tit.innerHTML='<span class="num">'+s.num+'</span>'+h.titre;
+    const ctx=document.querySelector("#"+s.sit+" .contexte"); if(ctx) ctx.innerHTML=h.teaser;
+    ["1","2"].forEach(function(n){
+      const sel=document.getElementById(s.id+"_"+n+"v");
+      if(sel){ const p=sel.closest("p"); if(p){ p.innerHTML = n+'. Le '+h.prixNom+' <select id="'+s.id+'_'+n+'v" class="trou"></select> proportionnel <select id="'+s.id+'_'+n+'g" class="trou"></select>, car le rapport <select id="'+s.id+'_'+n+'r" class="trou"></select> <select id="'+s.id+'_'+n+'c" class="trou"></select> constant.'; } }
+    });
+    const rk=document.getElementById(s.rel+"_k");
+    if(rk){ const p=rk.closest("p"); if(p){ p.innerHTML = h.prixSym+' = <select id="'+s.rel+'_k" class="trou"></select> &times; <select id="'+s.rel+'_g" class="trou"></select>'; } }
+    const us=document.getElementById("unit_"+s.co);
+    if(us){ us.innerHTML='<option value="">&mdash;</option>'+h.unitOptions.map(function(u){return '<option>'+u+'</option>';}).join(''); }
+    const ai=document.getElementById("aide_"+s.co);
+    if(ai){ ai.innerHTML=h.aide; }
+  });
+}
+
+function afficherSerie(jeu){
+  const z=document.getElementById("zone-questions"); if(!z) return;
+  let b=document.getElementById("serie-badge");
+  if(!b){ b=document.createElement("div"); b.id="serie-badge";
+    b.style.cssText="background:#eef4fa;border-left:3px solid var(--bleu-cl);border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:16px;font-size:.9rem;color:var(--bleu)";
+    z.parentNode.insertBefore(b, z); }
+  b.innerHTML='Tu fais la <strong>série '+jeu+'</strong> (4 situations). Le bouton « Recommencer » en bas te proposera la <strong>série '+(jeu==='A'?'B':'A')+'</strong> (4 autres situations).';
+}
+
+/* ===== Init ===== */
+function renderMath(){ if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([document.body]);} else {setTimeout(renderMath,100);} }
+window.addEventListener("DOMContentLoaded",()=>{
+  const zone=document.getElementById("zone-questions");
+  ["sit_insta","sit_cloud","sit_aff","sit_boi"].forEach(id=>{ const sx=document.getElementById(id); if(sx) zone.appendChild(sx); });
+  ["sit_cloud","sit_aff","sit_boi"].forEach(id=>{ const sl=document.getElementById(id); if(sl) sl.classList.add("verrouillee"); });
+  const JEU=lireJeu(); appliquerJeu(JEU); afficherSerie(JEU);
+  IDS_ASSOC.forEach(construireAssoc);
+  IDS_PROP2.forEach(construireProp2);
+  IDS_NUM.forEach(qid=>{ construireClavier("clav_"+qid,qid); renderDisp(qid); });
+  if(IDS_CALCTAB.length) initCalctab();
+  scormStart();
+  renderMath();
+});
+</script>
+</body>
+</html>

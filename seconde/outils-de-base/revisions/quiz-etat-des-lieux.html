@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Bases : État des lieux</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.aide{background:#eef4fa;border:1px solid #cfe0ef;border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:.86rem;color:#33597e}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.fait{border-color:var(--bleu-cl)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn:disabled{cursor:default;opacity:.92}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer}
+.assoc-table select:disabled{cursor:default;opacity:.92}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.saisie-ligne label{font-size:.9rem;color:#444}
+.sval-in{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);width:120px;background:var(--blanc);color:var(--texte)}
+.sval-in.court{width:70px;text-align:center}
+.sval-in:focus{border-color:var(--bleu-cl);outline:none}
+.sval-in:disabled{opacity:.92}
+.conv-table{border-collapse:collapse;margin:2px 0 4px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.conv-table td{border:1px solid var(--gris-m);padding:4px 10px;text-align:center;background:var(--blanc)}
+.conv-table td.u{background:#f0ede6;font-weight:600;color:var(--bleu)}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:11px;line-height:1.55;background:#eef4fa;color:var(--bleu-cl);border-left:3px solid var(--bleu-cl)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s;background:var(--bleu);color:var(--blanc)}
+.btn-global:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-global:disabled{opacity:.4;cursor:default}
+/* ---- Bilan ---- */
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.15rem;font-weight:600;color:var(--bleu);margin-bottom:6px}
+.bil-note{font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:var(--bleu);margin-bottom:4px}
+.bil-synth{background:#f0ede6;border-radius:var(--r);padding:12px 15px;margin:14px 0 22px;font-size:.95rem;line-height:1.6}
+.bil-sec-titre{font-size:1.02rem;font-weight:600;color:var(--bleu);margin:22px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.bil-sec-sous{font-size:.84rem;color:#666;font-style:italic;margin-bottom:14px}
+.cell{margin-bottom:16px}
+.cell-haut{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:5px}
+.cell-nom{font-weight:600;font-size:.95rem}
+.cell-score{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:#555}
+.cell-verdict{font-size:.82rem;font-weight:600;letter-spacing:.02em;white-space:nowrap;min-width:84px;text-align:right}
+.v-acquis{color:var(--bleu)}
+.v-consolider{color:#555}
+.v-retravailler{color:var(--texte)}
+.jauge-wrap{display:flex;align-items:center;gap:11px}
+.jauge{flex:1;height:13px;background:var(--gris-l);border-radius:7px;overflow:hidden}
+.jauge-fill{height:100%;background:linear-gradient(90deg,var(--bleu-cl),var(--bleu));border-radius:7px;transition:width .5s}
+.cell.prioritaire .cell-nom::before{content:"\2605 ";color:var(--or)}
+.bil-conseil{font-size:.86rem;color:#444;margin-top:6px}
+.note-banniere{font-size:.85rem;color:#7a5a30;font-style:italic;margin-bottom:18px;padding:10px 14px;background:#fffaf0;border:1px solid #ecdcbb;border-radius:var(--r)}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+}
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px;position:relative}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+/* Fraction empilée : numérateur au-dessus, barre horizontale, dénominateur en dessous */
+.frac-zone{display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 6px}
+.frac-stack{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frac-line{align-self:stretch;height:3px;background:var(--bleu);border-radius:2px;margin:1px 0}
+.conv-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:120px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.disp.actif{border-color:var(--bleu-cl);box-shadow:0 0 0 2px rgba(44,111,173,.16)}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:74px;background:var(--blanc);color:var(--texte)}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.egal{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--bleu);padding:0 2px}
+.clavier{display:grid;grid-template-columns:repeat(4,52px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.85rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.clavier-dur{display:grid;grid-template-columns:repeat(3,52px);gap:4px;margin:8px 0 12px}
+</style>
+</head>
+<body>
+<header class="mode-etatdeslieux">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> État des lieux</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+<main>
+
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="contexte">
+    Cet état des lieux fait le point sur ce que tu as <strong>vu au collège</strong> et ce dont tu te <strong>souviens</strong>. <strong>Il n'est pas noté</strong> : il sert juste à savoir où tu en es.<br>
+    Tu dois répondre à toutes les questions.<br>
+    Quand tu arrives à la fin du quiz d'État des lieux, clique sur <strong>« Rendre le devoir »</strong>.<br>
+    Tu verras alors le <strong>bilan complet</strong> de ce qui est acquis et de ce qui est à retravailler.<br>
+    Pour les conversions de durées (questions 10 à 13), la <strong>calculatrice NumWorks</strong> est disponible sous chaque question. Si tu utilises une <strong>Casio collège</strong>, elle est disponible sur Éléa &gt; 2PC0 &gt; Calculatrices.<br>
+    <em>En cas de souci technique, rouvre simplement l'activité : tes réponses validées sont conservées.</em>
+  </div>
+
+  <div class="scores-bandeau">
+    <div class="score-box"><div class="slabel">Questions traitées</div><div class="sval" id="straitees">0 / 0</div></div>
+  </div>
+
+  <div id="zone-questions"></div>
+
+  <div class="barre-finale">
+    <button class="btn-global" id="btn-rendre" disabled>Rendre le devoir</button>
+  </div>
+
+  <div id="bilan"></div>
+</main>
+
+<script>
+/* =====================================================================
+   EDL — panel complet (maquette pour juger le bilan par compétence)
+   Contenu réel tiré des quizz MAJ. Mode évaluation : 1 essai, gel.
+===================================================================== */
+
+/* ---------- Cellules du bilan (= parties) ---------- */
+const CELLULES = {
+  grandeurs:    { nom:"Grandeurs &amp; unités",               nature:"connaissance" },
+  pui_regles:   { nom:"Puissances de 10 : les règles",        nature:"connaissance" },
+  conv_tableau: { nom:"Conversion dans le tableau",           nature:"savoir-faire" },
+  durees:       { nom:"Conversion de durées",                 nature:"savoir-faire" },
+  isoler:       { nom:"Isoler une grandeur",                  nature:"savoir-faire" },
+  pui_appli:    { nom:"Puissances de 10 : les applications",  nature:"savoir-faire" }
+};
+
+/* ---------- Données ---------- */
+const GRANDEURS = {
+  g_masse:    { nom:"Masse",    notation:"m",  unite:"kg"  },
+  g_volume:   { nom:"Volume",   notation:"V",  unite:"L"   },
+  g_duree:    { nom:"Durée",    notation:"Δt", unite:"s"   },
+  g_vitesse:  { nom:"Vitesse",  notation:"v",  unite:"m/s" },
+  g_distance: { nom:"Longueur, distance", notation:["d","ℓ"], unite:"m"   }
+};
+const OPT_NOTATION = ["m","V","Δt","v","d","t","ℓ","F"];
+const OPT_UNITE    = ["kg","L","s","m/s","m","g","N","min"];
+
+const QCM = {
+  r_produit: { enonce:"Quand on <strong>multiplie</strong> deux puissances de 10, que fait-on des exposants&nbsp;?",
+    props:[{html:"on les <strong>additionne</strong>",correct:true},{html:"on les soustrait",correct:false},{html:"on les multiplie",correct:false},{html:"on les divise",correct:false}] },
+  r_quotient: { enonce:"Quand on <strong>divise</strong> deux puissances de 10, que fait-on des exposants&nbsp;?",
+    props:[{html:"on les <strong>soustrait</strong>",correct:true},{html:"on les additionne",correct:false},{html:"on les divise",correct:false},{html:"on les multiplie",correct:false}] },
+  r_zero: { enonce:"Combien vaut \\(10^{0}\\)&nbsp;?",
+    props:[{html:"\\(1\\)",correct:true},{html:"\\(0\\)",correct:false},{html:"\\(10\\)",correct:false},{html:"cela n'existe pas",correct:false}] }
+};
+
+const CONSTR = {   /* widget de construction — formules réelles du catalogue Isoler */
+  c05: { qid:"c05", grandeur:"m", enonce:"On a la formule \\(P = m \\times g\\). Isole la grandeur \\(m\\).",
+    lettres:["P","g"], lignes:[{ grandeur:"m", op:"fraction", slots:["P","g"] }], sid:"isoler_m_poids" },
+  c02: { qid:"c02", grandeur:"\\Delta t", enonce:"On a la formule \\(v = \\dfrac{d}{\\Delta t}\\). Isole la grandeur \\(\\Delta t\\).",
+    lettres:["d","v"], lignes:[{ grandeur:"\\Delta t", op:"fraction", slots:["d","v"] }], sid:"isoler_dt_vitesse" },
+  c01: { qid:"c01", grandeur:"d", enonce:"On a la formule \\(v = \\dfrac{d}{\\Delta t}\\). Isole la grandeur \\(d\\).",
+    lettres:["v","\\Delta t"], lignes:[{ grandeur:"d", op:"produit", slots:["v","\\Delta t"] }], sid:"isoler_d_vitesse" }
+};
+
+const NUM = {   /* puissances — applications (saisie de n) */
+  a13: { enonce:"\\(10^{3}\\times10^{5}=10^{n}\\). Donne \\(n\\).", val:8  },
+  a14: { enonce:"\\(10^{7}\\div10^{2}=10^{n}\\). Donne \\(n\\).",  val:5  },
+  a15: { enonce:"\\(10^{4}\\times10^{-6}=10^{n}\\). Donne \\(n\\).", val:-2 },
+  a16: { enonce:"\\(10^{-3}\\div10^{2}=10^{n}\\). Donne \\(n\\).",  val:-5 }
+};
+
+/* ===== Conversions — moteur génératif repris de la réglette ===== */
+function rnd(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+const PREFPOW = { k:3, h:2, da:1, d:-1, c:-2, m:-3 };
+const PREFNOM = { k:"kilo", h:"hecto", da:"déca", d:"déci", c:"centi", m:"milli" };
+function genDec1(){ let n; do { n=rnd(11,99); } while(n%10===0); return String(Math.floor(n/10))+","+String(n%10); }
+function genInt2(){ let n; do { n=rnd(11,99); } while(n%10===0); return String(n); }
+function genCent(){ return genInt2()+"0"; }
+function genHund(){ return String(rnd(2,9))+"00"; }
+function genZeroVirg(){ let n; do { n=rnd(15,95); } while(n%10===0); return "0,"+String(n); }
+function genZeroZeroVirg(){ let n; do { n=rnd(15,95); } while(n%10===0); return "0,0"+String(n); }
+function grouper(intP,fracP){
+  const i=intP.replace(/\B(?=(\d{3})+(?!\d))/g,"\u202F");
+  const f=fracP?fracP.replace(/(\d{3})(?=\d)/g,"$1\u202F"):"";
+  return f?i+","+f:i;
+}
+function calcDec(mantStr,exp){
+  const s=mantStr.replace(",","."); const parts=s.split(".");
+  const brut=parts[0]+(parts[1]||""); const digits=brut.replace(/^0+(?=\d)/,"");
+  const stripped=brut.length-digits.length; const pp=parts[0].length+exp-stripped;
+  let intP,fracP;
+  if(pp<=0){ intP="0"; fracP="0".repeat(-pp)+digits; }
+  else if(pp>=digits.length){ intP=digits+"0".repeat(pp-digits.length); fracP=""; }
+  else { intP=digits.slice(0,pp); fracP=digits.slice(pp); }
+  fracP=fracP.replace(/0+$/,"");
+  return { dec:grouper(intP,fracP), val:parseFloat(s)*Math.pow(10,exp) };
+}
+function tirConvEDL(){
+  const pick=a=>a[rnd(0,a.length-1)];
+  const PREF_POS=["k","h","da"], PREF_NEG=["d","c","m"], BASES=["m","g","L"], GEN_CDU=[genDec1,genCent,genHund];
+  const plan=[ {s:PREF_POS,g:pick(GEN_CDU)}, {s:PREF_POS,g:genZeroZeroVirg}, {s:PREF_NEG,g:pick(GEN_CDU)}, {s:PREF_NEG,g:genZeroVirg} ];
+  return plan.map((p,i)=>({ id:"cv"+(i+1), pref:pick(p.s), base:pick(BASES), gen:p.g }));
+}
+let CONVDEFS = [];
+const CONV = {};
+function buildConversions(){
+  let defs;
+  if(SAVE && SAVE.gen && SAVE.gen.conv){
+    defs = SAVE.gen.conv.map((g,i)=>({ id:"cv"+(i+1), pref:g[0], base:g[1], aff:g[2] }));
+  } else {
+    defs = tirConvEDL().map(d=>({ id:d.id, pref:d.pref, base:d.base, aff:d.gen() }));
+  }
+  CONVDEFS = defs;
+  GEN.conv = defs.map(d=>[d.pref, d.base, d.aff]);
+  defs.forEach(def=>{
+    const mantStr=def.aff; const exp=PREFPOW[def.pref]; const f=calcDec(mantStr,exp); const uPref=def.pref+def.base;
+    CONV[def.id]={ affG:mantStr, valG:parseFloat(mantStr.replace(",",".")), uPref:uPref, uBase:def.base, valD:f.val,
+      corr:mantStr+" "+uPref+" = "+f.dec+" "+def.base };
+  });
+}
+const TOUCHES = [
+  { l:"7", t:"ch", v:"7" }, { l:"8", t:"ch", v:"8" }, { l:"9", t:"ch", v:"9" }, { l:"\u232B", t:"del", v:"DEL" },
+  { l:"4", t:"ch", v:"4" }, { l:"5", t:"ch", v:"5" }, { l:"6", t:"ch", v:"6" }, { l:"C", t:"del", v:"CLR" },
+  { l:"1", t:"ch", v:"1" }, { l:"2", t:"ch", v:"2" }, { l:"3", t:"ch", v:"3" }, { l:",", t:"ch", v:"," },
+  { l:"0", t:"ch", v:"0" }, { l:"00", t:"ch", v:"00" }, { l:".", t:"ch", v:"." }, { l:" ", t:"void", v:"" }
+];
+const saisi = {}, actif = {}, fige = {};
+
+/* ===== Durées — moteur de conversion repris du quiz Durées ===== */
+const FACT  = { s:1, min:60, h:3600, jour:86400, an:31536000 };
+const UNOMP = { s:"secondes", min:"minutes", h:"heures", jour:"jours", an:"années" };
+const UFORMS = {
+  s:["s","seconde","secondes"], min:["min","mn","minute","minutes"],
+  h:["h","heure","heures"], jour:["jour","jours","j"], an:["an","ans","année","années","annee","annees"]
+};
+function symDur(u,v){ if(u==="jour") return v>1?"jours":"jour"; if(u==="an") return v>1?"ans":"an"; return u; }
+function frNum(x){ return (Math.round(x*1000)/1000).toString().replace(".",","); }
+const DUR = {};
+const TOUCHES_DUR = [
+  {l:"7",v:"7"},{l:"8",v:"8"},{l:"9",v:"9"},
+  {l:"4",v:"4"},{l:"5",v:"5"},{l:"6",v:"6"},
+  {l:"1",v:"1"},{l:"2",v:"2"},{l:"3",v:"3"},
+  {l:"0",v:"0"},{l:",",v:","},{l:"\u232B",v:"DEL",del:true}
+];
+const saisiDur = {}, figeDur = {};
+function defConvDureeEDL(qid, from, to, start){
+  const result = start*FACT[from]/FACT[to];
+  DUR[qid] = { val:result, tol:1e-9, unites:UFORMS[to],
+    enonce:"Convertis <b>"+start+" "+symDur(from,start)+"</b> en <b>"+UNOMP[to]+"</b>.",
+    corr: start+" "+symDur(from,start)+" = "+frNum(result)+" "+symDur(to,result) };
+  SCORM_IDS[qid] = "convertir_"+from+"_vers_"+to;
+}
+function buildDurees(){
+  let specs;
+  if(SAVE && SAVE.gen && SAVE.gen.dur){ specs = SAVE.gen.dur; }
+  else { specs = [ ["min","s",rnd(3,12)], ["h","min",rnd(2,9)], ["s","min",rnd(2,9)*60], ["min","h",rnd(2,6)*60] ]; }
+  GEN.dur = specs;
+  ["du1","du2","du3","du4"].forEach((qid,i)=>{ defConvDureeEDL(qid, specs[i][0], specs[i][1], specs[i][2]); });
+}
+
+/* ---------- COMPS : chaque question -> sa cellule ---------- */
+const COMPS = {};
+["g_masse","g_volume","g_duree","g_vitesse","g_distance"].forEach(id=>COMPS[id]="grandeurs");
+["r_produit","r_quotient","r_zero"].forEach(id=>COMPS[id]="pui_regles");
+["cv1","cv2","cv3","cv4"].forEach(id=>COMPS[id]="conv_tableau");
+["du1","du2","du3","du4"].forEach(id=>COMPS[id]="durees");
+["c05","c02","c01"].forEach(id=>COMPS[id]="isoler");
+["a13","a14","a15","a16"].forEach(id=>COMPS[id]="pui_appli");
+
+/* ---------- Ordre d'affichage (structure fixe) ---------- */
+const O_GRANDEURS = ["g_masse","g_volume","g_duree","g_vitesse","g_distance"];
+const O_CONV      = ["cv1","cv2","cv3","cv4"];
+const O_DUREES    = ["du1","du2","du3","du4"];
+const O_REGLES    = ["r_produit","r_quotient","r_zero"];
+const O_ISOLER    = ["c05","c02","c01"];
+const O_APPLI     = ["a13","a14","a15","a16"];
+const TOUS_IDS = [...O_GRANDEURS, ...O_CONV, ...O_DUREES, ...O_REGLES, ...O_APPLI, ...O_ISOLER];
+const TOTAL = TOUS_IDS.length;
+
+const etat = {};
+TOUS_IDS.forEach(id => etat[id] = { resultat:null });
+
+function melanger(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function num(raw){ return parseFloat((""+raw).trim().replace(",",".").replace(/\u2212/g,"-").replace(/\s/g,"")); }
+function egal(a,b){ return Math.abs(a-b) <= 1e-9*Math.max(1,Math.abs(b)); }
+
+/* ===================== Widget CONSTR (repris du quiz Isoler) ===================== */
+function construireConstrEDL(qid){
+  const cfg = CONSTR[qid]; if(!cfg) return;
+  cfg._etats = cfg.lignes.map(lg => ({ op:null, slots:Array(lg.slots.length).fill(null), sel:null }));
+  cfg._ligneFigee = cfg.lignes.map(()=>false);
+  cfg._bankComplete = [...cfg.lettres, ...(cfg.distracteurs||[])];
+  if(SAVE && SAVE.p && SAVE.p[qid]) cfg._bankOrder = SAVE.p[qid];
+  else cfg._bankOrder = melanger(cfg._bankComplete);
+  PERMS[qid]=cfg._bankOrder;
+  const container = document.getElementById("constr_"+qid);
+  container.innerHTML = '<div class="constr-wrap">' +
+    cfg.lignes.map((lg,i)=>'<div class="constr-row" id="constr-row-'+qid+'-'+i+'">'+renderConstrRow(qid,i)+'</div>').join('') + '</div>';
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([container]);
+}
+function renderConstrRow(qid, i){
+  const cfg = CONSTR[qid]; const lg = cfg.lignes[i]; const st = cfg._etats[i]; const figee = cfg._ligneFigee[i];
+  const nbCases = lg.slots.length;
+  const placees = st.slots.filter(Boolean);
+  const bank = cfg._bankOrder.filter(L => !placees.includes(L));
+  const caps = capsFromOp(st.op, nbCases); const sym = symFromOp(st.op);
+  const opsDispo = (nbCases === 3) ? [['produit','× produit'], ['somme','+ somme']]
+    : [['produit','× produit'], ['fraction','fraction'], ['somme','+ somme'], ['difference','− différence']];
+  const opsHtml = opsDispo.map(([op, lbl]) => {
+    const sel = (st.op === op) ? ' selected' : ''; const dis = figee ? ' disabled' : '';
+    return '<button class="constr-op-btn'+sel+'"'+dis+" onclick=\"constrSetOp('"+qid+"',"+i+",'"+op+"')\">"+lbl+"</button>";
+  }).join('');
+  // Rendu d'UN slot — HTML repris à l'identique du fichier, sans le symbole inter-cases
+  const renderUnSlot = (L, s) => {
+    const recept = (!L && st.sel && !figee) ? ' receptive' : '';
+    const cls = (L ? ' filled' : '') + (figee ? ' figee' : '') + recept; const dis = figee ? ' disabled' : '';
+    const act = L ? ("constrUnplace('"+qid+"',"+i+","+s+")") : ("constrPlaceAt('"+qid+"',"+i+","+s+")");
+    return '<div class="constr-slot-wrap"><button class="constr-slot'+cls+'"'+dis+
+      " onclick=\""+act+"\">"+(L ? '\\('+L+'\\)' : '?')+'</button>'+
+      '<span class="constr-slot-cap">'+caps[s]+'</span></div>';
+  };
+  let slotsHtml;
+  if(st.op === 'fraction'){
+    slotsHtml =
+      '<div class="frac-stack">' +
+        '<div class="frac-zone">' + renderUnSlot(st.slots[0], 0) + '</div>' +
+        '<div class="frac-line"></div>' +
+        '<div class="frac-zone">' + renderUnSlot(st.slots[1], 1) + '</div>' +
+      '</div>';
+  } else {
+    slotsHtml = st.slots.map((L, s) => {
+      const symAfter = (s < nbCases - 1) ? '<span class="constr-sym">'+sym+'</span>' : '';
+      return renderUnSlot(L, s) + symAfter;
+    }).join('');
+  }
+  const bankHtml = figee ? '<span class="constr-bank-figee">— ligne validée —</span>' :
+    (bank.length ? bank.map(L => "<button class=\"constr-token"+(st.sel===L?" selected":"")+"\" onclick=\"constrSelect('"+qid+"',"+i+",'"+L.replace(/\\/g,"\\\\")+"')\">\\("+L+"\\)</button>").join('')
+                 : '<span class="constr-bank-empty">— toutes les lettres sont placées —</span>');
+  const preview = previewTex(lg.grandeur, st);
+  const headStyle = figee ? ' style="color:var(--vert);font-weight:700"' : '';
+  return '<div class="constr-head"'+headStyle+'>\\('+preview+'\\)</div>'+
+    '<div class="constr-ops">'+opsHtml+'</div><div class="constr-slots">'+slotsHtml+'</div><div class="constr-bank">'+bankHtml+'</div>';
+}
+function capsFromOp(op, nb){
+  if(op==='fraction') return ['numérateur','dénominateur'];
+  if(op==='difference') return ['1er terme','2e terme'];
+  if(op==='produit') return Array(nb).fill('facteur');
+  if(op==='somme') return Array(nb).fill('terme');
+  return Array(nb).fill('position');
+}
+function symFromOp(op){ if(op==='fraction')return '/'; if(op==='difference')return '−'; if(op==='produit')return '×'; if(op==='somme')return '+'; return '?'; }
+function previewTex(grandeur, st){
+  if(!st.op && st.slots.every(s=>!s)) return grandeur+' = \\square\\,?\\,\\square';
+  const s = st.slots.map(x => x || '\\square');
+  if(st.op==='fraction') return grandeur+' = \\dfrac{'+s[0]+'}{'+s[1]+'}';
+  if(st.op==='produit') return grandeur+' = '+s.join(' \\times ');
+  if(st.op==='somme') return grandeur+' = '+s.join(' + ');
+  if(st.op==='difference') return grandeur+' = '+s[0]+' - '+s[1];
+  return grandeur+' = '+s.join(' \\,?\\, ');
+}
+function refreshConstrRow(qid, i){
+  const el = document.getElementById('constr-row-'+qid+'-'+i); if(!el) return;
+  el.innerHTML = renderConstrRow(qid, i);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]);
+}
+function constrSetOp(qid, row, op){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row])return; const st=cfg._etats[row]; st.op=(st.op===op)?null:op; st.sel=null; refreshConstrRow(qid,row); }
+function constrSelect(qid, row, letter){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row])return; const st=cfg._etats[row]; if(st.slots.includes(letter))return; st.sel=(st.sel===letter)?null:letter; refreshConstrRow(qid,row); }
+function constrPlaceAt(qid, row, slotIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row])return; const st=cfg._etats[row]; if(!st.sel)return; if(st.slots[slotIdx]!==null)return; if(st.slots.includes(st.sel))return; st.slots[slotIdx]=st.sel; st.sel=null; refreshConstrRow(qid,row); }
+function constrPlace(qid, row, letter){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row])return; const st=cfg._etats[row]; if(st.slots.includes(letter))return; const e=st.slots.indexOf(null); if(e===-1)return; st.slots[e]=letter; refreshConstrRow(qid,row); }
+function constrUnplace(qid, row, slotIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row])return; const st=cfg._etats[row]; if(st.slots[slotIdx]===null)return; st.slots[slotIdx]=null; refreshConstrRow(qid,row); }
+function evalLigne(opChoisie, opAttendue, slotsRemplis, slotsAttendus){
+  if(opChoisie !== opAttendue) return false;
+  if(opAttendue==='fraction' || opAttendue==='difference'){ return slotsRemplis.every((s,i)=>s===slotsAttendus[i]); }
+  const t1=[...slotsRemplis].sort(), t2=[...slotsAttendus].sort();
+  return t1.length===t2.length && t1.every((s,i)=>s===t2[i]);
+}
+function reponseConstr(qid){
+  const cfg=CONSTR[qid];
+  const plain = x => String(x).replace(/\\Delta t/g,"Δt").replace(/\\rho/g,"rho").replace(/\\ell/g,"l").replace(/\\dfrac/g,"").replace(/[\\{}]/g,"");
+  return cfg.lignes.map((lg,i)=>{ const st=cfg._etats[i]; const sl=st.slots.map(x=>plain(x||"?")); const g=plain(lg.grandeur);
+    if(st.op==="fraction") return g+"="+sl[0]+"/"+sl[1];
+    if(st.op==="produit") return g+"="+sl.join("*");
+    if(st.op==="somme") return g+"="+sl.join("+");
+    if(st.op==="difference") return g+"="+sl[0]+"-"+sl[1];
+    return g+"=?"; }).join(" ; ");
+}
+function validerConstrEDL(id){
+  if(etat[id].resultat !== null) return;
+  const cfg = CONSTR[id];
+  const complet = cfg.lignes.every((lg,i)=>{ const st=cfg._etats[i]; return st.op && st.slots.every(Boolean); });
+  if(!complet){ alert("Choisis l'opération et place toutes les lettres."); return; }
+  const ok = cfg.lignes.every((lg,i)=>{ const st=cfg._etats[i]; return evalLigne(st.op, lg.op, st.slots, lg.slots); });
+  const rep = reponseConstr(id);
+  cfg._ligneFigee = cfg.lignes.map(()=>true);
+  cfg.lignes.forEach((lg,i)=>refreshConstrRow(id,i));
+  trancher(id, ok, rep);
+}
+
+/* ===================== Clavier scientifique (repris de la réglette) ===================== */
+function convInner(id){
+  return '<div class="conv-ligne">'+
+    '<div class="disp" id="dispG_'+id+'" title="Valeur de départ"></div>'+
+    '<input class="sunit" id="unitG_'+id+'" type="text" autocomplete="off" spellcheck="false" placeholder="unité">'+
+    '<span class="egal">=</span>'+
+    '<div class="disp" id="dispD_'+id+'" title="Valeur convertie"></div>'+
+    '<input class="sunit" id="unitD_'+id+'" type="text" autocomplete="off" spellcheck="false" placeholder="unité">'+
+    '</div><div id="clav_'+id+'"></div>';
+}
+function construireClavier(qid){
+  const div=document.getElementById("clav_"+qid); if(!div) return;
+  const wrap=document.createElement("div"); wrap.className="clavier";
+  TOUCHES.forEach(t=>{ const b=document.createElement("button"); b.type="button"; b.className="k"+(t.t==="del"?" k-del":"");
+    b.textContent=t.l;
+    if(t.t==="void"){ b.disabled=true; b.style.visibility="hidden"; }
+    else b.addEventListener("click",()=>toucheClavier(qid,t.v));
+    wrap.appendChild(b); });
+  div.innerHTML=""; div.appendChild(wrap);
+}
+function toucheClavier(qid,val){
+  if(fige[qid]) return; const c=actif[qid];
+  if(val==="DEL") saisi[qid][c]=saisi[qid][c].slice(0,-1);
+  else if(val==="CLR") saisi[qid][c]="";
+  else saisi[qid][c]+=val;
+  renderDisp(qid);
+}
+function renderDisp(qid){
+  ["g","d"].forEach(c=>{ const el=document.getElementById((c==="g"?"dispG_":"dispD_")+qid); if(!el) return;
+    const cur=(!fige[qid] && actif[qid]===c) ? '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>' : "";
+    el.innerHTML=saisi[qid][c]+cur; el.classList.toggle("actif", !fige[qid] && actif[qid]===c); });
+}
+function setActif(qid,c){ if(!fige[qid]){ actif[qid]=c; renderDisp(qid); } }
+function parseVal(raw){ try{ const s=raw.replace(/,/g,".").replace(/\u202F/g,"").replace(/\s/g,""); if(s==="") return NaN; return parseFloat(s); }catch(e){ return NaN; } }
+function normUnite(str){ return str.replace(/\s/g,"").replace(/\u03BC/g,"\u00B5"); }
+function egalRel(a,b){ if(isNaN(a)||isNaN(b)) return false; return Math.abs(a-b) <= 1e-9*Math.abs(b); }
+function validerConvEDL(id){
+  if(etat[id].resultat!==null) return;
+  const cfg=CONV[id];
+  const uGraw=document.getElementById("unitG_"+id).value.trim(), uDraw=document.getElementById("unitD_"+id).value.trim();
+  if(saisi[id].g===""||saisi[id].d===""||uGraw===""||uDraw===""){ alert("Complète les deux membres (valeurs et unités)."); return; }
+  const vG=parseVal(saisi[id].g), vD=parseVal(saisi[id].d);
+  const uG=normUnite(uGraw), uD=normUnite(uDraw);
+  const ok = egalRel(vG,cfg.valG) && (uG===cfg.uPref) && egalRel(vD,cfg.valD) && (uD===cfg.uBase);
+  const rep = saisi[id].g+" "+uGraw+" = "+saisi[id].d+" "+uDraw;
+  fige[id]=true; renderDisp(id);
+  const clav=document.getElementById("clav_"+id); if(clav) clav.querySelectorAll("button").forEach(b=>b.disabled=true);
+  document.getElementById("unitG_"+id).disabled=true; document.getElementById("unitD_"+id).disabled=true;
+  trancher(id, ok, rep);
+}
+
+/* ===================== Clavier durées (dédié, repris du quiz Durées) ===================== */
+function durInner(id){
+  return '<button class="nw-btn" type="button" onclick="toggleNW(\'nw_'+id+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Calculatrice NumWorks</button>'+
+    '<div class="nw-wrap" id="nw_'+id+'"><iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe></div>'+
+    '<div class="conv-ligne"><div class="disp" id="dispDur_'+id+'" title="Valeur convertie"></div>'+
+    '<input class="sunit" id="unitDur_'+id+'" type="text" autocomplete="off" spellcheck="false" placeholder="unité"></div>'+
+    '<div id="clavDur_'+id+'"></div>';
+}
+function construireClavierDur(qid){
+  const div=document.getElementById("clavDur_"+qid); if(!div) return;
+  const wrap=document.createElement("div"); wrap.className="clavier-dur";
+  TOUCHES_DUR.forEach(t=>{ const b=document.createElement("button"); b.type="button"; b.className="k"+(t.del?" k-del":"");
+    b.textContent=t.l; b.addEventListener("click",()=>toucheClavierDur(qid,t.v)); wrap.appendChild(b); });
+  div.innerHTML=""; div.appendChild(wrap);
+}
+function toucheClavierDur(qid,val){ if(figeDur[qid]) return; if(val==="DEL") saisiDur[qid]=saisiDur[qid].slice(0,-1); else saisiDur[qid]+=val; renderDispDur(qid); }
+function renderDispDur(qid){ const el=document.getElementById("dispDur_"+qid); if(!el) return;
+  const cur=figeDur[qid]?"":'<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+  el.innerHTML=saisiDur[qid]+cur; }
+function validerDureeEDL(id){
+  if(etat[id].resultat!==null) return;
+  const cfg=DUR[id];
+  const raw=saisiDur[id]; const uRaw=document.getElementById("unitDur_"+id).value.trim();
+  if(raw===""||uRaw===""){ alert("Écris la valeur convertie ET son unité."); return; }
+  const v=parseVal(raw), u=normUnite(uRaw);
+  const ok = !isNaN(v) && Math.abs(v-cfg.val)<=cfg.tol*Math.max(1,Math.abs(cfg.val)) && cfg.unites.indexOf(u)!==-1;
+  const rep = raw+" "+uRaw;
+  figeDur[id]=true; renderDispDur(id);
+  const clav=document.getElementById("clavDur_"+id); if(clav) clav.querySelectorAll("button").forEach(b=>b.disabled=true);
+  document.getElementById("unitDur_"+id).disabled=true;
+  trancher(id, ok, rep);
+}
+
+/* ===================== Couche SCORM 1.2 (Éléa) ===================== */
+const SCORM_IDS = {
+  g_masse:"grandeur_masse", g_volume:"grandeur_volume", g_duree:"grandeur_duree", g_vitesse:"grandeur_vitesse", g_distance:"grandeur_distance",
+  cv1:"convertir_m_vers_cm", cv2:"convertir_km_vers_m", cv3:"convertir_cm_vers_m", cv4:"convertir_cm_vers_m_petit",
+  du1:"duree_2h5_vers_hmin", du2:"duree_1h25_vers_hmin", du3:"duree_1h30_vers_dec", du4:"duree_2h45_vers_dec",
+  r_produit:"regle_produit_exposants", r_quotient:"regle_quotient_exposants", r_zero:"puissance_exposant_zero",
+  c05:"isoler_m_poids", c02:"isoler_dt_vitesse", c01:"isoler_d_vitesse",
+  a13:"appli_produit_3_5", a14:"appli_quotient_7_2", a15:"appli_produit_4_m6", a16:"appli_quotient_m3_2"
+};
+var scormAPI=null, scormInit=false, scormI=0, scormO=0;
+var SAVE=null, rendu=false;
+const PERMS={}, GEN={conv:[], dur:[]};
+function scormFindAPI(win){ let t=0; while(win && !win.API && t<12){ if(win.parent && win.parent!==win){win=win.parent;} else break; t++; } return (win&&win.API)?win.API:null; }
+function scormStart(){ try{ scormAPI=scormFindAPI(window); if(!scormAPI&&window.opener){scormAPI=scormFindAPI(window.opener);} if(scormAPI){ scormAPI.LMSInitialize(""); scormInit=true;
+    let sd=""; try{ sd=String(scormAPI.LMSGetValue("cmi.suspend_data")||""); }catch(e){}
+    if(sd){ try{ const o=JSON.parse(sd); if(o&&o.v===1) SAVE=o; }catch(e){ SAVE=null; } }
+    if(!SAVE){ scormAPI.LMSSetValue("cmi.core.score.min","0"); scormAPI.LMSSetValue("cmi.core.score.max",String(TOTAL)); scormAPI.LMSSetValue("cmi.core.score.raw","0"); scormAPI.LMSSetValue("cmi.core.lesson_status","incomplete"); scormAPI.LMSCommit(""); }
+    else { scormI=Object.keys(SAVE.e||{}).length; scormO=Object.keys(SAVE.e||{}).length; }
+  } }catch(e){} }
+function noteActuelle(){ return TOUS_IDS.filter(id=>etat[id].resultat==="ok").length; }
+function scormInteraction(qid, ok, rep){ try{ if(!scormInit) return; const sid=qid+"_"+(SCORM_IDS[qid]||qid);
+    const pi="cmi.interactions."+scormI+"."; scormAPI.LMSSetValue(pi+"id",sid); scormAPI.LMSSetValue(pi+"type","performance");
+    scormAPI.LMSSetValue(pi+"student_response",(""+(rep||"")).slice(0,250)); scormAPI.LMSSetValue(pi+"result",ok?"correct":"wrong"); scormAPI.LMSSetValue(pi+"weighting","1"); scormI++;
+    const po="cmi.objectives."+scormO+"."; scormAPI.LMSSetValue(po+"id",sid); scormAPI.LMSSetValue(po+"score.min","0"); scormAPI.LMSSetValue(po+"score.max","1");
+    scormAPI.LMSSetValue(po+"score.raw",ok?"1":"0"); scormAPI.LMSSetValue(po+"status",ok?"passed":"failed"); scormO++;
+    scormAPI.LMSSetValue("cmi.core.score.raw",String(noteActuelle())); scormAPI.LMSCommit(""); }catch(e){} }
+function scormBilanCompetences(){ try{ if(!scormInit) return; Object.keys(CELLULES).forEach(cle=>{ const s=statsCellule(cle);
+    const po="cmi.objectives."+scormO+"."; scormAPI.LMSSetValue(po+"id","bilan_"+cle); scormAPI.LMSSetValue(po+"score.min","0");
+    scormAPI.LMSSetValue(po+"score.max",String(s.t)); scormAPI.LMSSetValue(po+"score.raw",String(s.r)); scormAPI.LMSSetValue(po+"status",(s.r===s.t)?"passed":"failed"); scormO++; }); scormAPI.LMSCommit(""); }catch(e){} }
+function scormReport(note){ try{ if(!scormInit) return; scormAPI.LMSSetValue("cmi.core.score.raw",String(note)); scormAPI.LMSSetValue("cmi.core.lesson_status","completed"); scormAPI.LMSCommit(""); }catch(e){} }
+function scormEnd(){ try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit=false; } }catch(e){} }
+window.addEventListener("beforeunload",scormEnd); window.addEventListener("unload",scormEnd);
+
+/* ===================== Construction ===================== */
+function bloc(id, titre, contenu){
+  return '<div class="qbloc" id="bloc_'+id+'">'
+       +   '<div class="qenonce"><span class="qnum">'+(TOUS_IDS.indexOf(id)+1)+'</span><span>'+titre+'</span></div>'
+       +   '<div class="qcont">'+contenu
+       +     '<div class="fb" id="fb_'+id+'"></div>'
+       +     '<button class="btn-v" id="btnv_'+id+'">Valider</button>'
+       +   '</div></div>';
+}
+function ulQCM(id){ return '<ul class="opts" id="opts_'+id+'"></ul>'; }
+
+function tableauConv(){
+  const u=["km","hm","dam","m","dm","cm","mm"];
+  return '<div class="aide">Tu peux t\'aider de ce tableau de conversion :<br><table class="conv-table"><tr>'
+       + u.map(x=>'<td class="u">'+x+'</td>').join("")
+       + '</tr><tr>'+u.map(()=>'<td>&nbsp;</td>').join("")+'</tr></table></div>';
+}
+
+function construire(){
+  buildConversions();
+  buildDurees();
+  const z = document.getElementById("zone-questions");
+  let html = "";
+
+  html += '<div class="partie-titre">Partie 1 — Grandeurs, notations et unités</div>';
+  O_GRANDEURS.forEach(id => {
+    const g = GRANDEURS[id];
+    let ordN, ordU;
+    if(SAVE && SAVE.p && SAVE.p[id]){ ordN=SAVE.p[id][0]; ordU=SAVE.p[id][1]; }
+    else { ordN=melanger(OPT_NOTATION); ordU=melanger(OPT_UNITE); }
+    PERMS[id]=[ordN,ordU];
+    const optN = ordN.map(o=>'<option value="'+o+'">'+o+'</option>').join("");
+    const optU = ordU.map(o=>'<option value="'+o+'">'+o+'</option>').join("");
+    const tbl = '<table class="assoc-table"><tr><th>Grandeur</th><th>Notation</th><th>Unité</th></tr>'
+              + '<tr><td>'+g.nom+'</td>'
+              + '<td><select id="selN_'+id+'"><option value="">—</option>'+optN+'</select></td>'
+              + '<td><select id="selU_'+id+'"><option value="">—</option>'+optU+'</select></td></tr></table>';
+    html += bloc(id, "Associe la grandeur à sa notation et à son unité.", tbl);
+  });
+
+  html += '<div class="partie-titre">Partie 2 — Conversions (le tableau t\'est donné)</div>';
+  html += tableauConv();
+  O_CONV.forEach(id => {
+    const c = CONV[id];
+    html += bloc(id, 'Convertis <b>'+c.affG+'&nbsp;'+c.uPref+'</b> en <b>'+c.uBase+'</b>. Recopie la valeur de départ à gauche, puis écris la valeur convertie à droite (nombres au clavier à l\'écran, unités au clavier de l\'ordinateur).', convInner(id));
+  });
+
+  html += '<div class="partie-titre">Partie 3 — Conversions de durées</div>';
+  html += '<div class="aide">Rappels : \\(1\\ \\text{h} = 60\\ \\text{min}\\) et \\(1\\ \\text{min} = 60\\ \\text{s}\\).</div>';
+  O_DUREES.forEach(id => html += bloc(id, DUR[id].enonce, durInner(id)));
+
+  html += '<div class="partie-titre">Partie 4 — Puissances de 10 : les règles</div>';
+  O_REGLES.forEach(id => html += bloc(id, QCM[id].enonce, ulQCM(id)));
+
+  html += '<div class="partie-titre">Partie 5 — Puissances de 10 : les applications</div>';
+  O_APPLI.forEach(id => {
+    const q = NUM[id];
+    const inp = '<div class="saisie-ligne"><label>'+q.enonce+'</label>&nbsp;<label>n =</label> <input class="sval-in court" id="in_'+id+'" autocomplete="off"></div>';
+    html += bloc(id, "Application — règle des exposants.", inp);
+  });
+
+  html += '<div class="partie-titre">Partie 6 — Isoler une grandeur</div>';
+  O_ISOLER.forEach(id => html += bloc(id, CONSTR[id].enonce, '<div id="constr_'+id+'"></div>'));
+
+  z.innerHTML = html;
+
+  /* options des QCM (règles uniquement) */
+  O_REGLES.forEach(id => {
+    const ul = document.getElementById("opts_"+id);
+    let order;
+    if(SAVE && SAVE.p && SAVE.p[id]) order = SAVE.p[id];
+    else order = melanger(QCM[id].props.map((_,i)=>i));
+    PERMS[id]=order;
+    order.forEach(idx => {
+      const p = QCM[id].props[idx];
+      const li = document.createElement("li");
+      li.innerHTML = '<button class="opt-btn" data-correct="'+p.correct+'">'+p.html+'</button>';
+      ul.appendChild(li);
+    });
+    ul.querySelectorAll(".opt-btn").forEach(b => b.addEventListener("click", function(){
+      ul.querySelectorAll(".opt-btn").forEach(x=>x.classList.remove("sel"));
+      this.classList.add("sel");
+    }));
+  });
+
+  /* widgets CONSTR (isoler) */
+  O_ISOLER.forEach(id => construireConstrEDL(id));
+
+  /* claviers scientifiques (conversions) */
+  O_CONV.forEach(id => {
+    saisi[id]={g:"",d:""}; actif[id]="g"; fige[id]=false;
+    construireClavier(id);
+    document.getElementById("dispG_"+id).addEventListener("click",()=>setActif(id,"g"));
+    document.getElementById("dispD_"+id).addEventListener("click",()=>setActif(id,"d"));
+    renderDisp(id);
+  });
+
+  /* claviers durées */
+  O_DUREES.forEach(id => {
+    saisiDur[id]=""; figeDur[id]=false;
+    construireClavierDur(id);
+    renderDispDur(id);
+  });
+
+  TOUS_IDS.forEach(id => { document.getElementById("btnv_"+id).onclick = () => valider(id); });
+  renderMath();
+}
+
+/* ===================== Validation ===================== */
+function trancher(id, ok, rep){
+  etat[id].resultat = ok ? "ok" : "ko";
+  etat[id].rep = rep || "";
+  document.getElementById("bloc_"+id).classList.add("fait");
+  const fb = document.getElementById("fb_"+id);
+  fb.textContent = "Réponse enregistrée."; fb.style.display = "block";
+  document.getElementById("btnv_"+id).disabled = true;
+  scormInteraction(id, ok, etat[id].rep);
+  sauvegarder();
+  majTraitees();
+}
+
+function valider(id){
+  if(etat[id].resultat !== null) return;
+
+  if(O_GRANDEURS.includes(id)){
+    const n=document.getElementById("selN_"+id), u=document.getElementById("selU_"+id);
+    if(!n.value||!u.value){ alert("Choisis une notation et une unité."); return; }
+    const ok = (Array.isArray(GRANDEURS[id].notation) ? GRANDEURS[id].notation.includes(n.value) : n.value===GRANDEURS[id].notation) && (u.value===GRANDEURS[id].unite);
+    const rep = n.value+" · "+u.value;
+    n.disabled=true; u.disabled=true; trancher(id, ok, rep);
+
+  } else if(O_ISOLER.includes(id)){
+    validerConstrEDL(id); return;
+
+  } else if(O_REGLES.includes(id)){
+    const ul=document.getElementById("opts_"+id);
+    const sel=ul.querySelector(".opt-btn.sel");
+    if(!sel){ alert("Sélectionne une réponse."); return; }
+    const ok = sel.dataset.correct==="true";
+    const rep = (sel.textContent||"").trim();
+    ul.querySelectorAll(".opt-btn").forEach(b=>b.disabled=true); trancher(id, ok, rep);
+
+  } else if(O_CONV.includes(id)){
+    validerConvEDL(id); return;
+
+  } else if(O_DUREES.includes(id)){
+    validerDureeEDL(id); return;
+
+  } else {   /* O_APPLI */
+    const inp=document.getElementById("in_"+id);
+    if(inp.value.trim()===""){ alert("Écris la valeur de n."); return; }
+    const v=num(inp.value); const ok=!isNaN(v)&&egal(v,NUM[id].val);
+    const rep = "n = "+inp.value.trim();
+    inp.disabled=true; trancher(id, ok, rep);
+  }
+}
+
+function majTraitees(){
+  const n = TOUS_IDS.filter(id=>etat[id].resultat!==null).length;
+  document.getElementById("straitees").textContent = n+" / "+TOTAL;
+  document.getElementById("btn-rendre").disabled = (n<TOTAL);
+}
+
+/* ===================== Bilan ===================== */
+function verdict(reussies, total, nature){
+  const err = total - reussies;
+  if(err===0) return { cls:"v-acquis", txt:"acquis" };
+  if(err===1) return { cls:"v-consolider", txt:"à consolider" };
+  return        { cls:"v-retravailler", txt: nature==="connaissance" ? "à revoir" : "à retravailler" };
+}
+function statsCellule(cle){
+  const ids = TOUS_IDS.filter(id=>COMPS[id]===cle);
+  return { r: ids.filter(id=>etat[id].resultat==="ok").length, t: ids.length };
+}
+function celluleHTML(cle){
+  const c=CELLULES[cle], s=statsCellule(cle), v=verdict(s.r,s.t,c.nature), pct=Math.round(100*s.r/s.t);
+  return '<div class="cell">'
+       +   '<div class="cell-haut"><span class="cell-nom">'+c.nom+'</span>'
+       +     '<span class="cell-score">'+s.r+' / '+s.t+'</span></div>'
+       +   '<div class="jauge-wrap"><div class="jauge"><div class="jauge-fill" style="width:'+pct+'%"></div></div>'
+       +     '<span class="cell-verdict '+v.cls+'">'+v.txt+'</span></div>'
+       + '</div>';
+}
+function sectionHTML(nature, titre, sous){
+  let h='<div class="bil-sec-titre">'+titre+'</div><div class="bil-sec-sous">'+sous+'</div>';
+  Object.keys(CELLULES).filter(k=>CELLULES[k].nature===nature).forEach(k=>h+=celluleHTML(k));
+  return h;
+}
+function scoreNature(nature){
+  const ids=TOUS_IDS.filter(id=>CELLULES[COMPS[id]].nature===nature);
+  return { r: ids.filter(id=>etat[id].resultat==="ok").length, t: ids.length };
+}
+/* ===================== Sauvegarde / restauration (suspend_data) ===================== */
+function reponseCompacte(id){
+  if(O_GRANDEURS.includes(id)){ return [ (document.getElementById("selN_"+id)||{}).value||"", (document.getElementById("selU_"+id)||{}).value||"" ]; }
+  if(O_CONV.includes(id)){ return [ saisi[id].g, (document.getElementById("unitG_"+id)||{}).value||"", saisi[id].d, (document.getElementById("unitD_"+id)||{}).value||"" ]; }
+  if(O_DUREES.includes(id)){ return [ saisiDur[id], (document.getElementById("unitDur_"+id)||{}).value||"" ]; }
+  if(O_ISOLER.includes(id)){ return CONSTR[id]._etats.map(st=>[st.op, st.slots.slice()]); }
+  if(O_REGLES.includes(id)){ const btns=[].slice.call(document.querySelectorAll("#opts_"+id+" .opt-btn")); const sel=document.querySelector("#opts_"+id+" .opt-btn.sel"); return btns.indexOf(sel); }
+  const inp=document.getElementById("in_"+id); return inp ? inp.value.slice(0,40) : "";
+}
+function sauvegarder(){
+  if(!scormInit) return;
+  try{
+    const e={};
+    TOUS_IDS.forEach(id=>{ if(etat[id].resultat!==null){ e[id]=[ etat[id].resultat==="ok"?1:0, reponseCompacte(id) ]; } });
+    const sd=JSON.stringify({ v:1, p:PERMS, gen:GEN, e:e, r:(rendu?1:0) });
+    scormAPI.LMSSetValue("cmi.suspend_data", sd); scormAPI.LMSCommit("");
+  }catch(err){ /* silencieux */ }
+}
+function appliquerReponse(id, rc){
+  if(O_GRANDEURS.includes(id)){
+    const n=document.getElementById("selN_"+id), u=document.getElementById("selU_"+id);
+    if(n){ n.value=rc[0]; n.disabled=true; } if(u){ u.value=rc[1]; u.disabled=true; }
+  } else if(O_CONV.includes(id)){
+    saisi[id]={g:rc[0], d:rc[2]}; fige[id]=true; renderDisp(id);
+    const ug=document.getElementById("unitG_"+id), ud=document.getElementById("unitD_"+id);
+    if(ug){ ug.value=rc[1]; ug.disabled=true; } if(ud){ ud.value=rc[3]; ud.disabled=true; }
+    const clav=document.getElementById("clav_"+id); if(clav) clav.querySelectorAll("button").forEach(b=>b.disabled=true);
+  } else if(O_DUREES.includes(id)){
+    saisiDur[id]=rc[0]; figeDur[id]=true; renderDispDur(id);
+    const ud=document.getElementById("unitDur_"+id); if(ud){ ud.value=rc[1]; ud.disabled=true; }
+    const clav=document.getElementById("clavDur_"+id); if(clav) clav.querySelectorAll("button").forEach(b=>b.disabled=true);
+  } else if(O_ISOLER.includes(id)){
+    const cfg=CONSTR[id];
+    cfg._etats = rc.map(line=>({ op:line[0], slots:line[1].slice(), sel:null }));
+    cfg._ligneFigee = cfg.lignes.map(()=>true);
+    cfg.lignes.forEach((_,i)=>refreshConstrRow(id,i));
+  } else if(O_REGLES.includes(id)){
+    const btns=[].slice.call(document.querySelectorAll("#opts_"+id+" .opt-btn"));
+    if(rc>=0 && btns[rc]) btns[rc].classList.add("sel");
+    btns.forEach(b=>b.disabled=true);
+  } else {
+    const inp=document.getElementById("in_"+id); if(inp){ inp.value=rc; inp.disabled=true; }
+  }
+}
+function figerVisuel(id){
+  const bloc=document.getElementById("bloc_"+id); if(bloc) bloc.classList.add("fait");
+  const fb=document.getElementById("fb_"+id); if(fb){ fb.textContent="Réponse enregistrée."; fb.style.display="block"; }
+  const btnv=document.getElementById("btnv_"+id); if(btnv) btnv.disabled=true;
+}
+function restaurerReponses(){
+  if(!SAVE || !SAVE.e) return;
+  Object.keys(SAVE.e).forEach(id=>{
+    if(!etat[id]) return;
+    const r=SAVE.e[id][0], rc=SAVE.e[id][1];
+    appliquerReponse(id, rc);
+    etat[id].resultat = (r===1) ? "ok" : "ko";
+    etat[id].rep = "";
+    figerVisuel(id);
+  });
+  majTraitees();
+  renderMath();
+  if(SAVE.r===1){ rendu=true; construireBilanUI(); }
+}
+
+/* ===================== Bilan & rendu ===================== */
+function construireBilanUI(){
+  const legende = "Ce bilan distingue deux types de compétences : les <strong>Connaissances</strong> — ce que tu dois <strong>savoir</strong>, qui se révise dans le <strong>cours</strong> — et les <strong>Savoir-faire</strong> — ce que tu dois <strong>savoir faire</strong>, qui se travaille avec les <strong>exercices</strong>.";
+  const b=document.getElementById("bilan");
+  b.innerHTML =
+      '<h2>Ton bilan</h2>'
+    + '<div class="bil-synth">'+legende+'</div>'
+    + sectionHTML("connaissance","Connaissances","Ce que tu dois savoir (cours / ressources).")
+    + sectionHTML("savoir-faire","Savoir-faire","Ce que tu dois savoir faire (exercices).");
+  b.style.display="block";
+  const btn=document.getElementById("btn-rendre"); if(btn){ btn.disabled=true; btn.textContent="Devoir rendu \u2713"; }
+  renderMath();
+}
+function rendreDevoir(){
+  if(rendu) return;
+  if(TOUS_IDS.some(id=>etat[id].resultat===null)) return;
+  rendu = true;
+  const note = TOUS_IDS.filter(id=>etat[id].resultat==="ok").length;   // calculée pour la remontée prof, jamais affichée à l'élève
+  construireBilanUI();
+  sauvegarder();             // fige r:1
+  scormBilanCompetences();   // un objectif par compétence (bilan en clair côté prof)
+  scormReport(note);         // note globale + statut "completed"
+  const b=document.getElementById("bilan"); if(b) b.scrollIntoView({behavior:"smooth"});
+}
+
+/* ===================== Init ===================== */
+function toggleNW(id){ const w=document.getElementById(id); if(w) w.style.display=(w.style.display==="block")?"none":"block"; }
+function renderMath(){ if(window.MathJax&&MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); } else { setTimeout(renderMath,100); } }
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("straitees").textContent = "0 / "+TOTAL;
+  scormStart();                          // connexion LMS + lecture de cmi.suspend_data → SAVE
+  construire();                          // utilise SAVE (gen + ordres) si présent, sinon tire et enregistre
+  if(SAVE) restaurerReponses();          // ré-applique les réponses validées (aucune ré-émission SCORM)
+  else sauvegarder();                    // premier chargement : fige le tirage immédiatement
+  document.getElementById("btn-rendre").onclick = rendreDevoir;
+});
+</script>
+</body>
+</html>

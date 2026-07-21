@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : tableau de conversion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.consigne{background:#fff4d6;border-left:5px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:15px 18px;margin-bottom:22px;font-size:.95rem;line-height:1.65;color:#5a4a1f;box-shadow:0 1px 4px rgba(200,146,42,.18)}
+.consigne strong{color:var(--bleu)}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.7}
+.contexte strong{color:var(--bleu)}
+.fb-corr-table{border-collapse:collapse;margin:8px 0 4px;font-size:.88rem}
+.fb-corr-table td{border:1px solid var(--gris-l);padding:5px 9px;text-align:center;background:var(--blanc)}
+.fb-corr-table td.lbl{font-weight:600;color:var(--bleu);background:#f0ede6;text-align:left;white-space:nowrap}
+.fb-corr-table td.mono{font-family:'JetBrains Mono',monospace;font-weight:600}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qnum.star{background:var(--or)}
+.qcont{padding:15px}
+.qaide{font-size:.86rem;color:#555;line-height:1.55;margin-bottom:12px}
+/* ===== Type 7 : tableau à étiquettes ===== */
+.banques{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.bank{border:1.5px solid var(--gris-l);background:#f8f6f2;border-radius:var(--r);padding:9px 11px}
+.bank-titre{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:6px}
+.bank-zone{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}
+.bank-vide{font-style:italic;color:#aaa;font-size:.85rem}
+.etq{font-family:'Source Serif 4',serif;font-size:.9rem;padding:6px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .12s;user-select:none}
+.etq.mono{font-family:'JetBrains Mono',monospace;font-weight:600}
+.etq:hover{background:#eef4fa}
+.etq.sel{background:var(--bleu-cl);color:var(--blanc)}
+.prefixe-table{width:100%;border-collapse:collapse;margin-top:6px}
+.prefixe-table td{padding:6px 6px;border:1px solid var(--gris-l);text-align:center;font-size:.9rem}
+.cell-fixe{font-weight:600;color:var(--bleu);background:#f0ede6;font-size:.82rem;text-align:left!important;white-space:nowrap}
+.tslot{font-family:'Source Serif 4',serif;font-size:.9rem;width:100%;min-height:38px;padding:6px 4px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;color:var(--texte)}
+.tslot.mono{font-family:'JetBrains Mono',monospace;font-weight:600}
+.tslot:hover:not(.fige){border-color:var(--bleu-cl);background:#eef4fa}
+.tslot.sel{border-color:var(--bleu-cl);border-style:solid;background:#ddeef8}
+.tslot.filled{border-style:solid;border-color:var(--bleu-cl);color:var(--bleu);font-weight:600}
+.tslot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.tslot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.tslot.fige{cursor:default}
+/* ===== Type 2 : conversions ===== */
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:120px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.disp.actif{border-color:var(--bleu-cl);box-shadow:0 0 0 2px rgba(44,111,173,.16)}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:64px;background:var(--blanc);color:var(--texte)}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.egal{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--bleu);padding:0 2px}
+.clavier{display:grid;grid-template-columns:repeat(4,52px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.85rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:6px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:6px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}.hd{text-align:left}.h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(4,46px)}.k{height:32px}
+  .prefixe-table td{padding:4px 2px;font-size:.8rem}
+  .tslot{min-height:34px;padding:5px 2px;font-size:.8rem}
+  .etq{font-size:.85rem;padding:5px 9px}
+  .disp{min-width:96px}
+}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les bases du collège</span> Connaître le tableau et savoir convertir. (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="consigne">
+    📝 <strong>Cet exercice se fait avec une feuille.</strong> Commence par reconstituer le tableau des préfixes ci-dessous, puis <strong>recopie-le sur ta feuille</strong> : il te servira pour toutes les conversions.
+  </div>
+
+  <div id="zone-questions"></div>
+
+  <div class="barre-finale">
+    <button class="btn-global btn-valider-tout" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" onclick="location.reload()">&#8634; Recommencer (nouveau tirage)</button>
+  </div>
+
+  <div id="bilan">
+    <h2>Tes notes</h2>
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1<sup>er</sup> essai)<br><span class="score-res-val" id="bilan-n1">— / 20</span></div>
+      <div class="score-res-item">Note 2 (1<sup>er</sup> ou 2<sup>e</sup> essai)<br><span class="score-res-val" id="bilan-n2">— / 20</span></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Exercice — La réglette de conversion (kilo → milli)
+   Chapitre 0 · Seconde · entraînement
+   Q1 : Type 7 (tableau des préfixes, 14 cases × 0,5 pt)
+   Q2..Q14 : conversions sur la réglette (1 pt chacune)
+   Barème /20. SCORM 1.2 question par question (Note 1 officielle).
+   ============================================================ */
+
+// Relance prof (entraînement uniquement) — accolée au feedback de 2e essai raté.
+// Pas de MODE_QUIZ dans ce fichier (réglette bespoke) → entraînement, donc true.
+const EN_CLASSE = true;
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+function rnd(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+function melanger(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function fmtPts(x){
+  return (Math.round(x * 10) / 10).toString().replace(".", ",");
+}
+
+// ============================================================
+// Q1 — Tableau des préfixes (réglette complète kilo → milli)
+// ============================================================
+const PREFIXES = [
+  { nom: "kilo",  sym: "k"  },
+  { nom: "hecto", sym: "h"  },
+  { nom: "déca",  sym: "da" },
+  { nom: "unité", sym: "—"  },
+  { nom: "déci",  sym: "d"  },
+  { nom: "centi", sym: "c"  },
+  { nom: "milli", sym: "m"  }
+];
+const NB_COL = PREFIXES.length;          // 7
+const NB_CASES = NB_COL * 2;             // 14
+const PTS_CASE = 0.5;
+const PHASE = "bases";                        // "bases" | "competences" | "aucune"
+const FIGER_JUSTES = (PHASE === "bases");     // 2e essai differentiel : les cases justes restent figees
+
+// Rendu du tableau correct complet (affiché dans le feedback si erreurs après le 2e essai)
+function tableauCorrectHTML(){
+  let l1 = "", l2 = "";
+  PREFIXES.forEach(p => {
+    l1 += "<td>" + p.nom + "</td>";
+    l2 += '<td class="mono">' + p.sym + "</td>";
+  });
+  return '<table class="fb-corr-table"><tbody>' +
+           '<tr><td class="lbl">Préfixe (nom)</td>' + l1 + "</tr>" +
+           '<tr><td class="lbl">Symbole</td>' + l2 + "</tr>" +
+         "</tbody></table>";
+}
+
+// État du tableau
+let tCells = [];          // tCells[col] = { nom: valeur|null, sym: valeur|null }
+let tFige = [];           // tFige[col] = { nom: bool, sym: bool }
+let banque = { nom: [], sym: [] };  // étiquettes disponibles
+let etqSel = null;        // { row:"nom"|"sym", val:"..." }
+let slotSel = null;       // { col, row }
+let tableTent = 0;        // nombre de validations du tableau
+let tablePts1 = 0;        // points acquis à la 1re validation
+let tablePtsFinal = 0;    // points acquis au total (1re ou 2e)
+let tableDone = false;
+let tableRepEleve = "";
+
+function construireTableau(){
+  tCells = PREFIXES.map(() => ({ nom: null, sym: null }));
+  tFige = PREFIXES.map(() => ({ nom: false, sym: false }));
+  banque.nom = melanger(PREFIXES.map(p => p.nom));
+  banque.sym = melanger(PREFIXES.map(p => p.sym));
+  etqSel = null; slotSel = null;
+}
+
+function rendreBanque(){
+  ["nom", "sym"].forEach(row => {
+    const z = document.getElementById("bank_" + row);
+    if (!z) return;
+    if (banque[row].length === 0){
+      z.innerHTML = '<span class="bank-vide">(toutes les étiquettes sont placées)</span>';
+      return;
+    }
+    z.innerHTML = "";
+    banque[row].forEach(val => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "etq" + (row === "sym" ? " mono" : "") +
+                    (etqSel && etqSel.row === row && etqSel.val === val ? " sel" : "");
+      b.textContent = val;
+      b.addEventListener("click", () => clicEtq(row, val));
+      z.appendChild(b);
+    });
+  });
+}
+
+function rendreSlots(){
+  for (let c = 0; c < NB_COL; c++){
+    ["nom", "sym"].forEach(row => {
+      const el = document.getElementById("slot_" + row + "_" + c);
+      if (!el) return;
+      const v = tCells[c][row];
+      el.textContent = v ? v : "";
+      el.className = "tslot" + (row === "sym" ? " mono" : "");
+      if (v) el.classList.add("filled");
+      if (tFige[c][row]){
+        el.classList.add("fige");
+        el.classList.add(v === PREFIXES[c][row] ? "ok" : "ko");
+      } else if (slotSel && slotSel.col === c && slotSel.row === row){
+        el.classList.add("sel");
+      }
+    });
+  }
+}
+
+function clicEtq(row, val){
+  if (tableDone) return;
+  // si une case vide est déjà sélectionnée et de la bonne ligne → on place
+  if (slotSel && slotSel.row === row && !tFige[slotSel.col][slotSel.row]){
+    placer(slotSel.col, row, val);
+    slotSel = null; etqSel = null;
+  } else if (slotSel && slotSel.row !== row){
+    alert("Cette étiquette appartient à la ligne « " + (row === "nom" ? "Préfixe (nom)" : "Symbole") + " ».");
+    return;
+  } else {
+    etqSel = (etqSel && etqSel.row === row && etqSel.val === val) ? null : { row: row, val: val };
+  }
+  rendreBanque(); rendreSlots();
+}
+
+function clicSlot(col, row){
+  if (tableDone || tFige[col][row]) return;
+  // case déjà remplie → on la reprend (retour en banque)
+  if (tCells[col][row]){
+    banque[row].push(tCells[col][row]);
+    banque[row] = melanger(banque[row]);
+    tCells[col][row] = null;
+    slotSel = null; etqSel = null;
+    rendreBanque(); rendreSlots(); return;
+  }
+  // une étiquette est sélectionnée
+  if (etqSel){
+    if (etqSel.row !== row){
+      alert("Cette case attend une étiquette de la ligne « " + (row === "nom" ? "Préfixe (nom)" : "Symbole") + " ».");
+      return;
+    }
+    placer(col, row, etqSel.val);
+    etqSel = null; slotSel = null;
+  } else {
+    slotSel = (slotSel && slotSel.col === col && slotSel.row === row) ? null : { col: col, row: row };
+  }
+  rendreBanque(); rendreSlots();
+}
+
+function placer(col, row, val){
+  const i = banque[row].indexOf(val);
+  if (i >= 0) banque[row].splice(i, 1);
+  tCells[col][row] = val;
+}
+
+function validerTableau(){
+  // toutes les cases doivent être remplies (parmi celles non figées)
+  for (let c = 0; c < NB_COL; c++){
+    if ((!tFige[c].nom && !tCells[c].nom) || (!tFige[c].sym && !tCells[c].sym)){
+      alert("Place toutes les étiquettes avant de valider le tableau.");
+      return;
+    }
+  }
+  tableTent++;
+  let justes = 0, total = 0;
+  let restantes = { nom: [], sym: [] };
+  for (let c = 0; c < NB_COL; c++){
+    ["nom", "sym"].forEach(row => {
+      const bon = (tCells[c][row] === PREFIXES[c][row]);
+      if (bon){ justes++; tFige[c][row] = true; }
+      else {
+        total++;
+        // 1re tentative : on renvoie l'étiquette fausse en banque pour le 2e essai
+        if (tableTent === 1){
+          if (tCells[c][row]){ restantes[row].push(tCells[c][row]); }
+          tCells[c][row] = null;
+        } else {
+          tFige[c][row] = true;  // 2e tentative : figé en rouge
+        }
+      }
+    });
+  }
+  if (tableTent === 1){
+    tablePts1 = justes * PTS_CASE;
+    banque.nom = melanger(banque.nom.concat(restantes.nom));
+    banque.sym = melanger(banque.sym.concat(restantes.sym));
+  }
+  tablePtsFinal = justes * PTS_CASE;
+  tableRepEleve = PREFIXES.map((p, c) => (tCells[c].nom || "?") + "/" + (tCells[c].sym || "?")).join(" ");
+
+  const bloc = document.getElementById("q1");
+  const fb = document.getElementById("fb_q1");
+  const btnv = document.getElementById("btnv_q1");
+  const btnr = document.getElementById("btnr_q1");
+
+  const toutJuste = (justes === NB_CASES);
+  if (toutJuste || tableTent === 2){
+    tableDone = true;
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc");
+    bloc.classList.add(toutJuste ? "ok-bloc" : "ko-bloc");
+    fb.className = "fb " + (toutJuste ? "ok" : "ko2");
+    fb.innerHTML = (toutJuste
+      ? "&#10003; Bravo, ton tableau est complet et correct ! Recopie-le sur ta feuille, il va te servir pour faire les conversions ci-dessous."
+      : "&#10007; Il reste des erreurs (en rouge). Voici le tableau de conversion correct :" + tableauCorrectHTML() +
+        "<strong>Corrige ton tableau sur ta feuille pour pouvoir l'utiliser pour faire les conversions ci-dessous.</strong>");
+    if (!toutJuste) fb.innerHTML += (EN_CLASSE ? RELANCE_PROF : "");
+    fb.style.display = "block";
+    scormInteractionTableau("q1_tableau_prefixes_kilo_milli", toutJuste, tableRepEleve, tablePtsFinal);
+  } else {
+    bloc.classList.add("warn-bloc");
+    fb.className = "fb ko";
+    fb.innerHTML = "&#10007; " + fmtPts(justes * PTS_CASE) + " / 7 points pour l'instant. Les cases justes sont verrouillées en vert ; les étiquettes des cases fausses sont revenues dans les banques. Réessaie de les placer.";
+    fb.style.display = "block";
+    btnv.disabled = true; btnr.style.display = "inline-block";
+  }
+  rendreBanque(); rendreSlots();
+  verifierFin();
+}
+
+function retryTableau(){
+  document.getElementById("fb_q1").style.display = "none";
+  document.getElementById("btnr_q1").style.display = "none";
+  document.getElementById("btnv_q1").disabled = false;
+  document.getElementById("q1").classList.remove("warn-bloc");
+  rendreBanque(); rendreSlots();
+}
+
+// ============================================================
+// Q2..Q14 — Conversions sur la réglette (1 pt chacune)
+// ============================================================
+const PREFPOW = { "k": 3, "h": 2, "da": 1, "d": -1, "c": -2, "m": -3 };
+const PREFNOM = { "k": "kilo", "h": "hecto", "da": "déca", "d": "déci", "c": "centi", "m": "milli" };
+
+// Viviers : m, g, L sur toute la réglette ; s uniquement en ms
+const UNITES_POOL = {
+  "m": ["k", "h", "da", "d", "c", "m"],
+  "g": ["k", "h", "da", "d", "c", "m"],
+  "L": ["k", "h", "da", "d", "c", "m"],
+  "s": ["m"]
+};
+
+function genDec1(){ let n; do { n = rnd(11, 99); } while (n % 10 === 0); return String(Math.floor(n / 10)) + "," + String(n % 10); }
+function genInt2(){ let n; do { n = rnd(11, 99); } while (n % 10 === 0); return String(n); }
+function genCent(){ return genInt2() + "0"; }
+function genHund(){ return String(rnd(2, 9)) + "00"; }
+function genZeroVirg(){ let n; do { n = rnd(15, 95); } while (n % 10 === 0); return "0," + String(n); }
+const GENS = [genDec1, genInt2, genCent, genHund, genZeroVirg];
+
+const NB_CONV = 13;
+let CONVDEFS = [];
+
+function tirerConversions(){
+  // tous les couples possibles
+  let couples = [];
+  Object.keys(UNITES_POOL).forEach(b => UNITES_POOL[b].forEach(p => couples.push({ pref: p, base: b })));
+  const ms = couples.find(c => c.base === "s");          // ms imposé
+  let autres = melanger(couples.filter(c => c.base !== "s"));
+  // garantir m, g, L présents
+  const choisis = [ms];
+  ["m", "g", "L"].forEach(b => { choisis.push(autres.find(c => c.base === b)); });
+  // compléter sans doublon jusqu'à NB_CONV
+  autres.forEach(c => {
+    if (choisis.length < NB_CONV && !choisis.some(x => x.pref === c.pref && x.base === c.base)) choisis.push(c);
+  });
+  return melanger(choisis.slice(0, NB_CONV)).map((c, i) => ({
+    id: "q" + (i + 2),
+    pref: c.pref, base: c.base,
+    gen: GENS[rnd(0, GENS.length - 1)],
+    label: "Conversion " + c.pref + c.base + " → " + c.base
+  }));
+}
+
+// Mise en forme décimale (pas de notation scientifique ici)
+function grouper(intP, fracP){
+  const i = intP.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F");
+  const f = fracP ? fracP.replace(/(\d{3})(?=\d)/g, "$1\u202F") : "";
+  return f ? i + "," + f : i;
+}
+function calcDec(mantStr, exp){
+  const s = mantStr.replace(",", ".");
+  const parts = s.split(".");
+  const brut = parts[0] + (parts[1] || "");
+  const digits = brut.replace(/^0+(?=\d)/, "");
+  const stripped = brut.length - digits.length;
+  const pp = parts[0].length + exp - stripped;
+  let intP, fracP;
+  if (pp <= 0){ intP = "0"; fracP = "0".repeat(-pp) + digits; }
+  else if (pp >= digits.length){ intP = digits + "0".repeat(pp - digits.length); fracP = ""; }
+  else { intP = digits.slice(0, pp); fracP = digits.slice(pp); }
+  fracP = fracP.replace(/0+$/, "");
+  return { dec: grouper(intP, fracP), val: parseFloat(s) * Math.pow(10, exp) };
+}
+
+const CONV = {};
+
+function construireQuestions(){
+  construireTableau();
+  CONVDEFS = tirerConversions();
+  const zone = document.getElementById("zone-questions");
+  let html = "";
+
+  // ---- Bloc Q1 : tableau ----
+  let cols = "";
+  for (let c = 0; c < NB_COL; c++) cols += '<td><div class="tslot" id="slot_nom_' + c + '"></div></td>';
+  let cols2 = "";
+  for (let c = 0; c < NB_COL; c++) cols2 += '<td><div class="tslot mono" id="slot_sym_' + c + '"></div></td>';
+  html +=
+    '<div class="qbloc" id="q1">' +
+      '<div class="qenonce"><span class="qnum star">★</span><span>Reconstitue le tableau des préfixes, du plus grand au plus petit.</span></div>' +
+      '<div class="qcont">' +
+        '<div class="qaide">Place les étiquettes pour reconstituer le tableau de conversion que tu as appris au collège. Clique sur une étiquette dans une banque, puis sur la case où la poser (ou la case d\'abord). Pour reprendre une étiquette, clique sur sa case.</div>' +
+        '<table class="prefixe-table"><tbody>' +
+          '<tr><td class="cell-fixe">Préfixe (nom)</td>' + cols + '</tr>' +
+          '<tr><td class="cell-fixe">Symbole</td>' + cols2 + '</tr>' +
+        '</tbody></table>' +
+        '<div class="banques">' +
+          '<div class="bank"><div class="bank-titre">Étiquettes — préfixes (noms)</div><div class="bank-zone" id="bank_nom"></div></div>' +
+          '<div class="bank"><div class="bank-titre">Étiquettes — symboles</div><div class="bank-zone" id="bank_sym"></div></div>' +
+        '</div>' +
+        '<div class="fb" id="fb_q1"></div>' +
+        '<div style="margin-top:10px">' +
+          '<button class="btn-v" id="btnv_q1" onclick="validerTableau()">Valider le tableau</button>' +
+          '<button class="btn-r" id="btnr_q1" onclick="retryTableau()">2<sup>e</sup> essai</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  // ---- Consigne des conversions (après la réglette, avant la 1re conversion) ----
+  html +=
+    '<div class="contexte">' +
+      'Pour chaque conversion, écris l\'égalité complète, vérifie avec le quiz, et corrige ta feuille au fur et à mesure.<br>' +
+      'Les nombres s\'écrivent avec le <strong>clavier scientifique</strong> à l\'écran ; les unités s\'écrivent au <strong>clavier (de l\'ordinateur)</strong>.<br><br>' +
+      '<em>De nouvelles valeurs et de nouvelles unités sont tirées au sort à chaque chargement de la page : tu peux recommencer autant de fois que tu veux pour t\'entraîner&nbsp;!</em>' +
+    '</div>';
+
+  // ---- Blocs conversions ----
+  CONVDEFS.forEach((def, idx) => {
+    const mantStr = def.gen();
+    const exp = PREFPOW[def.pref];
+    const f = calcDec(mantStr, exp);
+    const uPref = def.pref + def.base;
+    CONV[def.id] = {
+      affG: mantStr, valG: parseFloat(mantStr.replace(",", ".")),
+      uPref: uPref, uBase: def.base, valD: f.val,
+      corr: mantStr + " " + uPref + " = " + f.dec + " " + def.base,
+      fbAide: "Sers-toi de ta réglette : pour passer de « " + PREFNOM[def.pref] + " » (" + uPref +
+              ") à l'unité de base, compte les colonnes à franchir et décale la virgule d'autant."
+    };
+    html +=
+      '<div class="qbloc" id="' + def.id + '">' +
+        '<div class="qenonce"><span class="qnum">' + (idx + 1) + '</span>' +
+        '<span>Convertis <b>' + mantStr + "&nbsp;" + uPref + '</b> en <b>' + def.base + '</b>.</span></div>' +
+        '<div class="qcont">' +
+          '<div class="saisie-ligne">' +
+            '<div class="disp" id="dispG_' + def.id + '" title="Valeur de départ"></div>' +
+            '<input class="sunit" id="unitG_' + def.id + '" type="text" autocomplete="off" spellcheck="false">' +
+            '<span class="egal">=</span>' +
+            '<div class="disp" id="dispD_' + def.id + '" title="Valeur convertie"></div>' +
+            '<input class="sunit" id="unitD_' + def.id + '" type="text" autocomplete="off" spellcheck="false">' +
+          '</div>' +
+          '<div id="clav_' + def.id + '"></div>' +
+          '<div class="fb" id="fb_' + def.id + '"></div>' +
+          '<div style="margin-top:10px">' +
+            '<button class="btn-v" id="btnv_' + def.id + '" onclick="validerConv(\'' + def.id + '\')">Valider</button>' +
+            '<button class="btn-r" id="btnr_' + def.id + '" onclick="retryConv(\'' + def.id + '\')">2<sup>e</sup> essai</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+  zone.innerHTML = html;
+}
+
+// Identifiants et libellés (pour bilan et SCORM)
+const TOUS_CONV = () => CONVDEFS.map(d => d.id);
+const LABELS = {};
+const SCORM_IDS = {};
+
+// Clavier (sans ×10ˣ)
+const TOUCHES = [
+  { l: "7", t: "ch", v: "7" }, { l: "8", t: "ch", v: "8" }, { l: "9", t: "ch", v: "9" }, { l: "⌫", t: "del", v: "DEL" },
+  { l: "4", t: "ch", v: "4" }, { l: "5", t: "ch", v: "5" }, { l: "6", t: "ch", v: "6" }, { l: "C", t: "del", v: "CLR" },
+  { l: "1", t: "ch", v: "1" }, { l: "2", t: "ch", v: "2" }, { l: "3", t: "ch", v: "3" }, { l: ",", t: "ch", v: "," },
+  { l: "0", t: "ch", v: "0" }, { l: "00", t: "ch", v: "00" }, { l: ".", t: "ch", v: "." }, { l: " ", t: "void", v: "" }
+];
+const saisi = {}, actif = {}, fige = {};
+
+function construireClavier(qid){
+  const div = document.getElementById("clav_" + qid);
+  if (!div) return;
+  const wrap = document.createElement("div");
+  wrap.className = "clavier";
+  TOUCHES.forEach(t => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "k" + (t.t === "del" ? " k-del" : "");
+    b.textContent = t.l;
+    if (t.t === "void"){ b.disabled = true; b.style.visibility = "hidden"; }
+    else b.addEventListener("click", () => toucheClavier(qid, t.v));
+    wrap.appendChild(b);
+  });
+  div.innerHTML = ""; div.appendChild(wrap);
+}
+function toucheClavier(qid, val){
+  if (fige[qid]) return;
+  const c = actif[qid];
+  if (val === "DEL") saisi[qid][c] = saisi[qid][c].slice(0, -1);
+  else if (val === "CLR") saisi[qid][c] = "";
+  else saisi[qid][c] += val;
+  renderDisp(qid);
+}
+function renderDisp(qid){
+  ["g", "d"].forEach(c => {
+    const el = document.getElementById((c === "g" ? "dispG_" : "dispD_") + qid);
+    if (!el) return;
+    const cur = (!fige[qid] && actif[qid] === c)
+      ? '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>' : "";
+    el.innerHTML = saisi[qid][c] + cur;
+    el.classList.toggle("actif", !fige[qid] && actif[qid] === c);
+  });
+}
+function setActif(qid, c){ if (!fige[qid]){ actif[qid] = c; renderDisp(qid); } }
+
+function parseVal(raw){
+  try {
+    const s = raw.replace(/,/g, ".").replace(/\u202F/g, "").replace(/\s/g, "");
+    if (s === "") return NaN;
+    return parseFloat(s);
+  } catch (e){ return NaN; }
+}
+function normUnite(str){ return str.replace(/\s/g, "").replace(/\u03BC/g, "\u00B5"); }
+function egalRel(a, b){ if (isNaN(a) || isNaN(b)) return false; return Math.abs(a - b) <= 1e-9 * Math.abs(b); }
+
+const etat = {};  // pour les conversions : {resultat, tentative}
+
+function validerConv(qid){
+  const cfg = CONV[qid];
+  const t = etat[qid];
+  t.tentative++;
+  const vG = parseVal(saisi[qid].g);
+  const vD = parseVal(saisi[qid].d);
+  const uGraw = document.getElementById("unitG_" + qid).value.trim();
+  const uDraw = document.getElementById("unitD_" + qid).value.trim();
+  const uG = normUnite(uGraw), uD = normUnite(uDraw);
+  const repEleve = saisi[qid].g + " " + uGraw + " = " + saisi[qid].d + " " + uDraw;
+
+  const gValOk = egalRel(vG, cfg.valG), gUniOk = (uG === cfg.uPref);
+  const dValOk = egalRel(vD, cfg.valD), dUniOk = (uD === cfg.uBase);
+  const isOk = gValOk && gUniOk && dValOk && dUniOk;
+
+  const dispG = document.getElementById("dispG_" + qid), dispD = document.getElementById("dispD_" + qid);
+  const uinpG = document.getElementById("unitG_" + qid), uinpD = document.getElementById("unitD_" + qid);
+  const fb = document.getElementById("fb_" + qid);
+  const btnv = document.getElementById("btnv_" + qid), btnr = document.getElementById("btnr_" + qid);
+  const bloc = document.getElementById(qid);
+
+  fige[qid] = true; renderDisp(qid);
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => b.disabled = true);
+  uinpG.disabled = true; uinpD.disabled = true;
+
+  if (isOk){
+    dispG.classList.add("ok"); uinpG.classList.add("ok"); dispD.classList.add("ok"); uinpD.classList.add("ok");
+    fb.className = "fb ok"; fb.innerHTML = "&#10003; Exact ! " + cfg.corr + "."; fb.style.display = "block";
+    t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add("warn-bloc"); fb.className = "fb ko";
+    let msg = "";
+    if (!gValOk || !gUniOk){
+      if (!gValOk) dispG.classList.add("ko");
+      if (!gUniOk) uinpG.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "&#10007; Recopie d'abord, à gauche du signe =, la valeur de départ avec son unité, exactement comme dans l'énoncé."
+        : "&#10007; À gauche, il fallait écrire : " + cfg.affG + " " + cfg.uPref + ". &mdash; Réponse attendue : " + cfg.corr;
+    } else if (!dValOk){
+      dispD.classList.add("ko"); if (!dUniOk) uinpD.classList.add("ko");
+      msg = (t.tentative === 1) ? "&#10007; " + cfg.fbAide
+                                : "&#10007; La valeur convertie est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    } else {
+      uinpD.classList.add("ko");
+      msg = (t.tentative === 1) ? "La valeur convertie est correcte, mais vérifie l'unité d'arrivée."
+                                : "&#10007; L'unité d'arrivée est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    }
+    fb.innerHTML = msg; fb.style.display = "block";
+    if (t.tentative === 1){ btnv.disabled = true; btnr.style.display = "inline-block"; }
+    else {
+      fb.className = "fb ko2"; t.resultat = "ko";
+      fb.innerHTML += (EN_CLASSE ? RELANCE_PROF : "");
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  verifierFin();
+}
+
+function retryConv(qid){
+  fige[qid] = false;
+  ["dispG_", "dispD_"].forEach(p => document.getElementById(p + qid).classList.remove("ok", "ko"));
+  ["unitG_", "unitD_"].forEach(p => { const f = document.getElementById(p + qid); f.classList.remove("ok", "ko"); f.disabled = false; });
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => { if (b.textContent.trim() !== "") b.disabled = false; });
+  document.getElementById("fb_" + qid).style.display = "none";
+  document.getElementById("btnr_" + qid).style.display = "none";
+  document.getElementById("btnv_" + qid).disabled = false;
+  document.getElementById(qid).classList.remove("warn-bloc");
+  renderDisp(qid);
+}
+
+// ============================================================
+// Scores (en points, /20) et bilan
+// ============================================================
+const TOTAL_POINTS = 20;
+
+function calculerScores(){
+  let n1 = tablePts1, n2 = tablePtsFinal;   // points du tableau
+  TOUS_CONV().forEach(id => {
+    const r = etat[id].resultat;
+    if (r === "ok1"){ n1 += 1; n2 += 1; }
+    else if (r === "ok2"){ n2 += 1; }
+  });
+  return { n1: n1, n2: n2 };
+}
+
+function verifierFin(){
+  const conversFini = TOUS_CONV().every(id => etat[id].resultat !== null);
+  if (tableDone && conversFini) afficherBilan();
+}
+
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById("bilan-n1").textContent = fmtPts(sc.n1) + " / " + TOTAL_POINTS;
+  document.getElementById("bilan-n2").textContent = fmtPts(sc.n2) + " / " + TOTAL_POINTS;
+  document.getElementById("bilan").style.display = "block";
+  const fini = tableDone && TOUS_CONV().every(id => etat[id].resultat !== null);
+  if (fini) scormReport(sc.n1);          // note officielle = Note 1
+}
+
+// ============================================================
+// SCORM 1.2 — remontée Note 1 + question par question (/20)
+// ============================================================
+var scormAPI = null, scormInit = false, scormNbInter = 0;
+function scormFindAPI(win){ let n = 0; while (win && !win.API && n < 10){ if (win.parent && win.parent !== win) win = win.parent; else break; n++; } return (win && win.API) ? win.API : null; }
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if (!scormAPI && window.opener) scormAPI = scormFindAPI(window.opener);
+    if (scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL_POINTS));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS */ }
+}
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if (!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+// Remontée dédiée au tableau de la réglette : pesée 7 points (la réglette reste telle quelle, scorée par case)
+function scormInteractionTableau(idStr, ok, repEleve, pts){
+  try{
+    if (!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", idStr);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai 1]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "7");
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", idStr);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "7");
+    scormAPI.LMSSetValue(po + "score.raw", String(pts));
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+function scormReport(note){
+  try{ if (!scormInit) return; scormAPI.LMSSetValue("cmi.core.score.raw", String(note)); scormAPI.LMSSetValue("cmi.core.lesson_status", "completed"); scormAPI.LMSCommit(""); }catch(e){}
+}
+function scormEnd(){ try{ if (scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){} }
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+// ============================================================
+// Init
+// ============================================================
+window.addEventListener("DOMContentLoaded", () => {
+  construireQuestions();
+  // libellés + ids SCORM des conversions (réglette : symbole identique au nom de domaine)
+  CONVDEFS.forEach(d => {
+    etat[d.id] = { resultat: null, tentative: 0 };
+    saisi[d.id] = { g: "", d: "" }; actif[d.id] = "g"; fige[d.id] = false;
+    LABELS[d.id] = d.label;
+    SCORM_IDS[d.id] = "convertir_" + d.pref + d.base + "_vers_" + d.base;
+  });
+  // clavier + sélection des cases pour les conversions
+  CONVDEFS.forEach(d => {
+    construireClavier(d.id);
+    document.getElementById("dispG_" + d.id).addEventListener("click", () => setActif(d.id, "g"));
+    document.getElementById("dispD_" + d.id).addEventListener("click", () => setActif(d.id, "d"));
+    renderDisp(d.id);
+  });
+  // tableau : clics sur les cases
+  for (let c = 0; c < NB_COL; c++){
+    document.getElementById("slot_nom_" + c).addEventListener("click", () => clicSlot(c, "nom"));
+    document.getElementById("slot_sym_" + c).addEventListener("click", () => clicSlot(c, "sym"));
+  }
+  rendreBanque(); rendreSlots();
+  scormStart();
+});
+</script>
+</body>
+</html>
