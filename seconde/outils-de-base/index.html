@@ -12,76 +12,85 @@
   :root{
     --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
     --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
-    --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
-    --eval:#1f6b54;--edl:#5b2a4e;
-    --video:#c2c6cb;--cours:#9aa1a8;--fonce:#2c333a;
+    --r:6px;--eval:#1f6b54;--edl:#5b2a4e;
+    --video:#c2c6cb;--cours:#9aa1a8;--doux:#5a5346;
   }
   *{box-sizing:border-box}
   body{
     font-family:'Source Serif 4',Georgia,serif;
     background:var(--fond); color:var(--texte); margin:0;
-    padding:2.4rem 1rem 4rem; line-height:1.62; font-size:1.02rem;
+    padding:1.8rem 1rem 3rem; line-height:1.5; font-size:.94rem;
   }
-  .page{max-width:47rem; margin:0 auto; background:var(--blanc);
+  .page{max-width:72rem; margin:0 auto; background:var(--blanc);
     border:1px solid var(--gris-l); border-radius:var(--r);
-    padding:2.2rem 2.1rem 2.6rem}
+    padding:1.8rem 2rem 2rem}
 
-  header{border-bottom:3px solid var(--or); padding-bottom:1.1rem; margin-bottom:1.6rem}
+  header{border-bottom:3px solid var(--or); padding-bottom:.85rem; margin-bottom:1.2rem}
   .h-phase{display:inline-block; background:var(--or); color:var(--bleu);
-    font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-    padding:2px 9px; border-radius:999px; white-space:nowrap; margin-bottom:.7rem}
-  h1{color:var(--bleu); font-size:1.95rem; line-height:1.18; margin:0 0 .3rem;
+    font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    padding:2px 9px; border-radius:999px; white-space:nowrap; margin-bottom:.55rem}
+  h1{color:var(--bleu); font-size:1.7rem; line-height:1.15; margin:0 0 .2rem;
      font-weight:700}
-  .sous-titre{font-size:1.04rem; color:#5a5346; margin:0}
+  .sous-titre{font-size:.98rem; color:var(--doux); margin:0}
 
   a{color:var(--bleu-cl); text-decoration:none;
-    border-bottom:1px solid rgba(44,111,173,.3)}
+    border-bottom:1px solid rgba(44,111,173,.28)}
   a:hover{color:var(--bleu); border-bottom-color:var(--bleu)}
   a:focus-visible{outline:2px solid var(--or); outline-offset:2px; border-radius:2px}
 
+  /* Bandeau d'introduction : pleine largeur, deux colonnes de texte */
   .intro{background:var(--fond); border-left:4px solid var(--or);
-    border-radius:0 var(--r) var(--r) 0; padding:1rem 1.25rem; font-size:.97rem}
-  .intro p{margin:.5rem 0}
-  .intro p:first-child{margin-top:0}
-  .intro p:last-child{margin-bottom:0}
-  .playlist{margin:1.4rem 0 0}
+    border-radius:0 var(--r) var(--r) 0; padding:.85rem 1.1rem; font-size:.9rem;
+    color:var(--doux)}
+  .intro-cols{columns:2; column-gap:2.2rem}
+  .intro p{margin:0 0 .5rem; break-inside:avoid}
+  .liens-haut{display:flex; flex-wrap:wrap; gap:1.4rem; margin-top:.6rem;
+    padding-top:.6rem; border-top:1px solid var(--gris-l); font-size:.92rem;
+    color:var(--texte)}
 
-  /* Bandeaux de section — logique de couleurs de la charte */
-  h2{display:flex; align-items:center; gap:.6rem; font-size:1.28rem; font-weight:700;
-     margin:2.8rem 0 0; padding:.65rem 1rem; border-radius:var(--r);
+  /* Grille principale */
+  .colonnes{display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; margin-top:1.6rem}
+  .colonnes>section{min-width:0}
+
+  h2{display:flex; align-items:center; gap:.5rem; font-size:1.08rem; font-weight:700;
+     margin:0; padding:.5rem .8rem; border-radius:var(--r);
      background:var(--bleu); color:var(--blanc)}
   h2.bases{background:var(--edl)}
-  h2 .ico{font-size:1.2rem; line-height:1}
-  .chapeau{color:#5a5346; font-size:.96rem; margin:1rem 0 1.6rem}
+  h2 .ico{font-size:1.05rem; line-height:1}
+  .chapeau{color:var(--doux); font-size:.88rem; margin:.7rem 0 1.1rem}
 
-  h3{display:flex; align-items:center; gap:.5rem; font-size:1.03rem; font-weight:700;
-     color:var(--bleu); margin:2rem 0 .6rem; padding-left:.7rem;
-     border-left:4px solid var(--gris-m); border-radius:2px}
+  h3{display:flex; align-items:center; gap:.4rem; font-size:.9rem; font-weight:700;
+     color:var(--bleu); margin:1.15rem 0 .35rem; padding-left:.55rem;
+     border-left:3px solid var(--gris-m)}
   h3.s-edl{border-left-color:var(--edl)}
   h3.s-video{border-left-color:var(--video)}
   h3.s-cours{border-left-color:var(--cours)}
   h3.s-sf{border-left-color:var(--bleu-cl)}
-  h3 .ico{font-size:1.05rem; line-height:1}
+  h3 .ico{font-size:.95rem; line-height:1}
 
-  ul{list-style:none; padding:0; margin:0; display:grid; gap:.45rem}
-  li{background:var(--blanc); border:1px solid var(--gris-l); border-radius:var(--r);
-     padding:.65rem .85rem; display:flex; gap:.6rem}
-  li:hover{border-color:var(--gris-m)}
-  .ico-li{flex:0 0 1.35rem; font-size:1rem; line-height:1.6}
+  ul{list-style:none; padding:0; margin:0}
+  li{display:flex; gap:.45rem; padding:.32rem 0 .32rem .55rem;
+     border-bottom:1px solid var(--gris-l)}
+  li:last-child{border-bottom:0}
+  .ico-li{flex:0 0 1.15rem; font-size:.92rem; line-height:1.55}
   .corps{min-width:0}
-  .badge{display:inline-block; background:var(--fond); color:#6b6355;
-    font-size:.69rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-    padding:.1rem .45rem; border-radius:4px; margin-left:.45rem; vertical-align:.1em;
+  .badge{color:var(--gris-m); font-size:.72rem; font-weight:700; letter-spacing:.03em;
+    text-transform:uppercase; margin-left:.35rem;
     font-family:'JetBrains Mono',ui-monospace,monospace}
-  .dl{font-size:.86rem; color:#6b6355}
-  .dl a{color:#6b6355; border-bottom-color:rgba(107,99,85,.35)}
-  .note{display:block; color:#5a5346; font-size:.92rem; margin-top:.28rem}
+  .dl{font-size:.8rem; color:var(--doux)}
+  .dl a{color:var(--doux); border-bottom-color:rgba(90,83,70,.3)}
+  .note{display:block; color:var(--doux); font-size:.85rem; margin-top:.15rem}
+  .vide{color:var(--doux); font-size:.9rem; font-style:italic; margin:1rem 0 0}
 
-  footer{margin-top:3rem; padding-top:1.1rem; border-top:1px solid var(--gris-l);
-    font-size:.92rem; color:#6b6355}
+  footer{margin-top:2.4rem; padding-top:.9rem; border-top:1px solid var(--gris-l);
+    font-size:.88rem; color:var(--doux)}
+
+  @media(max-width:900px){
+    .colonnes{grid-template-columns:1fr; gap:2rem}
+    .intro-cols{columns:1}
+  }
   @media(max-width:520px){
-    .page{padding:1.5rem 1.05rem 2rem} h1{font-size:1.55rem}
-    h2{font-size:1.12rem; padding:.55rem .8rem}
+    .page{padding:1.3rem 1rem 1.6rem} h1{font-size:1.45rem}
   }
 </style>
 </head>
@@ -95,109 +104,110 @@
 </header>
 
 <div class="intro">
-<p>Ces ressources sont conçues pour une classe inversée : la capsule vidéo se regarde avant
-la séance, le temps de classe étant consacré aux activités et aux exercices. Les quiz ne
-servent pas à évaluer mais à apprendre — ils sont faits pour être refaits.</p>
-
-<p>Les quiz sont des fichiers HTML autonomes : ils s'ouvrent dans un navigateur, sans
-installation ni compte, et n'enregistrent aucun résultat. Les QCM de vérification de
-visionnage sont des fichiers XML, à importer dans Pronote ou dans Moodle.</p>
-
-<p>Pour chaque quiz, le titre ouvre le fichier pour l'essayer ; le lien
-« télécharger » à côté l'enregistre sur votre ordinateur.</p>
-
-<p>📡 <a href="../../methode/" target="_blank" rel="noopener">Comment utiliser ces ressources</a></p>
+  <div class="intro-cols">
+    <p>Ces ressources sont conçues pour une classe inversée : la capsule vidéo se regarde avant la séance, le temps de classe étant consacré aux activités et aux exercices. Les quiz ne servent pas à évaluer mais à apprendre — ils sont faits pour être refaits.</p>
+    <p>Les quiz sont des fichiers HTML autonomes : ils s'ouvrent dans un navigateur, sans installation ni compte, et n'enregistrent aucun résultat. Les QCM de vérification de visionnage sont des fichiers XML, à importer dans Pronote ou dans Moodle.</p>
+    <p>Pour chaque quiz, le titre ouvre le fichier pour l'essayer ; le lien « télécharger » à côté l'enregistre sur votre ordinateur.</p>
+  </div>
+  <p class="liens-haut">
+    <span>📡 <a href="../../methode/" target="_blank" rel="noopener">Comment utiliser ces ressources</a></span>
+    <span>👀 <a href="https://www.youtube.com/playlist?list=PLe8tIQRcJeF4" target="_blank" rel="noopener">Toutes les capsules vidéo du chapitre (playlist YouTube)</a></span>
+  </p>
 </div>
 
-<p class="playlist">👀 <a href="https://www.youtube.com/playlist?list=PLe8tIQRcJeF4" target="_blank" rel="noopener">Toutes les capsules vidéo de ce chapitre (playlist YouTube)</a></p>
+<div class="colonnes">
 
-<h2 class="bases"><span class="ico" aria-hidden="true">🧱</span>Révisions — les acquis du collège</h2>
-<p class="chapeau">Cette partie ne relève pas du programme de Seconde : elle réactive les compétences du
-collège nécessaires pour comprendre la suite, afin que tous les élèves démarrent avec les
-mêmes bases.</p>
+<section>
+  <h2 class="bases"><span class="ico" aria-hidden="true">🧱</span>Révisions — les acquis du collège</h2>
+  <p class="chapeau">Cette partie ne relève pas du programme de Seconde : elle réactive les compétences du collège nécessaires pour comprendre la suite, afin que tous les élèves démarrent avec les mêmes bases.</p>
 
-<h3 class="s-edl"><span class="ico" aria-hidden="true">❓</span>Avant de commencer</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true">❓</span><div class="corps">
-    <a href="revisions/quiz-etat-des-lieux.html" target="_blank" rel="noopener">Quiz — État des lieux</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-etat-des-lieux.html" download>télécharger</a></span>
-    <span class="note">Balaie l'ensemble de ces compétences : chacun repère ce qu'il maîtrise déjà et ce qu'il doit retravailler.</span>
-  </div></li>
-</ul>
+  <h3 class="s-edl"><span class="ico" aria-hidden="true">❓</span>Avant de commencer</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true">❓</span><div class="corps">
+      <a href="revisions/quiz-etat-des-lieux.html" target="_blank" rel="noopener">Quiz — État des lieux</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-etat-des-lieux.html" download>télécharger</a></span>
+      <span class="note">Balaie l'ensemble de ces compétences : chacun repère ce qu'il maîtrise déjà et ce qu'il doit retravailler.</span>
+    </div></li>
+  </ul>
 
-<h3 class="s-video"><span class="ico" aria-hidden="true">👀</span>Les capsules vidéo</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-    <a href="https://www.youtube.com/watch?v=NwHemlvvyyM" target="_blank" rel="noopener">Révision 1 (vidéo) — Convertir des longueurs</a>
-    <span class="badge">YouTube</span>
-  </div></li>
-  <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-    <a href="https://www.youtube.com/watch?v=5YiIFecXjBE" target="_blank" rel="noopener">Révision 2 (vidéo) — Convertir des durées</a>
-    <span class="badge">YouTube</span>
-  </div></li>
-  <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-    <a href="revisions/qcm-videos-revisions1et2.xml" download>QCM Pronote — vérification du visionnage (révision 1 et 2)</a>
-    <span class="badge">XML — téléchargement</span>
-  </div></li>
-</ul>
+  <h3 class="s-video"><span class="ico" aria-hidden="true">👀</span>Les capsules vidéo</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
+      <a href="https://www.youtube.com/watch?v=NwHemlvvyyM" target="_blank" rel="noopener">Révision 1 (vidéo) — Convertir des longueurs</a>
+      <span class="badge">YouTube</span>
+    </div></li>
+    <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
+      <a href="https://www.youtube.com/watch?v=5YiIFecXjBE" target="_blank" rel="noopener">Révision 2 (vidéo) — Convertir des durées</a>
+      <span class="badge">YouTube</span>
+    </div></li>
+    <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
+      <a href="revisions/qcm-videos-revisions1et2.xml" download>QCM Pronote — vérification du visionnage (révision 1 et 2)</a>
+      <span class="badge">XML</span>
+    </div></li>
+  </ul>
 
-<h3><span class="ico" aria-hidden="true"></span>Activité</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-    <a href="revisions/quiz-proportionnalite-tableau.html" target="_blank" rel="noopener">Proportionnalité en tableau</a>
-    <span class="badge">HTML — consignes incluses</span>
-    <span class="dl">— <a href="revisions/quiz-proportionnalite-tableau.html" download>télécharger</a></span>
-  </div></li>
-</ul>
+  <h3><span class="ico" aria-hidden="true"></span>Activité</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
+      <a href="revisions/quiz-proportionnalite-tableau.html" target="_blank" rel="noopener">Proportionnalité en tableau</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-proportionnalite-tableau.html" download>télécharger</a></span>
+    </div></li>
+  </ul>
 
-<h3 class="s-cours"><span class="ico" aria-hidden="true">📖</span>La fiche de cours</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true">📄</span><div class="corps">
-    <a href="revisions/cours-bases-college.pdf" target="_blank" rel="noopener">Les bases du collège</a>
-    <span class="badge">PDF</span>
-  </div></li>
-</ul>
+  <h3 class="s-cours"><span class="ico" aria-hidden="true">📖</span>La fiche de cours</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true">📄</span><div class="corps">
+      <a href="revisions/cours-bases-college.pdf" target="_blank" rel="noopener">Les bases du collège</a>
+      <span class="badge">PDF</span>
+    </div></li>
+  </ul>
 
-<h3 class="s-cours"><span class="ico" aria-hidden="true">🧠</span>Quiz « Apprendre » — les connaissances</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
-    <a href="revisions/quiz-grandeurs-unites-mesures.html" target="_blank" rel="noopener">Grandeurs, unités et mesures</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-grandeurs-unites-mesures.html" download>télécharger</a></span>
-  </div></li>
-</ul>
+  <h3 class="s-cours"><span class="ico" aria-hidden="true">🧠</span>Quiz « Apprendre » — les connaissances</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
+      <a href="revisions/quiz-grandeurs-unites-mesures.html" target="_blank" rel="noopener">Grandeurs, unités et mesures</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-grandeurs-unites-mesures.html" download>télécharger</a></span>
+    </div></li>
+  </ul>
 
-<h3><span class="ico" aria-hidden="true"></span>Quiz mixtes — connaissances et savoir-faire</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-    <a href="revisions/quiz-conversions-tableau.html" target="_blank" rel="noopener">Conversions avec le tableau</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-conversions-tableau.html" download>télécharger</a></span>
-  </div></li>
-  <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-    <a href="revisions/quiz-conversions-durees.html" target="_blank" rel="noopener">Conversions de durées</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-conversions-durees.html" download>télécharger</a></span>
-  </div></li>
-</ul>
+  <h3><span class="ico" aria-hidden="true"></span>Quiz mixtes — connaissances et savoir-faire</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
+      <a href="revisions/quiz-conversions-tableau.html" target="_blank" rel="noopener">Conversions avec le tableau</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-conversions-tableau.html" download>télécharger</a></span>
+    </div></li>
+    <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
+      <a href="revisions/quiz-conversions-durees.html" target="_blank" rel="noopener">Conversions de durées</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-conversions-durees.html" download>télécharger</a></span>
+    </div></li>
+  </ul>
 
-<h3 class="s-sf"><span class="ico" aria-hidden="true">🔥</span>Quiz d'entraînement — les savoir-faire</h3>
-<ul>
-  <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-    <a href="revisions/quiz-puissances-de-10.html" target="_blank" rel="noopener">Puissances de 10 : les formules</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-puissances-de-10.html" download>télécharger</a></span>
-  </div></li>
-  <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-    <a href="revisions/quiz-isoler-une-variable-niveau-0.html" target="_blank" rel="noopener">Isoler une variable — niveau 0</a>
-    <span class="badge">HTML</span>
-    <span class="dl">— <a href="revisions/quiz-isoler-une-variable-niveau-0.html" download>télécharger</a></span>
-  </div></li>
-</ul>
+  <h3 class="s-sf"><span class="ico" aria-hidden="true">🔥</span>Quiz d'entraînement — les savoir-faire</h3>
+  <ul>
+    <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
+      <a href="revisions/quiz-puissances-de-10.html" target="_blank" rel="noopener">Puissances de 10 : les formules</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-puissances-de-10.html" download>télécharger</a></span>
+    </div></li>
+    <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
+      <a href="revisions/quiz-isoler-une-variable-niveau-0.html" target="_blank" rel="noopener">Isoler une variable — niveau 0</a>
+      <span class="badge">HTML</span>
+      <span class="dl">— <a href="revisions/quiz-isoler-une-variable-niveau-0.html" download>télécharger</a></span>
+    </div></li>
+  </ul>
+</section>
 
-<h2><span class="ico" aria-hidden="true"></span>Compétences de Seconde</h2>
-<p class="chapeau">Section en cours de construction.</p>
+<section>
+  <h2><span class="ico" aria-hidden="true"></span>Compétences de Seconde</h2>
+  <p class="vide">Section en cours de construction.</p>
+</section>
+
+</div>
 
 <footer>
 <p>Z. Lechevalier, professeure de physique-chimie en lycée.<br>
