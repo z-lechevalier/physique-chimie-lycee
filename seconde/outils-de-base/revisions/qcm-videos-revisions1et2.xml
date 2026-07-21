@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<!--Titre du QCM-->
+	<question type="category">
+		<category>
+			<text><![CDATA[<infos><name>**2PC0 QCM Révision 1 et 2</name><answernumbering>123</answernumbering><niveau>2NDE</niveau><matiere>PHYSIQUE-CHIMIE</matiere></infos>]]></text>
+		</category>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans le nombre 3,7, quel est le chiffre des unités ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Le 3 (le dernier avant la virgule)]]></text>
+			<feedback>
+				<text><![CDATA[Le chiffre des unités est le dernier avant la virgule, donc le 3.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Le 7 (le premier après la virgule)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Le 7, car c'est le dernier chiffre écrit]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On ne peut pas le savoir sans le tableau]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Combien de centimètres y a-t-il dans 7 mètres ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[70 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[7000 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[700 cm]]></text>
+			<feedback>
+				<text><![CDATA[Du mètre au centimètre, on va vers une unité plus petite : 7 m = 700 cm.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[0,07 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans un tableau de conversion, combien de chiffres écrit-on dans une même colonne ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Deux chiffres si le nombre est grand]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Un seul chiffre par colonne]]></text>
+			<feedback>
+				<text><![CDATA[Règle de base : un seul chiffre par colonne, toujours.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Autant de chiffres que nécessaire]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Cela dépend de l'unité de départ]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Le nombre est placé et la virgule déplacée vers la colonne d'arrivée. Que fait-on des cases restées vides entre les deux unités ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On les remplit avec des virgules]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On les laisse vides dans le tableau]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On y recopie le chiffre des unités]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On les remplit avec des zéros]]></text>
+			<feedback>
+				<text><![CDATA[On complète les cases vides entre les deux unités par des zéros.]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">On convertit 45 millimètres en centimètres. Quel est le résultat ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[450 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[4,5 cm]]></text>
+			<feedback>
+				<text><![CDATA[On convertit vers une unité plus grande (mm vers cm), le résultat est plus petit : 45 mm = 4,5 cm.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[0,45 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[4500 cm]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Combien de secondes y a-t-il dans 3 minutes ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[60 secondes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[90 secondes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[180 secondes]]></text>
+			<feedback>
+				<text><![CDATA[1 min = 60 s, donc 3 min = 3 × 60 = 180 s.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[300 secondes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Pour convertir des secondes en minutes, quelle opération faut-il faire ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Diviser par 60 (unité plus grande)]]></text>
+			<feedback>
+				<text><![CDATA[La minute est plus grande que la seconde, on divise par 60.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Multiplier par 60 (unité plus grande)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Diviser par 100 comme pour les longueurs]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Ajouter 60 au nombre de secondes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Léa affirme que 2,2 heures font 2 h et 20 min. A-t-elle raison ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Oui : le 2 après la virgule donne 20 min]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Non : 2,2 h font en réalité 2 h 02]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Oui : on lit directement 2 h 20 min]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Non : 0,2 h font 12 min, donc 2 h 12]]></text>
+			<feedback>
+				<text><![CDATA[Piège décimal : 0,2 h n'est pas 20 min. On convertit : 0,2 × 60 = 12 min, soit 2 h 12.]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">On convertit 150 minutes en heures et minutes. Quel est le résultat ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[2 h et 30 min]]></text>
+			<feedback>
+				<text><![CDATA[150 = 2 × 60 + 30, soit 2 h et 30 min. La réponse 2 h 50 est le piège à éviter (0,5 h n'est pas 50 min).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[1 h et 50 min]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[2 h et 50 min]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[2 h et 5 min]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Exprime 4h05 en minutes.</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[405 minutes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[245 minutes]]></text>
+			<feedback>
+				<text><![CDATA[4 × 60 = 240 min, puis + 5 = 245 min. Le 405 vient de lire 4h05 comme le nombre 405 ; le 240 oublie les 5 minutes.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[240 minutes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[90 minutes]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+</quiz>
