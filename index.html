@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Physique-chimie au lycée — Z. Lechevalier</title>
-<meta name="description" content="Ressources de physique-chimie pour le lycée : capsules vidéo, quiz d'entraînement, activités et cours, en accès libre pour les collègues.">
+<meta name="description" content="Ressources de physique-chimie pour le lycée : vidéos, quiz d'entraînement, activités et cours, en accès libre pour les collègues.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
   :root{
     --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
     --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
-    --r:6px;--edl:#5b2a4e;--doux:#5a5346;
+    --r:6px;--doux:#5a5346;
   }
   *{box-sizing:border-box}
   body{
@@ -40,18 +40,34 @@
   .intro p{margin:0 0 .55rem}
   .intro p:last-child{margin-bottom:0}
 
-  h2{font-size:1.08rem; font-weight:700;
-     margin:1.8rem 0 0; padding:.5rem .8rem; border-radius:var(--r);
-     background:var(--bleu); color:var(--blanc)}
-  h2.seconde{background:var(--edl)}
+  .nav-haut{margin:0 0 1.8rem; line-height:1.9}
 
-  ul{list-style:none; padding:0; margin:.8rem 0 0}
+  /* Niveau : même pastille dorée que sur les pages de chapitre */
+  h2{margin:2rem 0 0}
+  h2 span{display:inline-block; background:var(--or); color:var(--bleu);
+    font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    padding:2px 9px; border-radius:999px; white-space:nowrap}
+
+  ul{list-style:none; padding:0; margin:.7rem 0 0}
   li{padding:.45rem 0 .45rem .55rem; border-bottom:1px solid var(--gris-l)}
   li:last-child{border-bottom:0}
   li a{font-weight:600}
   .note{display:block; color:var(--doux); font-size:.86rem; margin-top:.1rem}
-  .vide{color:var(--doux); font-size:.9rem; font-style:italic; margin:.9rem 0 0;
+  .vide{color:var(--doux); font-size:.9rem; font-style:italic; margin:.7rem 0 0;
     padding-left:.55rem}
+
+  /* Bloc neuroéducation */
+  .fondement{margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--gris-l)}
+  .fondement h3{color:var(--bleu); font-size:1rem; font-weight:700; margin:0 0 .6rem}
+  .fondement p{margin:0 0 .7rem; font-size:.92rem}
+  .fondement figure{margin:1.2rem 0 1.4rem}
+  .fondement img{width:100%; border-radius:var(--r); display:block}
+  .fondement figcaption{font-size:.85rem; color:var(--doux); font-style:italic;
+    margin-top:.4rem}
+  .liens{list-style:none; padding:0; margin:.6rem 0 0}
+  .liens li{border-bottom:0; padding:.15rem 0 .15rem .55rem; font-size:.92rem}
+  .liens li a{font-weight:400}
+  .liens li::before{content:"→ "; color:var(--or); font-weight:700}
 
   footer{margin-top:2.6rem; padding-top:.9rem; border-top:1px solid var(--gris-l);
     font-size:.88rem; color:var(--doux)}
@@ -70,25 +86,56 @@
 </header>
 
 <div class="intro">
-  <p>Vous trouverez ici les ressources que j'utilise avec mes classes : capsules vidéo, quiz d'entraînement, activités et fiches de cours. Elles sont librement téléchargeables et réutilisables.</p>
+  <p>Vous trouverez ici les ressources que j'utilise avec mes classes : vidéos, quiz d'entraînement, activités et fiches de cours. Elles sont librement téléchargeables et réutilisables.</p>
   <p>Chaque chapitre suit la même architecture, pensée pour une classe inversée et fondée sur les principes de la recherche en neuroéducation. Le détail de la démarche est expliqué sur la page « <a href="methode/">Comment utiliser ces ressources</a> ».</p>
 </div>
 
-<p>
+<p class="nav-haut">
   📡 <a href="methode/">Comment utiliser ces ressources</a><br>
-  👀 <a href="https://www.youtube.com/@physique-chimie-lechevalier" target="_blank" rel="noopener">La chaîne YouTube — toutes les capsules vidéo</a>
+  👀 <a href="https://www.youtube.com/@physique-chimie-lechevalier" target="_blank" rel="noopener">La chaîne YouTube — toutes les vidéos</a>
 </p>
 
-<h2 class="seconde">Seconde</h2>
+<h2><span>Seconde</span></h2>
 <ul>
   <li>
-    <a href="seconde/outils-de-base/">Outils de base en physique-chimie</a>
-    <span class="note">Conversions, formules, matériel et pictogrammes de sécurité.</span>
+    <a href="seconde/outils-de-base/">Outils de base en physique-chimie : conversions, formules, matériel</a>
   </li>
 </ul>
 
-<h2>Première spécialité</h2>
+<h2><span>Première spécialité</span></h2>
 <p class="vide">Les chapitres de Première spécialité seront mis en ligne progressivement.</p>
+
+<div class="fondement">
+  <h3>Sur quoi tout cela repose</h3>
+
+  <p>Apprendre, c'est créer des connexions entre les neurones, puis les entretenir : une connaissance qui n'est jamais réactivée s'efface. C'est ce qui explique l'organisation de ces ressources — nombreuses, fractionnées, à reprendre à intervalles espacés — plutôt qu'un document unique qu'on lirait une fois.</p>
+
+  <figure>
+    <img src="images/neurones.png" alt="Trois images successives d'un même neurone : le réseau de connexions s'étend et se densifie d'une image à l'autre.">
+    <figcaption>Le même neurone à trois moments : les prolongements s'étendent et le réseau se densifie. C'est cela, un apprentissage.</figcaption>
+  </figure>
+
+  <p>Sans rien faire, on oublie très vite ce qu'on vient d'apprendre. Mais chaque réactivation fait remonter la courbe — et la redescente est un peu plus lente à chaque fois. Inutile de tout retenir du premier coup : il suffit de revenir au bon moment, un peu à chaque fois.</p>
+
+  <figure>
+    <img src="images/courbe-memoire.png" alt="Graphique comparant deux courbes de mémorisation dans le temps : sans révision, la courbe chute rapidement vers zéro ; avec révisions successives, elle remonte à chaque reprise et redescend de plus en plus lentement.">
+    <figcaption>La courbe de l'oubli, avec et sans réactivation.</figcaption>
+  </figure>
+
+  <p>C'est aussi ce que fait une jeune plante : on l'arrose souvent au début, puis on espace. À chaque réactivation, le souvenir s'enracine un peu plus — et si l'on cesse d'arroser, la plante meurt.</p>
+
+  <figure>
+    <img src="images/frise-plante.png" alt="Deux chemins partant d'une jeune pousse : en haut, réactivée, elle devient plante puis arbre ; en bas, délaissée, elle se fane et disparaît.">
+    <figcaption>Réviser, c'est arroser : souvent au début, puis de plus en plus espacé.</figcaption>
+  </figure>
+
+  <p>Je dois l'essentiel de cette approche à <strong>Steve Masson</strong>, professeur à l'Université du Québec à Montréal, où il dirige le Laboratoire de recherche en neuroéducation. Son livre <em>Activer ses neurones : pour mieux apprendre et enseigner</em> (Odile Jacob, 2020) expose sept principes issus de la recherche sur le cerveau, dont ceux qui structurent tout ce travail : activer les neurones à plusieurs reprises, à intervalles espacés, et s'entraîner à récupérer en mémoire plutôt qu'à relire.</p>
+
+  <ul class="liens">
+    <li><a href="https://www.youtube.com/@SteveMasson" target="_blank" rel="noopener">Steve Masson — Cerveau et apprentissage (YouTube)</a></li>
+    <li><a href="https://www.odilejacob.fr/catalogue/psychologie/education-pedagogie/activer-ses-neurones_9782738151506.php" target="_blank" rel="noopener">Le livre chez Odile Jacob</a></li>
+  </ul>
+</div>
 
 <footer>
 <p>Z. Lechevalier, professeure de physique-chimie en lycée.<br>
