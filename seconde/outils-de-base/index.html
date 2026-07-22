@@ -38,7 +38,6 @@
   a:hover{color:var(--bleu); border-bottom-color:var(--bleu)}
   a:focus-visible{outline:2px solid var(--or); outline-offset:2px; border-radius:2px}
 
-  /* Bandeau d'introduction : pleine largeur, deux colonnes de texte */
   .intro{background:var(--fond); border-left:4px solid var(--or);
     border-radius:0 var(--r) var(--r) 0; padding:.85rem 1.1rem; font-size:.9rem;
     color:var(--doux)}
@@ -48,7 +47,6 @@
     padding-top:.6rem; border-top:1px solid var(--gris-l); font-size:.92rem;
     color:var(--texte)}
 
-  /* Grille principale */
   .colonnes{display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; margin-top:1.6rem}
   .colonnes>section{min-width:0}
 
@@ -76,11 +74,20 @@
   li:last-child{border-bottom:0}
   .ico-li{flex:0 0 1.15rem; font-size:.92rem; line-height:1.55}
   .corps{min-width:0}
-  .badge{color:var(--gris-m); font-size:.72rem; font-weight:700; letter-spacing:.03em;
-    text-transform:uppercase; margin-left:.35rem;
-    font-family:'JetBrains Mono',ui-monospace,monospace}
-  .dl{font-size:.8rem; color:var(--doux)}
-  .dl a{color:var(--doux); border-bottom-color:rgba(90,83,70,.3)}
+
+  /* Pastilles de format : le lien est porté par la pastille */
+  .badge{display:inline-block; font-size:.72rem; font-weight:700; letter-spacing:.03em;
+    margin-left:.35rem; padding:1px 8px; border-radius:999px;
+    font-family:'JetBrains Mono',ui-monospace,monospace; white-space:nowrap;
+    text-decoration:none; vertical-align:.05em;
+    color:var(--bleu-cl); background:rgba(44,111,173,.09);
+    border:1px solid rgba(44,111,173,.3)}
+  a.badge:hover{background:var(--bleu-cl); color:var(--blanc); border-color:var(--bleu-cl)}
+  a.badge:focus-visible{outline:2px solid var(--or); outline-offset:2px}
+  .badge-dl{color:var(--doux); background:rgba(90,83,70,.07);
+    border-color:rgba(90,83,70,.28)}
+  a.badge-dl:hover{background:var(--doux); color:var(--blanc); border-color:var(--doux)}
+
   .note{display:block; color:var(--doux); font-size:.85rem; margin-top:.15rem}
   .vide{color:var(--doux); font-size:.9rem; font-style:italic; margin:1rem 0 0}
 
@@ -108,8 +115,8 @@
 <div class="intro">
   <div class="intro-cols">
     <p>Ces ressources sont conçues pour une classe inversée : la capsule vidéo se regarde avant la séance, le temps de classe étant consacré aux activités et aux exercices. Les quiz ne servent pas à évaluer mais à apprendre — ils sont faits pour être refaits.</p>
-    <p>Les quiz sont des fichiers HTML autonomes : ils s'ouvrent dans un navigateur, sans installation ni compte, et n'enregistrent aucun résultat. Les QCM de vérification de visionnage sont des fichiers XML, à importer dans Pronote ou dans Moodle.</p>
-    <p>Pour chaque quiz, le titre ouvre le fichier pour l'essayer ; le lien « télécharger » à côté l'enregistre sur votre ordinateur.</p>
+    <p>Les quiz sont des fichiers HTML autonomes : ils s'ouvrent dans un navigateur, sans installation ni compte, et n'enregistrent aucun résultat. Les QCM de vérification de visionnage sont des fichiers XML, à importer dans Pronote ou dans Moodle. Les vidéos sont également proposées en version interactive au format H5P, à importer dans Moodle ou dans Éléa.</p>
+    <p>Les pastilles de format à droite de chaque titre portent les liens : elles ouvrent la ressource, ou l'enregistrent sur votre ordinateur lorsqu'elles indiquent « télécharger ».</p>
   </div>
   <p class="liens-haut">
     <span>📡 <a href="../../methode/" target="_blank" rel="noopener">Comment utiliser ces ressources</a></span>
@@ -126,9 +133,9 @@
   <h3 class="s-edl"><span class="ico" aria-hidden="true">❓</span>Avant de commencer</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">❓</span><div class="corps">
-      <a href="revisions/quiz-etat-des-lieux.html" target="_blank" rel="noopener">Quiz — État des lieux</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-etat-des-lieux.html" download>télécharger</a></span>
+      Quiz — État des lieux
+      <a class="badge" href="revisions/quiz-etat-des-lieux.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-etat-des-lieux.html" download>télécharger</a>
       <span class="note">Balaie l'ensemble de ces compétences : chacun repère ce qu'il maîtrise déjà et ce qu'il doit retravailler.</span>
     </div></li>
   </ul>
@@ -136,70 +143,70 @@
   <h3 class="s-video"><span class="ico" aria-hidden="true">👀</span>Les capsules vidéo</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-      <a href="https://www.youtube.com/watch?v=NwHemlvvyyM" target="_blank" rel="noopener">Révision 1 (vidéo) — Convertir des longueurs</a>
-      <span class="badge">YouTube</span>
+      Révision 1 — Convertir des longueurs
+      <a class="badge" href="https://www.youtube.com/watch?v=NwHemlvvyyM" target="_blank" rel="noopener">YouTube</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-      <a href="https://www.youtube.com/watch?v=5YiIFecXjBE" target="_blank" rel="noopener">Révision 2 (vidéo) — Convertir des durées</a>
-      <span class="badge">YouTube</span>
+      Révision 2 — Convertir des durées
+      <a class="badge" href="https://www.youtube.com/watch?v=5YiIFecXjBE" target="_blank" rel="noopener">YouTube</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="revisions/qcm-videos-revisions1et2.xml" download>QCM Pronote — vérification du visionnage (révision 1 et 2)</a>
-      <span class="badge">XML</span>
+      QCM Pronote — vérification du visionnage (révisions 1 et 2)
+      <a class="badge badge-dl" href="revisions/qcm-videos-revisions1et2.xml" download>télécharger · XML</a>
     </div></li>
   </ul>
 
   <h3><span class="ico" aria-hidden="true"></span>Activité</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="revisions/quiz-proportionnalite-tableau.html" target="_blank" rel="noopener">Proportionnalité en tableau</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-proportionnalite-tableau.html" download>télécharger</a></span>
+      Proportionnalité en tableau
+      <a class="badge" href="revisions/quiz-proportionnalite-tableau.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-proportionnalite-tableau.html" download>télécharger</a>
     </div></li>
   </ul>
 
   <h3 class="s-cours"><span class="ico" aria-hidden="true">📖</span>La fiche de cours</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">📄</span><div class="corps">
-      <a href="revisions/cours-bases-college.pdf" target="_blank" rel="noopener">Les bases du collège</a>
-      <span class="badge">PDF</span>
+      Les bases du collège
+      <a class="badge" href="revisions/cours-bases-college.pdf" target="_blank" rel="noopener">PDF</a>
     </div></li>
   </ul>
 
   <h3 class="s-cours"><span class="ico" aria-hidden="true">🧠</span>Quiz « Apprendre » — les connaissances</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
-      <a href="revisions/quiz-grandeurs-unites-mesures.html" target="_blank" rel="noopener">Grandeurs, unités et mesures</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-grandeurs-unites-mesures.html" download>télécharger</a></span>
+      Grandeurs, unités et mesures
+      <a class="badge" href="revisions/quiz-grandeurs-unites-mesures.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-grandeurs-unites-mesures.html" download>télécharger</a>
     </div></li>
   </ul>
 
   <h3><span class="ico" aria-hidden="true"></span>Quiz mixtes — connaissances et savoir-faire</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="revisions/quiz-conversions-tableau.html" target="_blank" rel="noopener">Conversions avec le tableau</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-conversions-tableau.html" download>télécharger</a></span>
+      Conversions avec le tableau
+      <a class="badge" href="revisions/quiz-conversions-tableau.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-conversions-tableau.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="revisions/quiz-conversions-durees.html" target="_blank" rel="noopener">Conversions de durées</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-conversions-durees.html" download>télécharger</a></span>
+      Conversions de durées
+      <a class="badge" href="revisions/quiz-conversions-durees.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-conversions-durees.html" download>télécharger</a>
     </div></li>
   </ul>
 
   <h3 class="s-sf"><span class="ico" aria-hidden="true">🔥</span>Quiz d'entraînement — les savoir-faire</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="revisions/quiz-puissances-de-10.html" target="_blank" rel="noopener">Puissances de 10 : les formules</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-puissances-de-10.html" download>télécharger</a></span>
+      Puissances de 10 : les formules
+      <a class="badge" href="revisions/quiz-puissances-de-10.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-puissances-de-10.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="revisions/quiz-isoler-une-variable-niveau-0.html" target="_blank" rel="noopener">Isoler une variable — niveau 0</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="revisions/quiz-isoler-une-variable-niveau-0.html" download>télécharger</a></span>
+      Isoler une variable — niveau 0
+      <a class="badge" href="revisions/quiz-isoler-une-variable-niveau-0.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="revisions/quiz-isoler-une-variable-niveau-0.html" download>télécharger</a>
     </div></li>
   </ul>
 </section>
@@ -210,43 +217,47 @@
 
   <h3 class="s-video"><span class="ico" aria-hidden="true">👀</span>Les capsules vidéo</h3>
   <ul>
-    <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-      <a href="🟥" target="_blank" rel="noopener">Vidéo 1 — Les préfixes et les puissances de 10</a>
-      <span class="badge">YouTube</span>
+   <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
+      Vidéo 1 — Les préfixes et les puissances de 10
+      <a class="badge" href="https://www.youtube.com/watch?v=d_W9OYcaR8I" target="_blank" rel="noopener">YouTube</a>
+      <a class="badge badge-dl" href="competences/video-prefixes.h5p" download>télécharger · H5P</a>
+      <span class="note">La version H5P est la vidéo interactive : les questions apparaissent en cours de lecture. À importer dans Moodle ou Éléa.</span>
     </div></li>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="competences/qcm-video-prefixes.xml" download>QCM Pronote — vérification du visionnage (vidéo 1)</a>
-      <span class="badge">XML</span>
+      QCM Pronote — vérification du visionnage (vidéo 1)
+      <a class="badge badge-dl" href="competences/qcm-video-prefixes.xml" download>télécharger · XML</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-      <a href="https://www.youtube.com/watch?v=Ew_riXazkAA" target="_blank" rel="noopener">Vidéo 2 — Isoler une grandeur dans une formule (1)</a>
-      <span class="badge">YouTube</span>
+      Vidéo 2 — Isoler une grandeur dans une formule (1)
+      <a class="badge" href="https://www.youtube.com/watch?v=Ew_riXazkAA" target="_blank" rel="noopener">YouTube</a>
+      <a class="badge badge-dl" href="competences/video-isoler-1.h5p" download>télécharger · H5P</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">👀</span><div class="corps">
-      <a href="https://www.youtube.com/watch?v=OnJzLGhC5VY" target="_blank" rel="noopener">Vidéo 3 — Isoler une grandeur dans une formule (2)</a>
-      <span class="badge">YouTube</span>
+      Vidéo 3 — Isoler une grandeur dans une formule (2)
+      <a class="badge" href="https://www.youtube.com/watch?v=OnJzLGhC5VY" target="_blank" rel="noopener">YouTube</a>
+      <a class="badge badge-dl" href="competences/video-isoler-2.h5p" download>télécharger · H5P</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="competences/qcm-videos-isoler-1et2.xml" download>QCM Pronote — vérification du visionnage (vidéos 2 et 3)</a>
-      <span class="badge">XML</span>
+      QCM Pronote — vérification du visionnage (vidéos 2 et 3)
+      <a class="badge badge-dl" href="competences/qcm-videos-isoler-1et2.xml" download>télécharger · XML</a>
     </div></li>
   </ul>
 
   <h3 class="s-act"><span class="ico" aria-hidden="true"></span>Les activités</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="competences/activite-proportionnalite-tableur.pdf" target="_blank" rel="noopener">Activité 2 — Proportionnalité et tableur</a>
-      <span class="badge">PDF</span>
+      Activité 2 — Proportionnalité et tableur
+      <a class="badge" href="competences/activite-proportionnalite-tableur.pdf" target="_blank" rel="noopener">PDF</a>
       <span class="note">Se fait sur ordinateur, avec la notice ci-dessous.</span>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🧮</span><div class="corps">
-      <a href="competences/notice-libreoffice-calc.pdf" target="_blank" rel="noopener">Notice LibreOffice Calc</a>
-      <span class="badge">PDF</span>
+      Notice LibreOffice Calc
+      <a class="badge" href="competences/notice-libreoffice-calc.pdf" target="_blank" rel="noopener">PDF</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true"></span><div class="corps">
-      <a href="competences/activite-decrypter-un-enonce.html" target="_blank" rel="noopener">Activité 3 — Décrypter un énoncé</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/activite-decrypter-un-enonce.html" download>télécharger</a></span>
+      Activité 3 — Décrypter un énoncé
+      <a class="badge" href="competences/activite-decrypter-un-enonce.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/activite-decrypter-un-enonce.html" download>télécharger</a>
       <span class="note">Consignes de rédaction incluses.</span>
     </div></li>
   </ul>
@@ -254,103 +265,103 @@
   <h3 class="s-cours"><span class="ico" aria-hidden="true">📖</span>La fiche de cours</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">📄</span><div class="corps">
-      <a href="competences/cours-outils-de-base.pdf" target="_blank" rel="noopener">Outils de base en physique-chimie</a>
-      <span class="badge">PDF</span>
+      Outils de base en physique-chimie
+      <a class="badge" href="competences/cours-outils-de-base.pdf" target="_blank" rel="noopener">PDF</a>
     </div></li>
   </ul>
 
   <h3 class="s-cours"><span class="ico" aria-hidden="true">🧠</span>Quiz « Apprendre » — les connaissances</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
-      <a href="competences/quiz-apprendre-prefixes.html" target="_blank" rel="noopener">Les préfixes</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-apprendre-prefixes.html" download>télécharger</a></span>
+      Les préfixes
+      <a class="badge" href="competences/quiz-apprendre-prefixes.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-apprendre-prefixes.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
-      <a href="competences/quiz-apprendre-pictogrammes.html" target="_blank" rel="noopener">Les pictogrammes de sécurité</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-apprendre-pictogrammes.html" download>télécharger</a></span>
+      Les pictogrammes de sécurité
+      <a class="badge" href="competences/quiz-apprendre-pictogrammes.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-apprendre-pictogrammes.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🧠</span><div class="corps">
-      <a href="competences/quiz-apprendre-materiel.html" target="_blank" rel="noopener">Le matériel de laboratoire</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-apprendre-materiel.html" download>télécharger</a></span>
+      Le matériel de laboratoire
+      <a class="badge" href="competences/quiz-apprendre-materiel.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-apprendre-materiel.html" download>télécharger</a>
     </div></li>
   </ul>
 
   <h3 class="s-sf"><span class="ico" aria-hidden="true">🔥</span>Échauffements — le raisonnement, sans rédaction</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="competences/quiz-echauffement-conversions-1.html" target="_blank" rel="noopener">Conversions 1</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-echauffement-conversions-1.html" download>télécharger</a></span>
+      Conversions 1
+      <a class="badge" href="competences/quiz-echauffement-conversions-1.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-echauffement-conversions-1.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="competences/quiz-echauffement-conversions-2.html" target="_blank" rel="noopener">Conversions 2</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-echauffement-conversions-2.html" download>télécharger</a></span>
+      Conversions 2
+      <a class="badge" href="competences/quiz-echauffement-conversions-2.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-echauffement-conversions-2.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="competences/quiz-echauffement-isoler-niveau-1.html" target="_blank" rel="noopener">Isoler une grandeur — niveau 1</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-echauffement-isoler-niveau-1.html" download>télécharger</a></span>
+      Isoler une grandeur — niveau 1
+      <a class="badge" href="competences/quiz-echauffement-isoler-niveau-1.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-echauffement-isoler-niveau-1.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">🕯️</span><div class="corps">
-      <a href="competences/quiz-echauffement-isoler-niveau-2.html" target="_blank" rel="noopener">Isoler une grandeur — niveau 2</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-echauffement-isoler-niveau-2.html" download>télécharger</a></span>
+      Isoler une grandeur — niveau 2
+      <a class="badge" href="competences/quiz-echauffement-isoler-niveau-2.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-echauffement-isoler-niveau-2.html" download>télécharger</a>
     </div></li>
   </ul>
 
   <h3 class="s-ex"><span class="ico" aria-hidden="true">📋</span>Exercices — rédaction comprise</h3>
   <ul>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-conversions-3.html" target="_blank" rel="noopener">Exercice 1 — Conversions 3 (valeurs déjà en puissances de 10)</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-conversions-3.html" download>télécharger</a></span>
+      Exercice 1 — Conversions 3 (valeurs déjà en puissances de 10)
+      <a class="badge" href="competences/quiz-exercice-conversions-3.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-conversions-3.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-conversions-4.html" target="_blank" rel="noopener">Exercice 2 — Conversions 4 (tous types mélangés)</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-conversions-4.html" download>télécharger</a></span>
+      Exercice 2 — Conversions 4 (tous types mélangés)
+      <a class="badge" href="competences/quiz-exercice-conversions-4.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-conversions-4.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-isoler-niveau-3.html" target="_blank" rel="noopener">Exercice 3 — Isoler une grandeur, niveau 3</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-isoler-niveau-3.html" download>télécharger</a></span>
+      Exercice 3 — Isoler une grandeur, niveau 3
+      <a class="badge" href="competences/quiz-exercice-isoler-niveau-3.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-isoler-niveau-3.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-isoler-mixte.html" target="_blank" rel="noopener">Exercice 4 — Isoler une grandeur, les trois niveaux mélangés</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-isoler-mixte.html" download>télécharger</a></span>
+      Exercice 4 — Isoler une grandeur, les trois niveaux mélangés
+      <a class="badge" href="competences/quiz-exercice-isoler-mixte.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-isoler-mixte.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-lecture-axes-1/" target="_blank" rel="noopener">Exercice 5 — Lecture d'axes 1</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-lecture-axes-1.zip">télécharger (zip)</a></span>
+      Exercice 5 — Lecture d'axes 1
+      <a class="badge" href="competences/quiz-exercice-lecture-axes-1/" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-lecture-axes-1.zip">télécharger · ZIP</a>
       <span class="note">Quiz en plusieurs pages : le téléchargement est un dossier compressé, à décompresser avant d'ouvrir <code>index.html</code>.</span>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-lecture-axes-2/" target="_blank" rel="noopener">Exercice 6 — Lecture d'axes 2</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-lecture-axes-2.zip">télécharger (zip)</a></span>
+      Exercice 6 — Lecture d'axes 2
+      <a class="badge" href="competences/quiz-exercice-lecture-axes-2/" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-lecture-axes-2.zip">télécharger · ZIP</a>
       <span class="note">Quiz en plusieurs pages : le téléchargement est un dossier compressé, à décompresser avant d'ouvrir <code>index.html</code>.</span>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-decrypter-un-enonce.html" target="_blank" rel="noopener">Exercice 7 — Décrypter un énoncé</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-decrypter-un-enonce.html" download>télécharger</a></span>
+      Exercice 7 — Décrypter un énoncé
+      <a class="badge" href="competences/quiz-exercice-decrypter-un-enonce.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-decrypter-un-enonce.html" download>télécharger</a>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-proportionnalite.html" target="_blank" rel="noopener">Exercice 8 — Proportionnalité</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-proportionnalite.html" download>télécharger</a></span>
-      <span class="note">Avec son <a href="competences/annexe-exercice-proportionnalite.pdf" target="_blank" rel="noopener">annexe (PDF)</a>, à imprimer ou à garder sous les yeux.</span>
+      Exercice 8 — Proportionnalité
+      <a class="badge" href="competences/quiz-exercice-proportionnalite.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-proportionnalite.html" download>télécharger</a>
+      <span class="note">Avec son annexe <a class="badge" href="competences/annexe-exercice-proportionnalite.pdf" target="_blank" rel="noopener">PDF</a>, à imprimer ou à garder sous les yeux.</span>
     </div></li>
     <li><span class="ico-li" aria-hidden="true">✏️</span><div class="corps">
-      <a href="competences/quiz-exercice-proportionnalite-tableur.html" target="_blank" rel="noopener">Exercice 9 — Proportionnalité au tableur</a>
-      <span class="badge">HTML</span>
-      <span class="dl">— <a href="competences/quiz-exercice-proportionnalite-tableur.html" download>télécharger</a></span>
+      Exercice 9 — Proportionnalité au tableur
+      <a class="badge" href="competences/quiz-exercice-proportionnalite-tableur.html" target="_blank" rel="noopener">HTML</a>
+      <a class="badge badge-dl" href="competences/quiz-exercice-proportionnalite-tableur.html" download>télécharger</a>
     </div></li>
   </ul>
 </section>
