@@ -7,7 +7,7 @@
 <meta name="description" content="La démarche pédagogique des ressources de physique-chimie : classe inversée, quiz d'entraînement, principes issus de la neuroéducation.">
 <style>
   :root { --vert:#1b5e4a; --vert-clair:#e8f2ee; --bleu:#1a4f8a; }
-  body { font-family: Georgia, serif; max-width: 46rem; margin: 0 auto 3rem;
+  body { font-family: Georgia, serif; max-width: 55rem; margin: 0 auto 3rem;
          padding: 0 1.2rem; line-height: 1.65; color: #222; }
 
   header.bandeau { background: linear-gradient(135deg,#1b5e4a,#2e8b6f);
@@ -44,7 +44,8 @@
 
   footer { margin-top: 3.5rem; padding-top: 1.2rem; border-top: 2px solid var(--vert-clair);
            font-size: .92rem; color: #555; }
-  @media (min-width: 40rem) { .formats { grid-template-columns: repeat(3,1fr); } }
+  @media (min-width: 40rem) {
+    .formats { grid-template-columns: repeat(auto-fit, minmax(12rem,1fr)); } }
 </style>
 </head>
 <body>
@@ -118,10 +119,23 @@ de démarrer avec les mêmes bases, quel que soit leur parcours antérieur.</p>
 qu'il maîtrise déjà et ce qu'il doit retravailler. Suivent une fiche de
 cours et des quiz dédiés, à faire selon les besoins de chacun.</p>
 
-<h2><span class="num">2</span>La capsule vidéo</h2>
+<h2><span class="num">2</span>Les vidéos</h2>
 
 <p>Chaque notion nouvelle est introduite par une vidéo, regardée à
-la maison. Lorsque l'activité qui suit suppose de disposer d'une formule ou d'une
+la maison. Elle est proposée ici sous deux formes : le lien vers la vidéo elle-même, et le
+fichier .h5p de la vidéo interactive — la version qu'utilisent mes élèves, dans laquelle des
+questions apparaissent en cours de lecture et interrompent le visionnage tant qu'on n'y a pas
+répondu. C'est ce qui transforme le visionnage en méthode active.</p>
+
+<div class="cle">
+  <p>Utiliser le fichier .h5p — il ne s'ouvre pas seul : il lui faut une plateforme qui sache
+  le lire. Sur Moodle ou Éléa : <em>Ajouter une activité</em> → <em>H5P</em> (ou
+  <em>Contenu interactif</em>), déposer le fichier, enregistrer. L'activité est alors
+  modifiable — on peut retirer une question, en ajouter une, changer la vidéo source. Côté
+  élève, rien à installer.</p>
+</div>
+
+<p>Lorsque l'activité qui suit suppose de disposer d'une formule ou d'une
 définition précise, la vidéo est accompagnée d'une feuille de visionnage
 à compléter — regarder en prenant des notes est une méthode active ; regarder passivement
 ne l'est pas.</p>
@@ -171,6 +185,8 @@ erreurs — puis de venir me poser les questions qui restent, ou de demander des
   <div><span>HTML</span> — les quiz, fichiers autonomes : ils s'ouvrent dans un navigateur,
   sans installation ni compte, et n'enregistrent aucun résultat. Intégrables en SCORM sur
   Moodle ou Éléa pour qui souhaite un suivi.</div>
+  <div><span>H5P</span> — les vidéos interactives, à importer dans Moodle ou Éléa.
+  Modifiables une fois importées.</div>
   <div><span>XML</span> — les QCM de vérification de visionnage, à importer dans Pronote
   ou dans Moodle.</div>
   <div><span>PDF</span> — les cours, les feuilles de visionnage et les activités.</div>
