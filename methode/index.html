@@ -6,21 +6,53 @@
 <title>Comment utiliser ces ressources — Physique-chimie au lycée</title>
 <meta name="description" content="La démarche pédagogique des ressources de physique-chimie : classe inversée, quiz d'entraînement, principes issus de la neuroéducation.">
 <style>
-  body { font-family: Georgia, serif; max-width: 44rem; margin: 2rem auto;
+  :root { --vert:#1b5e4a; --vert-clair:#e8f2ee; --bleu:#1a4f8a; }
+  body { font-family: Georgia, serif; max-width: 46rem; margin: 0 auto 3rem;
          padding: 0 1.2rem; line-height: 1.65; color: #222; }
-  h1 { font-size: 1.8rem; line-height: 1.25; margin-bottom: 1.5rem; }
-  h2 { font-size: 1.25rem; margin-top: 2.6rem; border-bottom: 1px solid #ccc;
-       padding-bottom: 0.3rem; }
-  a { color: #1a4f8a; }
-  .liens { margin: 1rem 0 0 0; padding-left: 0; list-style: none; }
-  .liens li { margin-bottom: 0.4rem; }
-  footer { margin-top: 3.5rem; padding-top: 1.2rem; border-top: 1px solid #ccc;
-           font-size: 0.92rem; color: #555; }
+
+  header.bandeau { background: linear-gradient(135deg,#1b5e4a,#2e8b6f);
+        color: #fff; margin: 0 -1.2rem 2rem; padding: 2.2rem 1.2rem 1.8rem; }
+  header.bandeau h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 .4rem; }
+  header.bandeau p { margin: 0; font-size: 1.02rem; opacity: .92; font-style: italic; }
+
+  h2 { font-size: 1.25rem; margin-top: 2.8rem; color: var(--vert);
+       border-bottom: 2px solid var(--vert-clair); padding-bottom: .3rem; }
+  h2 .num { display:inline-block; width:1.7rem; height:1.7rem; line-height:1.7rem;
+       text-align:center; border-radius:50%; background:var(--vert); color:#fff;
+       font-size:.95rem; margin-right:.5rem; vertical-align:.05rem; }
+
+  a { color: var(--bleu); }
+  strong { color: #111; }
+
+  figure { margin: 1.6rem 0; }
+  figure img { width: 100%; border-radius: 6px; display: block; }
+  figcaption { font-size: .88rem; color: #666; font-style: italic;
+       margin-top: .5rem; text-align: center; }
+
+  .cle { background: var(--vert-clair); border-left: 4px solid var(--vert);
+       padding: .9rem 1.1rem; border-radius: 0 5px 5px 0; margin: 1.4rem 0; }
+  .cle p { margin: 0; }
+
+  .liens { margin: 1rem 0 0; padding-left: 0; list-style: none; }
+  .liens li { margin-bottom: .4rem; }
+  .liens li::before { content: "→ "; color: var(--vert); font-weight: bold; }
+
+  .formats { display: grid; gap: .8rem; margin: 1.2rem 0; }
+  .formats div { border: 1px solid #ddd; border-top: 3px solid var(--bleu);
+       border-radius: 5px; padding: .7rem .9rem; font-size: .95rem; }
+  .formats span { font-weight: bold; color: var(--bleu); }
+
+  footer { margin-top: 3.5rem; padding-top: 1.2rem; border-top: 2px solid var(--vert-clair);
+           font-size: .92rem; color: #555; }
+  @media (min-width: 40rem) { .formats { grid-template-columns: repeat(3,1fr); } }
 </style>
 </head>
 <body>
 
-<h1>Comment utiliser ces ressources</h1>
+<header class="bandeau">
+  <h1>Comment utiliser ces ressources</h1>
+  <p>Un même parcours pour tous les chapitres — conçu pour apprendre vraiment.</p>
+</header>
 
 <p>Tous les chapitres ont la même architecture, et le parcours à suivre est toujours
 identique. Les ressources sont conçues pour que les élèves avancent en autonomie et à
@@ -40,10 +72,18 @@ méthodes <strong>actives</strong> — se tester, essayer de se souvenir avant d
 classeur, répondre à des questions — par opposition à la relecture ou au surlignage, qui
 donnent l'impression de travailler sans laisser de trace durable.</p>
 
-<p>D'où le principe : revenir plusieurs fois sur la même notion, à intervalles de plus en
-plus espacés, et vérifier régulièrement à l'aide de quiz et de QCM assortis d'une réponse
-commentée. Ce retour immédiat est essentiel — il évite qu'une erreur s'installe et se
-renforce.</p>
+<figure>
+  <img src="/physique-chimie-lycee/images/chemins.png" alt="Cinq vignettes : un sous-bois impénétrable devient une trace dans l'herbe, puis un chemin de terre, puis une route goudronnée.">
+  <figcaption>Un passage emprunté une seule fois disparaît ; repris régulièrement,
+  il devient une route où l'information circule vite.</figcaption>
+</figure>
+
+<div class="cle">
+  <p>D'où le principe : revenir plusieurs fois sur la même notion, à intervalles de plus en
+  plus espacés, et vérifier régulièrement à l'aide de quiz et de QCM assortis d'une réponse
+  commentée. Ce retour immédiat est essentiel — il évite qu'une erreur s'installe et se
+  renforce.</p>
+</div>
 
 <p>C'est pour cette raison que les ressources sont nombreuses et fractionnées plutôt que
 rassemblées en un seul gros document.</p>
@@ -57,22 +97,28 @@ s'entraîner à récupérer en mémoire plutôt qu'à relire. Il tient aussi une
 il présente ces travaux en vidéos courtes.</p>
 
 <ul class="liens">
-  <li>→ <a href="https://www.youtube.com/@SteveMasson" target="_blank" rel="noopener">Steve Masson — Cerveau et apprentissage (YouTube)</a></li>
-<li>→ <a href="https://www.odilejacob.fr/catalogue/psychologie/education-pedagogie/activer-ses-neurones_9782738151506.php" target="_blank" rel="noopener">Le livre chez Odile Jacob</a></li>
+  <li><a href="https://www.youtube.com/@SteveMasson" target="_blank" rel="noopener">Steve Masson — Cerveau et apprentissage (YouTube)</a></li>
+  <li><a href="https://www.odilejacob.fr/catalogue/psychologie/education-pedagogie/activer-ses-neurones_9782738151506.php" target="_blank" rel="noopener">Le livre chez Odile Jacob</a></li>
 </ul>
 
-<h2>Étape 1 — Les révisions</h2>
+<h2><span class="num">1</span>Les révisions</h2>
 
 <p>Chaque chapitre s'ouvre sur une partie « Révisions », qui ne relève pas du programme du
 niveau : elle réactive les compétences du collège (pour le niveau Seconde) et/ou des
 chapitres précédents, nécessaires pour comprendre la suite. Elle permet à tous les élèves
 de démarrer avec les mêmes bases, quel que soit leur parcours antérieur.</p>
 
+<figure>
+  <img src="/physique-chimie-lycee/images/mur-seconde.png" alt="Comparaison de deux murs de briques : à gauche un mur complet et stable, à droite un mur troué dont les briques s'effondrent.">
+  <figcaption>Sans les briques du collège — unités, conversions, puissances de dix,
+  équations — l'édifice de la Seconde ne tient pas.</figcaption>
+</figure>
+
 <p>Un quiz « <strong>État des lieux</strong> » les balaie toutes, pour que chacun repère ce
 qu'il maîtrise déjà et ce qu'il doit retravailler. Suivent une <strong>fiche de
 cours</strong> et des <strong>quiz dédiés</strong>, à faire selon les besoins de chacun.</p>
 
-<h2>Étape 2 — La capsule vidéo</h2>
+<h2><span class="num">2</span>La capsule vidéo</h2>
 
 <p>Chaque notion nouvelle est introduite par une <strong>capsule vidéo</strong>, regardée à
 la maison. Lorsque l'activité qui suit suppose de disposer d'une formule ou d'une
@@ -85,13 +131,13 @@ compréhension, mais à s'assurer que les notions à retenir ont bien été rep�
 vérifie qu'il n'est pas passé à côté de l'essentiel, et moi que le travail a été fait avant
 la séance. Compter une vingtaine de minutes pour l'ensemble.</p>
 
-<h2>Étape 3 — Les activités</h2>
+<h2><span class="num">3</span>Les activités</h2>
 
 <p>Les <strong>activités</strong> se font en classe, après le visionnage de la vidéo
 présentant la notion ciblée. Selon les cas, elles se présentent en PDF ou sous forme de
 quiz intégrant les consignes de rédaction.</p>
 
-<h2>Étape 4 — Le cours</h2>
+<h2><span class="num">4</span>Le cours</h2>
 
 <p>Le cours vient ensuite : il met en forme et en mots ce que les activités et les vidéos
 ont permis de découvrir. Il est <strong>écrit à la main, en classe</strong> — le PDF proposé
@@ -101,7 +147,7 @@ du chapitre sont reprises et expliquées.</p>
 <p>Des <strong>quiz de cours</strong> permettent ensuite de tester régulièrement les
 connaissances.</p>
 
-<h2>Étape 5 — S'entraîner</h2>
+<h2><span class="num">5</span>S'entraîner</h2>
 
 <p>Deux temps, dans cet ordre.</p>
 
@@ -114,20 +160,21 @@ fur et à mesure, ce qui permet à chacun d'avancer à son rythme et de repérer
 erreurs — puis de venir me poser les questions qui restent, ou de demander des
 éclaircissements lorsque la correction n'est pas comprise.</p>
 
-<p>Ces quiz sont conçus pour être <strong>refaits</strong>, pas réussis du premier coup :
-c'est la reprise espacée qui ancre, pas la réussite immédiate.</p>
+<div class="cle">
+  <p>Ces quiz sont conçus pour être <strong>refaits</strong>, pas réussis du premier coup :
+  c'est la reprise espacée qui ancre, pas la réussite immédiate.</p>
+</div>
 
 <h2>Les formats</h2>
 
-<p>Les quiz sont des fichiers <strong>HTML</strong> autonomes : ils s'ouvrent dans un
-navigateur, sans installation ni compte, et n'enregistrent aucun résultat. Ils peuvent
-aussi être intégrés à une activité SCORM sur Moodle ou Éléa, pour qui souhaite un suivi des
-réponses des élèves.</p>
-
-<p>Les QCM de vérification de visionnage sont des fichiers <strong>XML</strong>, à importer
-dans Pronote ou dans Moodle.</p>
-
-<p>Les cours, les feuilles de visionnage et les activités sont en <strong>PDF</strong>.</p>
+<div class="formats">
+  <div><span>HTML</span> — les quiz, fichiers autonomes : ils s'ouvrent dans un navigateur,
+  sans installation ni compte, et n'enregistrent aucun résultat. Intégrables en SCORM sur
+  Moodle ou Éléa pour qui souhaite un suivi.</div>
+  <div><span>XML</span> — les QCM de vérification de visionnage, à importer dans Pronote
+  ou dans Moodle.</div>
+  <div><span>PDF</span> — les cours, les feuilles de visionnage et les activités.</div>
+</div>
 
 <footer>
 <p>Z. Lechevalier, professeure de physique-chimie en lycée.<br>
