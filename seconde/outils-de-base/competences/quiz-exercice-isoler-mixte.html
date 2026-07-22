@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde : Isoler une grandeur</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;   /* couleurs de bandeau : évaluation (émeraude sourd) / état des lieux (aubergine) */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+/* === Classe utilitaire pour formules chimiques dans conteneurs flex === */
+/* À utiliser systématiquement pour toute formule chimique (avec indices/exposants) */
+/* placée dans un conteneur flex : étiquettes Type 3, emplacements de reconstitution, etc. */
+.cm{display:inline-block}
+.cm sub,.cm sup{font-size:.72em}
+/* === Verrouillage progressif (Type 3 : étapes a → b → c) === */
+.qbloc.locked .qcont{display:none}
+.qbloc.locked .verrou{display:block}
+.verrou{display:none;padding:13px 15px;font-size:.88rem;color:#666;font-style:italic;background:#f8f6f2}
+/* === Widget EXPR (Type 4 : expression à coefficients) === */
+.expr-zone{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px;background:#f8f6f2;border-radius:var(--r);margin:8px 0 12px}
+.expr-fixe{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--bleu)}
+.expr-term{display:inline-flex;align-items:center;gap:4px;background:#f4f1ea;border:1px solid var(--gris-l);border-radius:var(--r);padding:3px 8px}
+.expr-term select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:3px 5px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);cursor:pointer}
+.expr-term select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.expr-term select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.expr-term .lab{font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.expr-term .lab sub{font-size:.72em}
+/* === Bouton d'insertion d'exposant ⁻¹ (à côté du champ unité) === */
+.exp-btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:5px 9px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu-cl);cursor:pointer;transition:all .14s}
+.exp-btn:hover{background:#eef4fa}
+.exp-btn:disabled{opacity:.4;cursor:default}
+/* === Widget CONSTR (Type 5 : construction de formule) === */
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+/* === Widget CONSTR — Extension sous-opérations dans les fractions === */
+.frac-zone{display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 6px}
+/* Case-fantôme : suggère "tu peux ajouter une case ici" */
+.add-case{font-family:'JetBrains Mono',monospace;font-size:1.05rem;min-width:50px;min-height:42px;padding:6px 14px;border:2px dashed #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;color:#aaa;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.add-case:hover{border-color:var(--bleu-cl);background:#eef4fa;color:var(--bleu-cl)}
+/* Icône corbeille pour supprimer la 2e case */
+.del-case{font-size:1.2rem;width:28px;height:28px;border:none;background:transparent;cursor:pointer;align-self:center;opacity:.55;transition:opacity .15s;padding:0}
+.del-case:hover{opacity:1}
+/* Sélecteur de sous-opération (× / + / −) */
+.sub-op-selector{display:inline-flex;border:1.5px solid var(--bleu-cl);border-radius:6px;overflow:hidden;font-family:'JetBrains Mono',monospace;align-self:center}
+.sub-op-btn{background:var(--blanc);border:none;padding:6px 10px;font-size:.95rem;cursor:pointer;color:#555;border-right:1px solid var(--bleu-cl)}
+.sub-op-btn:last-child{border-right:none}
+.sub-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);font-weight:bold}
+.sub-op-btn:hover:not(.selected){background:#eef4fa}
+.frac-stack{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frac-line{align-self:stretch;height:3px;background:var(--bleu);border-radius:2px;margin:1px 0}
+/* Mini-aide (icône ? + bulle) */
+.constr-row{position:relative}
+.help-icon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:#ddd;color:#555;text-align:center;font-size:.85rem;font-weight:bold;cursor:pointer;line-height:22px;user-select:none;border:none;padding:0}
+.help-icon:hover{background:var(--bleu-cl);color:var(--blanc)}
+.help-bubble{position:absolute;top:38px;right:10px;max-width:380px;background:var(--blanc);border:1px solid var(--bleu-cl);border-radius:6px;padding:12px 16px;font-size:.88rem;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:10}
+.help-bubble.visible{display:block}
+/* === Type 6 : transformations nucléaires === */
+/* Classement par zones (réutilisé aussi par Type 3 étape a si besoin) */
+.class-zones{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.zone{flex:1;min-width:200px;border:2px dashed var(--gris-m);border-radius:var(--r);padding:10px;min-height:96px;background:#f8f6f2;cursor:pointer;transition:all .14s}
+.zone:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.zone-titre{font-size:.82rem;font-weight:600;color:var(--bleu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:center}
+.zone-drop{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;min-height:42px}
+/* Banques d'étiquettes — style UNIFIÉ, partagé entre Type 6 et Type 7 (encadré complet + fond, décision du 06/06/2026) */
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--gris-l);border-radius:var(--r);background:#f8f6f2;align-items:center}
+.bank-label{width:100%;font-size:.8rem;color:#888;font-style:italic;margin-bottom:2px}
+.etq{font-family:'Source Serif 4',serif;font-size:.92rem;padding:6px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s;user-select:none}
+.etq:hover{background:#eef4fa}
+.etq.sel{background:var(--bleu-cl);color:var(--blanc)}
+.etq.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.etq.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.etq.placed{cursor:pointer}
+.etq.fige{cursor:default}
+/* Reconstitution d'équation nucléaire (squelette à 5 emplacements) */
+.recon-skel{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;background:#f8f6f2;border-radius:var(--r);margin:6px 0 10px;min-height:60px}
+.slot{min-width:60px;min-height:44px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);display:flex;align-items:center;justify-content:center;padding:4px 8px;cursor:pointer;font-size:1.05rem;transition:all .14s}
+.slot.op-slot{min-width:42px}
+.slot:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.slot.filled{border-style:solid;border-color:var(--bleu-cl)}
+.slot.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.slot.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.slot.fige{cursor:default}
+.etq-noy{font-size:1.05rem}
+/* Complétion d'équation nucléaire : équation avec champs de saisie A, Z, X */
+.equation-nuc{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:1.12rem;margin:6px 0 14px;line-height:2.2;padding:12px;background:#f8f6f2;border-radius:var(--r)}
+.equation-nuc .op{font-family:'JetBrains Mono',monospace;color:var(--bleu-cl);font-weight:600;font-size:1rem}
+.equation-nuc .coef{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.02rem}
+.noyau-edit{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;border:1.5px dashed var(--bleu-cl);border-radius:var(--r);padding:3px 6px;background:var(--blanc)}
+.noyau-az{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px}
+.nf{width:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:2px 3px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--texte)}
+.nf:focus{border-color:var(--bleu-cl);outline:none}
+.nf.fixe{border:none;background:none;color:#555;width:auto;min-width:24px;padding:0 2px}
+.nf.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.nf.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.nfx{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:600;text-align:center;width:58px;padding:3px 4px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--bleu)}
+.nfx:focus{border-color:var(--bleu-cl);outline:none}
+.nfx.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)}
+.nfx.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)}
+.noyau-sym{font-size:1.3rem;font-weight:600;color:var(--bleu);padding:0 3px}
+/* Tableau de conservation dynamique (utilisé par Type 3 et Type 6) */
+.cons-table{width:100%;border-collapse:collapse;margin:4px 0 12px;font-size:.88rem}
+.cons-table th,.cons-table td{padding:7px 11px;border:1px solid var(--gris-l);text-align:center}
+.cons-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.82rem}
+.cons-table td:first-child{font-weight:600;text-align:left;background:#f8f6f2}
+.cons-val{font-family:'JetBrains Mono',monospace}
+/* Bouton « Tout remettre » (auxiliaire, pour classement et reconstitution) */
+.btn-aux{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s}
+.btn-aux:hover{background:#fff3e0}
+/* === Type 7 : tableau à étiquettes === */
+/* Conteneur des banques empilées (.bank garde le style unifié ci-dessus) */
+.banques{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.etq-mono{font-family:'JetBrains Mono',monospace}
+.bank-vide{font-style:italic;color:#888;font-size:.85rem}
+/* Tableau à compléter (les noms .prefixe-table / tb_prefixes s'adaptent au contenu du quiz) */
+.prefixe-table{width:100%;border-collapse:collapse;margin-top:6px}
+.prefixe-table th,.prefixe-table td{padding:6px 8px;border:1px solid var(--gris-l);text-align:center;font-size:.9rem}
+.prefixe-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.cell-fixe{font-weight:600;color:var(--texte);background:#f0ede6}
+.cell-fixe.mono{font-family:'JetBrains Mono',monospace}
+.tslot{font-family:'Source Serif 4',serif;font-size:.9rem;width:100%;min-height:38px;padding:6px 8px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;color:var(--texte)}
+.tslot:hover:not(:disabled):not(.fige){border-color:var(--bleu-cl);background:#eef4fa}
+.tslot.sel{border-color:var(--bleu-cl);border-style:solid;background:#ddeef8}
+.tslot.filled{border-style:solid;border-color:var(--bleu-cl);color:var(--bleu);font-weight:600}
+.tslot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.tslot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.tslot.fige{cursor:default}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+  /* Type 7 (et étiquettes en général) */
+  .prefixe-table th,.prefixe-table td{padding:4px 4px;font-size:.82rem}
+  .tslot{min-height:34px;padding:5px 4px;font-size:.82rem}
+  .etq{font-size:.85rem;padding:5px 9px}
+}
+/* === Type 8 : tableau de calcul (test de proportionnalité) === */
+.ct-scroll{overflow-x:auto;margin:6px 0 12px}
+.ct-table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.ct-table th,.ct-table td{border:1px solid var(--gris-l);padding:6px 8px;text-align:center;white-space:nowrap}
+.ct-gr{font-weight:600;text-align:left!important;background:#f8f6f2;color:var(--bleu);position:sticky;left:0}
+.ct-gr .ct-sym{color:#888;font-weight:400}
+.ct-val{font-family:'JetBrains Mono',monospace}
+.ct-calc-row td{background:#fbfaf6}
+.ct-head-cell{background:#eef4fa!important;min-width:78px}
+.ct-cell-input{width:74px;font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:5px 4px;border:1.5px solid #ccc;border-radius:4px;text-align:center;background:var(--blanc);color:var(--texte)}
+.ct-cell-input:focus{border-color:var(--bleu-cl);outline:none}
+.ct-cell-input:disabled{background:#f0f0f0;cursor:not-allowed}
+.ct-cell-input.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.ct-cell-input.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+/* menu personnalisé à fractions verticales (MathJax) */
+.fdrop{position:relative;display:inline-block;font-family:'Source Serif 4',serif}
+.fdrop-cur{min-width:62px;min-height:46px;padding:4px 22px 4px 10px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--bleu)}
+.fdrop-cur::after{content:'▾';position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--bleu-cl)}
+.fdrop-cur.placeholder{color:#aaa;font-style:italic;font-size:.82rem}
+.fdrop-cur.figee{border-color:var(--vert);background:#e6f4eb;cursor:default}
+.fdrop-cur.figee::after{display:none}
+.fdrop-menu{display:none;position:absolute;z-index:20;top:50px;left:0;background:var(--blanc);border:1.5px solid var(--bleu-cl);border-radius:var(--r);box-shadow:0 3px 12px rgba(0,0,0,.14);padding:5px;min-width:150px}
+.fdrop-menu.open{display:flex;flex-wrap:wrap;gap:5px}
+.fdrop-opt{flex:1 1 40%;min-height:44px;padding:4px 8px;border:1px solid var(--gris-l);border-radius:4px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bleu)}
+.fdrop-opt:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+.schema-aire{display:block;max-width:300px;width:100%;height:auto;margin:6px 0 12px;border:1px solid var(--gris-l);border-radius:var(--r)}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien-chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Isoler une grandeur (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+<div class="consigne">
+  📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+</div>
+
+<div class="consignes-titre">CONSIGNES</div>
+<div class="contexte">
+  Choisis l'opération, puis <strong>clique sur une étiquette</strong> dans la banque et <strong>clique sur la case</strong> où tu veux la poser. Dans une fraction, une somme ou une différence, la <strong>case grise vide</strong> à côté d'une case ajoute une 2<sup>e</sup> case avec un sous-opérateur. <strong>Attention</strong> : le sous-opérateur par défaut est × — clique sur <strong>−</strong> ou <strong>+</strong> si besoin. L'icône corbeille 🗑 retire la 2<sup>e</sup> case ; l'icône <strong>?</strong> rappelle tout ça.
+</div>
+
+<div id="zone-questions"></div>
+
+<button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+<button class="btn-global btn-recommencer" id="btn-reload">&#8634; Recommencer</button>
+
+<div id="bilan" style="display:none">
+  <div class="score-res">
+    <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 10</span></div>
+    <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 10</span></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+const CATALOGUE = {
+"n1_c01": { qid:"n1_c01", niveau:1, grandeur:"d", schema:false,
+    enonce:"On a la formule \\(v = \\dfrac{d}{t}\\). Isole la grandeur \\(d\\).",
+    lettres:["v", "t"],
+    lignes:[{ grandeur:"d", op:"produit", slots:["v", "t"] }],
+    fb1:"Dans \\(v = \\dfrac{d}{t}\\), la grandeur \\(d\\) est au numérateur, divisée par \\(t\\). Quelle opération appliquer aux deux membres pour la libérer ?",
+    fb2:"On multiplie les deux membres par \\(t\\) : \\(d = v \\times t\\).",
+    fbok:"&#10003; Exact ! "+"\\(d = v \\times t\\).",
+    label:"Isoler d dans v = d/t", sid:"isoler_d_vitesse" },
+"n1_c02": { qid:"n1_c02", niveau:1, grandeur:"t", schema:false,
+    enonce:"On a la formule \\(v = \\dfrac{d}{t}\\). Isole la grandeur \\(t\\).",
+    lettres:["d", "v"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:["d", "v"] }],
+    fb1:"Dans \\(v = \\dfrac{d}{t}\\), la durée \\(t\\) est au dénominateur. Astuce : écris d'abord la formule donnant \\(d\\), puis isole \\(t\\).",
+    fb2:"À partir de \\(d = v \\times t\\), on divise les deux membres par \\(v\\) : \\(t = \\dfrac{d}{v}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{d}{v}\\).",
+    label:"Isoler t dans v = d/t", sid:"isoler_t_vitesse" },
+"n1_c03": { qid:"n1_c03", niveau:1, grandeur:"m", schema:false,
+    enonce:"On a la formule \\(\\rho = \\dfrac{m}{V}\\). Isole la grandeur \\(m\\).",
+    lettres:["\\rho", "V"],
+    lignes:[{ grandeur:"m", op:"produit", slots:["\\rho", "V"] }],
+    fb1:"Dans \\(\\rho = \\dfrac{m}{V}\\), la grandeur \\(m\\) est au numérateur, divisée par \\(V\\). Quelle opération permet de la libérer du quotient ?",
+    fb2:"On multiplie les deux membres par \\(V\\) : \\(m = \\rho \\times V\\).",
+    fbok:"&#10003; Exact ! "+"\\(m = \\rho \\times V\\).",
+    label:"Isoler m dans rho = m/V", sid:"isoler_m_masse_volumique" },
+"n1_c04": { qid:"n1_c04", niveau:1, grandeur:"V", schema:false,
+    enonce:"On a la formule \\(\\rho = \\dfrac{m}{V}\\). Isole la grandeur \\(V\\).",
+    lettres:["m", "\\rho"],
+    lignes:[{ grandeur:"V", op:"fraction", slots:["m", "\\rho"] }],
+    fb1:"Dans \\(\\rho = \\dfrac{m}{V}\\), la grandeur \\(V\\) est au dénominateur. Astuce : écris d'abord la formule donnant \\(m\\), puis isole \\(V\\).",
+    fb2:"À partir de \\(m = \\rho \\times V\\), on divise les deux membres par \\(\\rho\\) : \\(V = \\dfrac{m}{\\rho}\\).",
+    fbok:"&#10003; Exact ! "+"\\(V = \\dfrac{m}{\\rho}\\).",
+    label:"Isoler V dans rho = m/V", sid:"isoler_V_masse_volumique" },
+"n1_c05": { qid:"n1_c05", niveau:1, grandeur:"m", schema:false,
+    enonce:"On a la formule \\(P = m \\times g\\). Isole la grandeur \\(m\\).",
+    lettres:["P", "g"],
+    lignes:[{ grandeur:"m", op:"fraction", slots:["P", "g"] }],
+    fb1:"Dans \\(P = m \\times g\\), la grandeur \\(m\\) est multipliée par \\(g\\). Quelle est l'opération inverse de la multiplication, et dans quel ordre placer les lettres ?",
+    fb2:"On divise les deux membres par \\(g\\) : \\(m = \\dfrac{P}{g}\\).",
+    fbok:"&#10003; Exact ! "+"\\(m = \\dfrac{P}{g}\\).",
+    label:"Isoler m dans P = m × g", sid:"isoler_m_poids" },
+"n1_c06": { qid:"n1_c06", niveau:1, grandeur:"g", schema:false,
+    enonce:"On a la formule \\(P = m \\times g\\). Isole la grandeur \\(g\\).",
+    lettres:["P", "m"],
+    lignes:[{ grandeur:"g", op:"fraction", slots:["P", "m"] }],
+    fb1:"Dans \\(P = m \\times g\\), la grandeur \\(g\\) est multipliée par \\(m\\). Par quoi faut-il diviser les deux membres, et dans quel ordre ?",
+    fb2:"On divise les deux membres par \\(m\\) : \\(g = \\dfrac{P}{m}\\).",
+    fbok:"&#10003; Exact ! "+"\\(g = \\dfrac{P}{m}\\).",
+    label:"Isoler g dans P = m × g", sid:"isoler_g_poids" },
+"n1_c07": { qid:"n1_c07", niveau:1, grandeur:"I", schema:false,
+    enonce:"On a la formule \\(U = R \\times I\\). Isole la grandeur \\(I\\).",
+    lettres:["U", "R"],
+    lignes:[{ grandeur:"I", op:"fraction", slots:["U", "R"] }],
+    fb1:"Dans \\(U = R \\times I\\), la grandeur \\(I\\) est multipliée par \\(R\\). Par quoi faut-il diviser les deux membres pour l'isoler ?",
+    fb2:"On divise les deux membres par \\(R\\) : \\(I = \\dfrac{U}{R}\\).",
+    fbok:"&#10003; Exact ! "+"\\(I = \\dfrac{U}{R}\\).",
+    label:"Isoler I dans U = R × I", sid:"isoler_I_loi_ohm" },
+"n1_c08": { qid:"n1_c08", niveau:1, grandeur:"R", schema:false,
+    enonce:"On a la formule \\(U = R \\times I\\). Isole la grandeur \\(R\\).",
+    lettres:["U", "I"],
+    lignes:[{ grandeur:"R", op:"fraction", slots:["U", "I"] }],
+    fb1:"Dans \\(U = R \\times I\\), la grandeur \\(R\\) est multipliée par \\(I\\). Par quoi faut-il diviser les deux membres, et dans quel ordre ?",
+    fb2:"On divise les deux membres par \\(I\\) : \\(R = \\dfrac{U}{I}\\).",
+    fbok:"&#10003; Exact ! "+"\\(R = \\dfrac{U}{I}\\).",
+    label:"Isoler R dans U = R × I", sid:"isoler_R_loi_ohm" },
+"n1_c09": { qid:"n1_c09", niveau:1, grandeur:"I", schema:false,
+    enonce:"On a la formule \\(P = U \\times I\\). Isole la grandeur \\(I\\).",
+    lettres:["P", "U"],
+    lignes:[{ grandeur:"I", op:"fraction", slots:["P", "U"] }],
+    fb1:"Dans \\(P = U \\times I\\), la grandeur \\(I\\) est multipliée par \\(U\\). Par quoi faut-il diviser les deux membres pour l'isoler ?",
+    fb2:"On divise les deux membres par \\(U\\) : \\(I = \\dfrac{P}{U}\\).",
+    fbok:"&#10003; Exact ! "+"\\(I = \\dfrac{P}{U}\\).",
+    label:"Isoler I dans P = U × I", sid:"isoler_I_puissance" },
+"n1_c10": { qid:"n1_c10", niveau:1, grandeur:"U", schema:false,
+    enonce:"On a la formule \\(P = U \\times I\\). Isole la grandeur \\(U\\).",
+    lettres:["P", "I"],
+    lignes:[{ grandeur:"U", op:"fraction", slots:["P", "I"] }],
+    fb1:"Dans \\(P = U \\times I\\), la grandeur \\(U\\) est multipliée par \\(I\\). Par quoi faut-il diviser les deux membres, et dans quel ordre ?",
+    fb2:"On divise les deux membres par \\(I\\) : \\(U = \\dfrac{P}{I}\\).",
+    fbok:"&#10003; Exact ! "+"\\(U = \\dfrac{P}{I}\\).",
+    label:"Isoler U dans P = U × I", sid:"isoler_U_puissance" },
+"n1_c11": { qid:"n1_c11", niveau:1, grandeur:"P", schema:false,
+    enonce:"On a la formule \\(E = P \\times t\\). Isole la grandeur \\(P\\).",
+    lettres:["E", "t"],
+    lignes:[{ grandeur:"P", op:"fraction", slots:["E", "t"] }],
+    fb1:"Dans \\(E = P \\times t\\), la grandeur \\(P\\) est multipliée par \\(t\\). Par quoi faut-il diviser les deux membres pour l'isoler ?",
+    fb2:"On divise les deux membres par \\(t\\) : \\(P = \\dfrac{E}{t}\\).",
+    fbok:"&#10003; Exact ! "+"\\(P = \\dfrac{E}{t}\\).",
+    label:"Isoler P dans E = P × t", sid:"isoler_P_energie" },
+"n1_c12": { qid:"n1_c12", niveau:1, grandeur:"t", schema:false,
+    enonce:"On a la formule \\(E = P \\times t\\). Isole la grandeur \\(t\\).",
+    lettres:["E", "P"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:["E", "P"] }],
+    fb1:"Dans \\(E = P \\times t\\), la grandeur \\(t\\) est multipliée par \\(P\\). Par quoi faut-il diviser les deux membres, et dans quel ordre ?",
+    fb2:"On divise les deux membres par \\(P\\) : \\(t = \\dfrac{E}{P}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{E}{P}\\).",
+    label:"Isoler t dans E = P × t", sid:"isoler_t_energie" },
+"n1_c13": { qid:"n1_c13", niveau:1, grandeur:"\\rho", schema:false,
+    enonce:"On a la formule \\(d = \\dfrac{\\rho}{\\rho_{\\text{eau}}}\\). Isole la grandeur \\(\\rho\\).",
+    lettres:["d", "\\rho_{\\text{eau}}"],
+    lignes:[{ grandeur:"\\rho", op:"produit", slots:["d", "\\rho_{\\text{eau}}"] }],
+    fb1:"Dans \\(d = \\dfrac{\\rho}{\\rho_{\\text{eau}}}\\), la grandeur \\(\\rho\\) est au numérateur, divisée par \\(\\rho_{\\text{eau}}\\). Quelle opération permet de la libérer ?",
+    fb2:"On multiplie les deux membres par \\(\\rho_{\\text{eau}}\\) : \\(\\rho = d \\times \\rho_{\\text{eau}}\\).",
+    fbok:"&#10003; Exact ! "+"\\(\\rho = d \\times \\rho_{\\text{eau}}\\).",
+    label:"Isoler rho dans d = rho/rho_eau", sid:"isoler_rho_densite" },
+"n1_c14": { qid:"n1_c14", niveau:1, grandeur:"\\rho_{\\text{eau}}", schema:false,
+    enonce:"On a la formule \\(d = \\dfrac{\\rho}{\\rho_{\\text{eau}}}\\). Isole la grandeur \\(\\rho_{\\text{eau}}\\).",
+    lettres:["\\rho", "d"],
+    lignes:[{ grandeur:"\\rho_{\\text{eau}}", op:"fraction", slots:["\\rho", "d"] }],
+    fb1:"Dans \\(d = \\dfrac{\\rho}{\\rho_{\\text{eau}}}\\), la grandeur \\(\\rho_{\\text{eau}}\\) est au dénominateur. Astuce : écris d'abord la formule donnant \\(\\rho\\), puis isole \\(\\rho_{\\text{eau}}\\).",
+    fb2:"À partir de \\(\\rho = d \\times \\rho_{\\text{eau}}\\), on divise les deux membres par \\(d\\) : \\(\\rho_{\\text{eau}} = \\dfrac{\\rho}{d}\\).",
+    fbok:"&#10003; Exact ! "+"\\(\\rho_{\\text{eau}} = \\dfrac{\\rho}{d}\\).",
+    label:"Isoler rho_eau dans d = rho/rho_eau", sid:"isoler_rho_eau_densite" },
+"n1_c15": { qid:"n1_c15", niveau:1, grandeur:"L", schema:true,
+    enonce:"On a la formule \\(\\mathcal{A} = L \\times \\ell\\). Isole la grandeur \\(L\\).",
+    lettres:["\\mathcal{A}", "\\ell"],
+    lignes:[{ grandeur:"L", op:"fraction", slots:["\\mathcal{A}", "\\ell"] }],
+    fb1:"Dans \\(\\mathcal{A} = L \\times \\ell\\), la grandeur \\(L\\) est multipliée par \\(\\ell\\). Par quoi faut-il diviser les deux membres pour l'isoler ?",
+    fb2:"On divise les deux membres par \\(\\ell\\) : \\(L = \\dfrac{\\mathcal{A}}{\\ell}\\).",
+    fbok:"&#10003; Exact ! "+"\\(L = \\dfrac{\\mathcal{A}}{\\ell}\\).",
+    label:"Isoler L dans A = L × l", sid:"isoler_L_aire" },
+"n1_c16": { qid:"n1_c16", niveau:1, grandeur:"\\ell", schema:true,
+    enonce:"On a la formule \\(\\mathcal{A} = L \\times \\ell\\). Isole la grandeur \\(\\ell\\).",
+    lettres:["\\mathcal{A}", "L"],
+    lignes:[{ grandeur:"\\ell", op:"fraction", slots:["\\mathcal{A}", "L"] }],
+    fb1:"Dans \\(\\mathcal{A} = L \\times \\ell\\), la grandeur \\(\\ell\\) est multipliée par \\(L\\). Par quoi faut-il diviser les deux membres, et dans quel ordre ?",
+    fb2:"On divise les deux membres par \\(L\\) : \\(\\ell = \\dfrac{\\mathcal{A}}{L}\\).",
+    fbok:"&#10003; Exact ! "+"\\(\\ell = \\dfrac{\\mathcal{A}}{L}\\).",
+    label:"Isoler l dans A = L × l", sid:"isoler_l_aire" },
+"n2_c01": { qid:"n2_c01", niveau:2, grandeur:"U", schema:false,
+    enonce:"On a la formule \\(E = U \\times I \\times t\\). Isole la grandeur \\(U\\).",
+    lettres:["E", "I", "t"],
+    lignes:[{ grandeur:"U", op:"fraction", slots:["E", { subop: "produit", cells: ["I", "t"] }] }],
+    fb1:"Dans \\(E = U \\times I \\times t\\), la grandeur \\(U\\) est multipliée par DEUX grandeurs à la fois : \\(I\\) et \\(t\\). Par quel produit faut-il diviser \\(E\\) ?",
+    fb2:"On divise les deux membres par le produit \\(I \\times t\\) : \\(U = \\dfrac{E}{I \\times t}\\).",
+    fbok:"&#10003; Exact ! "+"\\(U = \\dfrac{E}{I \\times t}\\).",
+    label:"Isoler U dans E = U × I × t", sid:"isoler_U_energie_elec" },
+"n2_c02": { qid:"n2_c02", niveau:2, grandeur:"t", schema:false,
+    enonce:"On a la formule \\(E = U \\times I \\times t\\). Isole la grandeur \\(t\\).",
+    lettres:["E", "U", "I"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:["E", { subop: "produit", cells: ["U", "I"] }] }],
+    fb1:"Dans \\(E = U \\times I \\times t\\), la grandeur \\(t\\) est multipliée par \\(U\\) ET par \\(I\\). Par quel produit faut-il diviser \\(E\\) ?",
+    fb2:"On divise les deux membres par le produit \\(U \\times I\\) : \\(t = \\dfrac{E}{U \\times I}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{E}{U \\times I}\\).",
+    label:"Isoler t dans E = U × I × t", sid:"isoler_t_energie_elec" },
+"n2_c03": { qid:"n2_c03", niveau:2, grandeur:"L", schema:false,
+    enonce:"On a la formule \\(V = L \\times \\ell \\times h\\). Isole la grandeur \\(L\\).",
+    lettres:["V", "\\ell", "h"],
+    lignes:[{ grandeur:"L", op:"fraction", slots:["V", { subop: "produit", cells: ["\\ell", "h"] }] }],
+    fb1:"Dans \\(V = L \\times \\ell \\times h\\), la grandeur \\(L\\) est multipliée par \\(\\ell\\) ET par \\(h\\). Par quel produit faut-il diviser \\(V\\) ?",
+    fb2:"On divise les deux membres par le produit \\(\\ell \\times h\\) : \\(L = \\dfrac{V}{\\ell \\times h}\\).",
+    fbok:"&#10003; Exact ! "+"\\(L = \\dfrac{V}{\\ell \\times h}\\).",
+    label:"Isoler L dans V = L × l × h", sid:"isoler_L_volume_pave" },
+"n2_c04": { qid:"n2_c04", niveau:2, grandeur:"h", schema:false,
+    enonce:"On a la formule \\(V = L \\times \\ell \\times h\\). Isole la grandeur \\(h\\).",
+    lettres:["V", "L", "\\ell"],
+    lignes:[{ grandeur:"h", op:"fraction", slots:["V", { subop: "produit", cells: ["L", "\\ell"] }] }],
+    fb1:"Dans \\(V = L \\times \\ell \\times h\\), la grandeur \\(h\\) est multipliée par \\(L\\) ET par \\(\\ell\\). Par quel produit faut-il diviser \\(V\\) ?",
+    fb2:"On divise les deux membres par le produit \\(L \\times \\ell\\) : \\(h = \\dfrac{V}{L \\times \\ell}\\).",
+    fbok:"&#10003; Exact ! "+"\\(h = \\dfrac{V}{L \\times \\ell}\\).",
+    label:"Isoler h dans V = L × l × h", sid:"isoler_h_volume_pave" },
+"n2_c05": { qid:"n2_c05", niveau:2, grandeur:"a", schema:false,
+    enonce:"On a la formule \\(m = \\dfrac{a \\times b}{c}\\). Isole la grandeur \\(a\\).",
+    lettres:["m", "c", "b"],
+    lignes:[{ grandeur:"a", op:"fraction", slots:[{ subop: "produit", cells: ["m", "c"] }, "b"] }],
+    fb1:"Dans \\(m = \\dfrac{a \\times b}{c}\\), commence par faire « remonter » \\(c\\) : multiplie les deux membres par \\(c\\), ce qui donne \\(m \\times c = a \\times b\\). Il ne reste plus qu'à isoler \\(a\\). Pense à la 2ᵉ case au numérateur.",
+    fb2:"On multiplie par \\(c\\) puis on divise par \\(b\\) : \\(a = \\dfrac{m \\times c}{b}\\). La grandeur \\(c\\), qui était au dénominateur, se retrouve au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(a = \\dfrac{m \\times c}{b}\\).",
+    label:"Isoler a dans m = (a×b)/c", sid:"isoler_a_frac_ndeux" },
+"n2_c06": { qid:"n2_c06", niveau:2, grandeur:"c", schema:false,
+    enonce:"On a la formule \\(m = \\dfrac{a \\times b}{c}\\). Isole la grandeur \\(c\\).",
+    lettres:["a", "b", "m"],
+    lignes:[{ grandeur:"c", op:"fraction", slots:[{ subop: "produit", cells: ["a", "b"] }, "m"] }],
+    fb1:"Dans \\(m = \\dfrac{a \\times b}{c}\\), la grandeur \\(c\\) est au dénominateur. Astuce : fais-la « remonter » en multipliant par \\(c\\), puis isole-la. Que reste-t-il au numérateur ?",
+    fb2:"On obtient \\(m \\times c = a \\times b\\), puis on divise par \\(m\\) : \\(c = \\dfrac{a \\times b}{m}\\). Le produit \\(a \\times b\\) reste groupé au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(c = \\dfrac{a \\times b}{m}\\).",
+    label:"Isoler c dans m = (a×b)/c", sid:"isoler_c_frac_ddeux" },
+"n2_c07": { qid:"n2_c07", niveau:2, grandeur:"p", schema:false,
+    enonce:"On a la formule \\(F = \\dfrac{p \\times q}{r}\\). Isole la grandeur \\(p\\).",
+    lettres:["F", "r", "q"],
+    lignes:[{ grandeur:"p", op:"fraction", slots:[{ subop: "produit", cells: ["F", "r"] }, "q"] }],
+    fb1:"Dans \\(F = \\dfrac{p \\times q}{r}\\), fais d'abord « remonter » \\(r\\) : \\(F \\times r = p \\times q\\). Il ne reste plus qu'à isoler \\(p\\).",
+    fb2:"On multiplie par \\(r\\) puis on divise par \\(q\\) : \\(p = \\dfrac{F \\times r}{q}\\).",
+    fbok:"&#10003; Exact ! "+"\\(p = \\dfrac{F \\times r}{q}\\).",
+    label:"Isoler p dans F = (p×q)/r", sid:"isoler_p_frac_ndeux" },
+"n2_c08": { qid:"n2_c08", niveau:2, grandeur:"r", schema:false,
+    enonce:"On a la formule \\(F = \\dfrac{p \\times q}{r}\\). Isole la grandeur \\(r\\).",
+    lettres:["p", "q", "F"],
+    lignes:[{ grandeur:"r", op:"fraction", slots:[{ subop: "produit", cells: ["p", "q"] }, "F"] }],
+    fb1:"Dans \\(F = \\dfrac{p \\times q}{r}\\), la grandeur \\(r\\) est au dénominateur. Fais-la « remonter » en multipliant par \\(r\\), puis isole-la.",
+    fb2:"On obtient \\(F \\times r = p \\times q\\), puis on divise par \\(F\\) : \\(r = \\dfrac{p \\times q}{F}\\).",
+    fbok:"&#10003; Exact ! "+"\\(r = \\dfrac{p \\times q}{F}\\).",
+    label:"Isoler r dans F = (p×q)/r", sid:"isoler_r_frac_ddeux" },
+"n2_c09": { qid:"n2_c09", niveau:2, grandeur:"x", schema:false,
+    enonce:"On a la formule \\(D = \\dfrac{x}{y \\times z}\\). Isole la grandeur \\(x\\).",
+    lettres:["D", "y", "z"],
+    lignes:[{ grandeur:"x", op:"produit", slots:["D", "y", "z"] }],
+    fb1:"Dans \\(D = \\dfrac{x}{y \\times z}\\), la grandeur \\(x\\) est divisée par le produit \\(y \\times z\\). Quelle opération appliquer aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(y \\times z\\) : \\(x = D \\times y \\times z\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(x = D \\times y \\times z\\).",
+    label:"Isoler x dans D = x/(y×z)", sid:"isoler_x_frac_ddeuxbas" },
+"n2_c10": { qid:"n2_c10", niveau:2, grandeur:"y", schema:false,
+    enonce:"On a la formule \\(D = \\dfrac{x}{y \\times z}\\). Isole la grandeur \\(y\\).",
+    lettres:["x", "D", "z"],
+    lignes:[{ grandeur:"y", op:"fraction", slots:["x", { subop: "produit", cells: ["D", "z"] }] }],
+    fb1:"Dans \\(D = \\dfrac{x}{y \\times z}\\), la grandeur \\(y\\) est au dénominateur, avec \\(z\\). Astuce : isole d'abord le produit \\(y \\times z\\), puis \\(y\\) tout seul. Que se retrouve au dénominateur ?",
+    fb2:"On obtient \\(y \\times z = \\dfrac{x}{D}\\), puis on divise par \\(z\\) : \\(y = \\dfrac{x}{D \\times z}\\). La grandeur \\(D\\) « descend » au dénominateur.",
+    fbok:"&#10003; Exact ! "+"\\(y = \\dfrac{x}{D \\times z}\\).",
+    label:"Isoler y dans D = x/(y×z)", sid:"isoler_y_frac_ddeuxbas" },
+"n2_c11": { qid:"n2_c11", niveau:2, grandeur:"a", schema:false,
+    enonce:"On a la formule \\(N = \\dfrac{a}{b \\times c}\\). Isole la grandeur \\(a\\).",
+    lettres:["N", "b", "c"],
+    lignes:[{ grandeur:"a", op:"produit", slots:["N", "b", "c"] }],
+    fb1:"Dans \\(N = \\dfrac{a}{b \\times c}\\), la grandeur \\(a\\) est divisée par le produit \\(b \\times c\\). Quelle opération applique-t-on aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(b \\times c\\) : \\(a = N \\times b \\times c\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(a = N \\times b \\times c\\).",
+    label:"Isoler a dans N = a/(b×c)", sid:"isoler_a_frac_ddeuxbas" },
+"n2_c12": { qid:"n2_c12", niveau:2, grandeur:"c", schema:false,
+    enonce:"On a la formule \\(N = \\dfrac{a}{b \\times c}\\). Isole la grandeur \\(c\\).",
+    lettres:["a", "N", "b"],
+    lignes:[{ grandeur:"c", op:"fraction", slots:["a", { subop: "produit", cells: ["N", "b"] }] }],
+    fb1:"Dans \\(N = \\dfrac{a}{b \\times c}\\), la grandeur \\(c\\) est au dénominateur, avec \\(b\\). Isole d'abord le produit \\(b \\times c\\), puis \\(c\\) tout seul.",
+    fb2:"On obtient \\(b \\times c = \\dfrac{a}{N}\\), puis on divise par \\(b\\) : \\(c = \\dfrac{a}{N \\times b}\\).",
+    fbok:"&#10003; Exact ! "+"\\(c = \\dfrac{a}{N \\times b}\\).",
+    label:"Isoler c dans N = a/(b×c)", sid:"isoler_c_frac_ddeuxbas" },
+"n2_c13": { qid:"n2_c13", niveau:2, grandeur:"e", schema:false,
+    enonce:"On a la formule \\(K = \\dfrac{e \\times f}{g}\\). Isole la grandeur \\(e\\).",
+    lettres:["K", "g", "f"],
+    lignes:[{ grandeur:"e", op:"fraction", slots:[{ subop: "produit", cells: ["K", "g"] }, "f"] }],
+    fb1:"Dans \\(K = \\dfrac{e \\times f}{g}\\), commence par faire « remonter » \\(g\\) : multiplie les deux membres par \\(g\\), ce qui donne \\(K \\times g = e \\times f\\). Il ne reste plus qu'à isoler \\(e\\). Pense à la 2ᵉ case au numérateur.",
+    fb2:"On multiplie par \\(g\\) puis on divise par \\(f\\) : \\(e = \\dfrac{K \\times g}{f}\\). La grandeur \\(g\\), qui était au dénominateur, se retrouve au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(e = \\dfrac{K \\times g}{f}\\).",
+    label:"Isoler e dans K = (e×f)/g", sid:"isoler_e_frac_ndeux" },
+"n2_c14": { qid:"n2_c14", niveau:2, grandeur:"g", schema:false,
+    enonce:"On a la formule \\(K = \\dfrac{e \\times f}{g}\\). Isole la grandeur \\(g\\).",
+    lettres:["e", "f", "K"],
+    lignes:[{ grandeur:"g", op:"fraction", slots:[{ subop: "produit", cells: ["e", "f"] }, "K"] }],
+    fb1:"Dans \\(K = \\dfrac{e \\times f}{g}\\), la grandeur \\(g\\) est au dénominateur. Astuce : fais-la « remonter » en multipliant par \\(g\\), puis isole-la. Que reste-t-il au numérateur ?",
+    fb2:"On obtient \\(K \\times g = e \\times f\\), puis on divise par \\(K\\) : \\(g = \\dfrac{e \\times f}{K}\\). Le produit \\(e \\times f\\) reste groupé au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(g = \\dfrac{e \\times f}{K}\\).",
+    label:"Isoler g dans K = (e×f)/g", sid:"isoler_g_frac_ddeux" },
+"n2_c15": { qid:"n2_c15", niveau:2, grandeur:"m", schema:false,
+    enonce:"On a la formule \\(T = \\dfrac{m}{n \\times p}\\). Isole la grandeur \\(m\\).",
+    lettres:["T", "n", "p"],
+    lignes:[{ grandeur:"m", op:"produit", slots:["T", "n", "p"] }],
+    fb1:"Dans \\(T = \\dfrac{m}{n \\times p}\\), la grandeur \\(m\\) est divisée par le produit \\(n \\times p\\). Quelle opération applique-t-on aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(n \\times p\\) : \\(m = T \\times n \\times p\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(m = T \\times n \\times p\\).",
+    label:"Isoler m dans T = m/(n×p)", sid:"isoler_m_frac_ddeuxbas" },
+"n2_c16": { qid:"n2_c16", niveau:2, grandeur:"n", schema:false,
+    enonce:"On a la formule \\(T = \\dfrac{m}{n \\times p}\\). Isole la grandeur \\(n\\).",
+    lettres:["m", "T", "p"],
+    lignes:[{ grandeur:"n", op:"fraction", slots:["m", { subop: "produit", cells: ["T", "p"] }] }],
+    fb1:"Dans \\(T = \\dfrac{m}{n \\times p}\\), la grandeur \\(n\\) est au dénominateur, avec \\(p\\). Astuce : isole d'abord le produit \\(n \\times p\\), puis \\(n\\) tout seul. Que se retrouve au dénominateur ?",
+    fb2:"On obtient \\(n \\times p = \\dfrac{m}{T}\\), puis on divise par \\(p\\) : \\(n = \\dfrac{m}{T \\times p}\\). La grandeur \\(T\\) « descend » au dénominateur.",
+    fbok:"&#10003; Exact ! "+"\\(n = \\dfrac{m}{T \\times p}\\).",
+    label:"Isoler n dans T = m/(n×p)", sid:"isoler_n_frac_ddeuxbas" },
+"n3_c01": { qid:"n3_c01", niveau:3, grandeur:"x", schema:false,
+    enonce:"On a la formule \\(y = 3 \\times x + b\\). Isole la grandeur \\(x\\).",
+    lettres:["y", "b", "3"],
+    lignes:[{ grandeur:"x", op:"fraction", slots:[{ subop: "difference", cells: ["y", "b"] }, "3"] }],
+    fb1:"Dans \\(y = 3 \\times x + b\\), fais d'abord passer \\(b\\) de l'autre côté pour isoler le produit \\(3 \\times x\\), puis divise par 3. Quel terme vient en premier au numérateur ?",
+    fb2:"On isole le produit : \\(3 \\times x = y - b\\), puis on divise par 3 : \\(x = \\dfrac{y - b}{3}\\).",
+    fbok:"&#10003; Exact ! "+"\\(x = \\dfrac{y - b}{3}\\).",
+    label:"Isoler x dans y = 3×x + b", sid:"A_isoler_x_3xplusb" },
+"n3_c02": { qid:"n3_c02", niveau:3, grandeur:"t", schema:false,
+    enonce:"On a la formule \\(z = 2 \\times t + c\\). Isole la grandeur \\(t\\).",
+    lettres:["z", "c", "2"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:[{ subop: "difference", cells: ["z", "c"] }, "2"] }],
+    fb1:"Dans \\(z = 2 \\times t + c\\), fais passer \\(c\\) de l'autre côté pour isoler le produit \\(2 \\times t\\), puis divise par 2.",
+    fb2:"On isole le produit : \\(2 \\times t = z - c\\), puis on divise par 2 : \\(t = \\dfrac{z - c}{2}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{z - c}{2}\\).",
+    label:"Isoler t dans z = 2×t + c", sid:"A_isoler_t_2tplusc" },
+"n3_c03": { qid:"n3_c03", niveau:3, grandeur:"n", schema:false,
+    enonce:"On a la formule \\(w = 5 \\times n - d\\). Isole la grandeur \\(n\\).",
+    lettres:["w", "d", "5"],
+    lignes:[{ grandeur:"n", op:"fraction", slots:[{ subop: "somme", cells: ["w", "d"] }, "5"] }],
+    fb1:"Dans \\(w = 5 \\times n - d\\), fais passer \\(d\\) de l'autre côté pour isoler le produit \\(5 \\times n\\). Avec un signe −, que devient \\(d\\) quand il change de côté ?",
+    fb2:"Le terme soustrait devient ajouté : \\(5 \\times n = w + d\\), puis on divise par 5 : \\(n = \\dfrac{w + d}{5}\\).",
+    fbok:"&#10003; Exact ! "+"\\(n = \\dfrac{w + d}{5}\\) : avec le signe −, le terme soustrait devient ajouté en changeant de côté.",
+    label:"Isoler n dans w = 5×n − d", sid:"A_isoler_n_5nmoinsd" },
+"n3_c04": { qid:"n3_c04", niveau:3, grandeur:"k", schema:false,
+    enonce:"On a la formule \\(P = 4 \\times k + q\\). Isole la grandeur \\(k\\).",
+    lettres:["P", "q", "4"],
+    lignes:[{ grandeur:"k", op:"fraction", slots:[{ subop: "difference", cells: ["P", "q"] }, "4"] }],
+    fb1:"Dans \\(P = 4 \\times k + q\\), fais passer \\(q\\) de l'autre côté pour isoler le produit \\(4 \\times k\\), puis divise par 4.",
+    fb2:"On isole le produit : \\(4 \\times k = P - q\\), puis on divise par 4 : \\(k = \\dfrac{P - q}{4}\\).",
+    fbok:"&#10003; Exact ! "+"\\(k = \\dfrac{P - q}{4}\\).",
+    label:"Isoler k dans P = 4×k + q", sid:"A_isoler_k_4kplusq" },
+"n3_c05": { qid:"n3_c05", niveau:3, grandeur:"s", schema:false,
+    enonce:"On a la formule \\(m = 6 \\times s - e\\). Isole la grandeur \\(s\\).",
+    lettres:["m", "e", "6"],
+    lignes:[{ grandeur:"s", op:"fraction", slots:[{ subop: "somme", cells: ["m", "e"] }, "6"] }],
+    fb1:"Dans \\(m = 6 \\times s - e\\), fais passer \\(e\\) de l'autre côté pour isoler le produit \\(6 \\times s\\). Avec un signe −, que devient \\(e\\) en changeant de côté ?",
+    fb2:"Le terme soustrait devient ajouté : \\(6 \\times s = m + e\\), puis on divise par 6 : \\(s = \\dfrac{m + e}{6}\\).",
+    fbok:"&#10003; Exact ! "+"\\(s = \\dfrac{m + e}{6}\\).",
+    label:"Isoler s dans m = 6×s − e", sid:"A_isoler_s_6smoinse" },
+"n3_c06": { qid:"n3_c06", niveau:3, grandeur:"u", schema:false,
+    enonce:"On a la formule \\(T = 10 \\times u + f\\). Isole la grandeur \\(u\\).",
+    lettres:["T", "f", "10"],
+    lignes:[{ grandeur:"u", op:"fraction", slots:[{ subop: "difference", cells: ["T", "f"] }, "10"] }],
+    fb1:"Dans \\(T = 10 \\times u + f\\), fais passer \\(f\\) de l'autre côté pour isoler le produit \\(10 \\times u\\), puis divise par 10.",
+    fb2:"On isole le produit : \\(10 \\times u = T - f\\), puis on divise par 10 : \\(u = \\dfrac{T - f}{10}\\).",
+    fbok:"&#10003; Exact ! "+"\\(u = \\dfrac{T - f}{10}\\).",
+    label:"Isoler u dans T = 10×u + f", sid:"A_isoler_u_10uplusf" },
+"n3_c07": { qid:"n3_c07", niveau:3, grandeur:"x", schema:false,
+    enonce:"On a la formule \\(y = a \\times x + b\\). Isole la grandeur \\(x\\).",
+    lettres:["y", "b", "a"],
+    lignes:[{ grandeur:"x", op:"fraction", slots:[{ subop: "difference", cells: ["y", "b"] }, "a"] }],
+    fb1:"Dans \\(y = a \\times x + b\\), fais passer \\(b\\) de l'autre côté pour isoler le produit \\(a \\times x\\), puis divise par \\(a\\). Quel terme vient en premier au numérateur ?",
+    fb2:"On isole le produit : \\(a \\times x = y - b\\), puis on divise par \\(a\\) : \\(x = \\dfrac{y - b}{a}\\).",
+    fbok:"&#10003; Exact ! "+"\\(x = \\dfrac{y - b}{a}\\).",
+    label:"Isoler x dans y = a×x + b", sid:"B_isoler_x_axplusb" },
+"n3_c08": { qid:"n3_c08", niveau:3, grandeur:"a", schema:false,
+    enonce:"On a la formule \\(y = a \\times x + b\\). Isole la grandeur \\(a\\).",
+    lettres:["y", "b", "x"],
+    lignes:[{ grandeur:"a", op:"fraction", slots:[{ subop: "difference", cells: ["y", "b"] }, "x"] }],
+    fb1:"Dans \\(y = a \\times x + b\\), fais passer \\(b\\) de l'autre côté pour isoler le produit \\(a \\times x\\), puis divise par \\(x\\).",
+    fb2:"On isole le produit : \\(a \\times x = y - b\\), puis on divise par \\(x\\) : \\(a = \\dfrac{y - b}{x}\\).",
+    fbok:"&#10003; Exact ! "+"\\(a = \\dfrac{y - b}{x}\\).",
+    label:"Isoler a dans y = a×x + b", sid:"B_isoler_a_axplusb" },
+"n3_c09": { qid:"n3_c09", niveau:3, grandeur:"t", schema:false,
+    enonce:"On a la formule \\(z = c \\times t - d\\). Isole la grandeur \\(t\\).",
+    lettres:["z", "d", "c"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:[{ subop: "somme", cells: ["z", "d"] }, "c"] }],
+    fb1:"Dans \\(z = c \\times t - d\\), fais passer \\(d\\) de l'autre côté pour isoler le produit \\(c \\times t\\). Avec un signe −, que devient \\(d\\) en changeant de côté ?",
+    fb2:"Le terme soustrait devient ajouté : \\(c \\times t = z + d\\), puis on divise par \\(c\\) : \\(t = \\dfrac{z + d}{c}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{z + d}{c}\\).",
+    label:"Isoler t dans z = c×t − d", sid:"B_isoler_t_ctmoinsd" },
+"n3_c10": { qid:"n3_c10", niveau:3, grandeur:"q", schema:false,
+    enonce:"On a la formule \\(w = p \\times q + r\\). Isole la grandeur \\(q\\).",
+    lettres:["w", "r", "p"],
+    lignes:[{ grandeur:"q", op:"fraction", slots:[{ subop: "difference", cells: ["w", "r"] }, "p"] }],
+    fb1:"Dans \\(w = p \\times q + r\\), fais passer \\(r\\) de l'autre côté pour isoler le produit \\(p \\times q\\), puis divise par \\(p\\).",
+    fb2:"On isole le produit : \\(p \\times q = w - r\\), puis on divise par \\(p\\) : \\(q = \\dfrac{w - r}{p}\\).",
+    fbok:"&#10003; Exact ! "+"\\(q = \\dfrac{w - r}{p}\\).",
+    label:"Isoler q dans w = p×q + r", sid:"B_isoler_q_pqplusr" },
+"n3_c11": { qid:"n3_c11", niveau:3, grandeur:"h", schema:false,
+    enonce:"On a la formule \\(m = g \\times h - k\\). Isole la grandeur \\(h\\).",
+    lettres:["m", "k", "g"],
+    lignes:[{ grandeur:"h", op:"fraction", slots:[{ subop: "somme", cells: ["m", "k"] }, "g"] }],
+    fb1:"Dans \\(m = g \\times h - k\\), fais passer \\(k\\) de l'autre côté pour isoler le produit \\(g \\times h\\). Avec un signe −, que devient \\(k\\) en changeant de côté ?",
+    fb2:"Le terme soustrait devient ajouté : \\(g \\times h = m + k\\), puis on divise par \\(g\\) : \\(h = \\dfrac{m + k}{g}\\).",
+    fbok:"&#10003; Exact ! "+"\\(h = \\dfrac{m + k}{g}\\).",
+    label:"Isoler h dans m = g×h − k", sid:"B_isoler_h_ghmoinsk" },
+"n3_c12": { qid:"n3_c12", niveau:3, grandeur:"e", schema:false,
+    enonce:"On a la formule \\(V = e \\times f + n\\). Isole la grandeur \\(e\\).",
+    lettres:["V", "n", "f"],
+    lignes:[{ grandeur:"e", op:"fraction", slots:[{ subop: "difference", cells: ["V", "n"] }, "f"] }],
+    fb1:"Dans \\(V = e \\times f + n\\), fais passer \\(n\\) de l'autre côté pour isoler le produit \\(e \\times f\\), puis divise par \\(f\\).",
+    fb2:"On isole le produit : \\(e \\times f = V - n\\), puis on divise par \\(f\\) : \\(e = \\dfrac{V - n}{f}\\).",
+    fbok:"&#10003; Exact ! "+"\\(e = \\dfrac{V - n}{f}\\).",
+    label:"Isoler e dans V = e×f + n", sid:"B_isoler_e_efplusn" },
+"n3_c13": { qid:"n3_c13", niveau:3, grandeur:"b", schema:false,
+    enonce:"On a la formule \\(y = a \\times x + b\\). Isole la grandeur \\(b\\).",
+    lettres:["y", "a", "x"],
+    lignes:[{ grandeur:"b", op:"difference", slots:["y", { subop: "produit", cells: ["a", "x"] }] }],
+    fb1:"Dans \\(y = a \\times x + b\\), la grandeur \\(b\\) est ajoutée au produit \\(a \\times x\\). Pour l'isoler, écris-la comme une différence : que faut-il retrancher à \\(y\\) ?",
+    fb2:"On fait passer le produit de l'autre côté : \\(b = y - a \\times x\\). Choisis l'opération « différence », puis ajoute une 2ᵉ case « × » au second terme pour écrire \\(a \\times x\\).",
+    fbok:"&#10003; Exact ! "+"\\(b = y - a \\times x\\).",
+    label:"Isoler b dans y = a×x + b", sid:"C_isoler_b_axplusb" },
+"n3_c14": { qid:"n3_c14", niveau:3, grandeur:"c", schema:false,
+    enonce:"On a la formule \\(z = 3 \\times t + c\\). Isole la grandeur \\(c\\).",
+    lettres:["z", "3", "t"],
+    lignes:[{ grandeur:"c", op:"difference", slots:["z", { subop: "produit", cells: ["3", "t"] }] }],
+    fb1:"Dans \\(z = 3 \\times t + c\\), la grandeur \\(c\\) est ajoutée au produit \\(3 \\times t\\). Pour l'isoler, écris-la comme une différence : que faut-il retrancher à \\(z\\) ?",
+    fb2:"On fait passer le produit de l'autre côté : \\(c = z - 3 \\times t\\). Opération « différence », puis 2ᵉ case « × » au second terme pour \\(3 \\times t\\).",
+    fbok:"&#10003; Exact ! "+"\\(c = z - 3 \\times t\\).",
+    label:"Isoler c dans z = 3×t + c", sid:"C_isoler_c_3tplusc" },
+"n3_c15": { qid:"n3_c15", niveau:3, grandeur:"r", schema:false,
+    enonce:"On a la formule \\(w = p \\times q + r\\). Isole la grandeur \\(r\\).",
+    lettres:["w", "p", "q"],
+    lignes:[{ grandeur:"r", op:"difference", slots:["w", { subop: "produit", cells: ["p", "q"] }] }],
+    fb1:"Dans \\(w = p \\times q + r\\), la grandeur \\(r\\) est ajoutée au produit \\(p \\times q\\). Pour l'isoler, écris-la comme une différence : que faut-il retrancher à \\(w\\) ?",
+    fb2:"On fait passer le produit de l'autre côté : \\(r = w - p \\times q\\). Opération « différence », puis 2ᵉ case « × » au second terme pour \\(p \\times q\\).",
+    fbok:"&#10003; Exact ! "+"\\(r = w - p \\times q\\).",
+    label:"Isoler r dans w = p×q + r", sid:"C_isoler_r_pqplusr" },
+"n3_c16": { qid:"n3_c16", niveau:3, grandeur:"d", schema:false,
+    enonce:"On a la formule \\(P = 5 \\times k + d\\). Isole la grandeur \\(d\\).",
+    lettres:["P", "5", "k"],
+    lignes:[{ grandeur:"d", op:"difference", slots:["P", { subop: "produit", cells: ["5", "k"] }] }],
+    fb1:"Dans \\(P = 5 \\times k + d\\), la grandeur \\(d\\) est ajoutée au produit \\(5 \\times k\\). Pour l'isoler, écris-la comme une différence : que faut-il retrancher à \\(P\\) ?",
+    fb2:"On fait passer le produit de l'autre côté : \\(d = P - 5 \\times k\\). Opération « différence », puis 2ᵉ case « × » au second terme pour \\(5 \\times k\\).",
+    fbok:"&#10003; Exact ! "+"\\(d = P - 5 \\times k\\).",
+    label:"Isoler d dans P = 5×k + d", sid:"C_isoler_d_5kplusd" }
+};
+const IMG_AIRE = "<img class=\"schema-aire\" alt=\"Schéma d'un rectangle\" src=\"data:image/png;base64,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\">";
+
+// ============================================================
+//  Tirage STRATIFIÉ par niveau (vivier transversal niv 1+2+3)
+//  ⚠️ Mécanisme non encore formalisé dans le prompt COMMUN —
+//     conçu et testé ici, à reporter ensuite dans le socle.
+// ============================================================
+const MODE_QUIZ = "entrainement";
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+const QUOTAS = { 1: 2, 2: 4, 3: 4 };   // 2 de niv1, 4 de niv2, 4 de niv3 = 10
+const CLES = Object.keys(CATALOGUE);
+
+function melanger(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function tirageStratifie(){
+  const parNiveau = { 1: [], 2: [], 3: [] };
+  CLES.forEach(id => parNiveau[CATALOGUE[id].niveau].push(id));
+  let ids = [];
+  [1, 2, 3].forEach(niv => {
+    ids = ids.concat(melanger(parNiveau[niv]).slice(0, QUOTAS[niv]));
+  });
+  return melanger(ids);   // ordre d'affichage des 10 mélangé (niveaux non regroupés)
+}
+
+const TOUS_IDS = tirageStratifie();
+let TOTAL = TOUS_IDS.length;
+const CONSTR = {};
+const LABELS = {};
+const SCORM_IDS = {};
+const etat = {};
+TOUS_IDS.forEach(id => {
+  CONSTR[id] = CATALOGUE[id];
+  LABELS[id] = CATALOGUE[id].label;
+  SCORM_IDS[id] = CATALOGUE[id].sid;
+  etat[id] = { resultat: null, tentative: 0 };
+});
+
+function construireBlocsQuestions(){
+  const zone = document.getElementById("zone-questions");
+  zone.innerHTML = "";
+  TOUS_IDS.forEach((qid, i) => {
+    const q = CONSTR[qid];
+    const schemaHtml = q.schema ? IMG_AIRE : "";
+    const bloc = document.createElement("div");
+    bloc.className = "qbloc";
+    bloc.id = qid;
+    bloc.innerHTML =
+      '<div class="qenonce"><span class="qnum">' + (i + 1) + '</span>' +
+        '<span>' + q.enonce + '</span></div>' +
+      '<div class="qcont">' +
+        schemaHtml +
+        '<div id="constr_' + qid + '"></div>' +
+        '<div class="fb" id="fb_' + qid + '"></div>' +
+        '<div style="margin-top:10px">' +
+          '<button class="btn-v" id="btnv_' + qid + '">Valider</button>' +
+          '<button class="btn-r" id="btnr_' + qid + '" style="display:none">2<sup>e</sup> essai</button>' +
+        '</div>' +
+      '</div>';
+    zone.appendChild(bloc);
+  });
+}
+
+function normalizeSlot(){
+  // Au démarrage, toujours 1 case vide par emplacement,
+  // même si la solution attendue en comporte 2 (l'élève décide d'ajouter la 2e case).
+  return { subop: null, cells: [null] };
+}
+
+function construireConstr(qid){
+  const cfg = CONSTR[qid];
+  if(!cfg) return;
+  cfg._etats = cfg.lignes.map(lg => ({
+    op: null,
+    sel: null,                          // lettre actuellement "en main" (placement explicite : on prend une étiquette, puis on choisit la case)
+    slots: lg.slots.map(() => normalizeSlot())
+  }));
+  cfg._ligneFigee = cfg.lignes.map(() => false);
+  cfg._bankComplete = [...cfg.lettres, ...(cfg.distracteurs || [])];
+  cfg._bankOrder = melanger(cfg._bankComplete);
+
+  const container = document.getElementById("constr_" + qid);
+  const helpHtml =
+    '<button class="help-icon" onclick="toggleHelp(\'' + qid + '\')" title="Aide">?</button>' +
+    '<div class="help-bubble" id="helpbubble_' + qid + '">' +
+      "<strong>💡 Comment utiliser ce widget</strong>" +
+      '<ul style="margin:8px 0;padding-left:20px">' +
+        "<li>Choisis d'abord l'opération (× / fraction / + / −) en cliquant sur un bouton.</li>" +
+        "<li>Clique une étiquette dans la banque pour la <strong>prendre</strong> (elle s'illumine), puis clique la <strong>case</strong> où la poser. Reclique l'étiquette pour la lâcher.</li>" +
+        "<li>Clic sur une lettre déjà placée → elle retourne dans la banque.</li>" +
+      '</ul>' +
+      "<strong>Pour les fractions :</strong>" +
+      '<ul style="margin:8px 0;padding-left:20px">' +
+        "<li>Clic sur la case grise vide à côté d'une case remplie → ajoute une 2\u1d49 case avec un sous-opérateur (×, + ou − au choix).</li>" +
+        "<li>Sélecteur × / + / − → change le sous-opérateur à tout moment (les lettres restent).</li>" +
+        "<li>Icône corbeille 🗑 → retire la 2\u1d49 case (les lettres reviennent dans la banque).</li>" +
+      '</ul>' +
+      "<em>Tu peux revenir en arrière à n'importe quel moment, rien n'est définitif avant de cliquer sur « Valider ».</em>" +
+    '</div>';
+  container.innerHTML = '<div class="constr-wrap">' + helpHtml +
+    cfg.lignes.map((lg, i) =>
+      '<div class="constr-row" id="constr-row-' + qid + '-' + i + '">' +
+      renderConstrRow(qid, i) +
+      '</div>'
+    ).join('') +
+  '</div>';
+  document.getElementById('btnv_' + qid).onclick = () => validerConstr(qid);
+  document.getElementById('btnr_' + qid).onclick = () => retryConstr(qid);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([container]);
+}
+
+function toggleHelp(qid){
+  const bubble = document.getElementById("helpbubble_" + qid);
+  if(bubble) bubble.classList.toggle("visible");
+}
+
+function banqueDisponible(cfg, row){
+  const st = cfg._etats[row];
+  const placees = new Set();
+  st.slots.forEach(slot => {
+    slot.cells.forEach(c => { if(c) placees.add(c); });
+  });
+  return cfg._bankOrder.filter(L => !placees.has(L));
+}
+
+function renderConstrRow(qid, i){
+  const cfg = CONSTR[qid];
+  const lg = cfg.lignes[i];
+  const st = cfg._etats[i];
+  const figee = cfg._ligneFigee[i];
+  const nbSlots = st.slots.length;
+
+  const bank = banqueDisponible(cfg, i);
+  const sym = symFromOp(st.op);
+
+  const opsDispo =
+    [['produit','× produit'], ['fraction','fraction'],
+     ['somme','+ somme'], ['difference','− différence']];
+
+  const opsHtml = opsDispo.map(([op, lbl]) => {
+    const sel = (st.op === op) ? ' selected' : '';
+    const dis = figee ? ' disabled' : '';
+    return '<button class="constr-op-btn' + sel + '"' + dis +
+           " onclick=\"constrSetOp('" + qid + "'," + i + ",'" + op + "')\">" + lbl + "</button>";
+  }).join('');
+
+  // Zone des emplacements
+  let slotsHtml;
+  if(st.op === 'fraction'){
+    slotsHtml =
+      '<div class="frac-stack">' +
+        '<div class="frac-zone">' + renderSlot(qid, i, 0) + '</div>' +
+        '<div class="frac-line"></div>' +
+        '<div class="frac-zone">' + renderSlot(qid, i, 1) + '</div>' +
+      '</div>';
+  } else {
+    slotsHtml = st.slots.map((slot, s) => {
+      const symAfter = (s < nbSlots - 1) ?
+        '<span class="constr-sym">' + sym + '</span>' : '';
+      return renderSlot(qid, i, s) + symAfter;
+    }).join('');
+  }
+
+  const bankHtml = figee ? '<span class="constr-bank-figee">— ligne validée —</span>' :
+    (bank.length ? bank.map(L =>
+      "<button class=\"constr-token" + (st.sel === L ? " selected" : "") + "\" onclick=\"constrSelect('" + qid + "'," + i + ",'" + L.replace(/\\/g, "\\\\") + "')\">\\(" + L + "\\)</button>"
+    ).join('') :
+    '<span class="constr-bank-empty">— toutes les lettres sont placées —</span>');
+
+  const preview = previewTex(lg.grandeur, st);
+
+  const headStyle = figee ? ' style="color:var(--vert);font-weight:700"' : '';
+  return '<div class="constr-head"' + headStyle + '>\\(' + preview + '\\)</div>' +
+    '<div class="constr-ops">' + opsHtml + '</div>' +
+    '<div class="constr-slots">' + slotsHtml + '</div>' +
+    '<div class="constr-bank">' + bankHtml + '</div>';
+}
+
+function renderSlot(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  const st = cfg._etats[row];
+  const opPrincipale = st.op;
+  const slot = st.slots[slotIdx];
+  const cap = capsFromOp(opPrincipale, st.slots.length)[slotIdx];
+  const figee = cfg._ligneFigee[row];
+  const dis = figee ? ' disabled' : '';
+
+  // Opération principale produit (ou non choisie) : 1 case par slot, pas de sous-op possible
+  if(opPrincipale !== "fraction" && opPrincipale !== "difference" && opPrincipale !== "somme"){
+    return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+  }
+
+  // Fraction : 1 case + case-fantôme OU 2 cases + sélecteur + corbeille
+  if(slot.cells.length === 1){
+    const html = renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+    if(!figee){
+      const phantom = '<button class="add-case" onclick="constrAddSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Ajouter une 2e case avec un sous-opérateur">⎕</button>';
+      return html + phantom;
+    }
+    return html;
+  }
+
+  const selHtml = !figee ? renderSubOpSelector(qid, row, slotIdx, slot.subop) :
+    '<span class="constr-sym">' + subSym(slot.subop) + '</span>';
+  const trashHtml = !figee ? '<button class="del-case" onclick="constrRemoveSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Retirer cette case">🗑</button>' : "";
+  return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee) +
+         selHtml +
+         renderCase(qid, row, slotIdx, 1, slot.cells[1], cap, dis, figee) +
+         trashHtml;
+}
+
+function subSym(subop){
+  if(subop === 'produit')    return '×';
+  if(subop === 'somme')      return '+';
+  if(subop === 'difference') return '−';
+  return '?';
+}
+
+function renderSubOpSelector(qid, row, slotIdx, currentSubOp){
+  const ops = [["produit","×"], ["somme","+"], ["difference","−"]];
+  const inner = ops.map(([op, sym]) => {
+    const sel = (currentSubOp === op) ? ' selected' : '';
+    return '<button class="sub-op-btn' + sel + '" onclick="constrSetSubOp(\'' + qid + '\',' + row + ',' + slotIdx + ',\'' + op + '\')">' + sym + '</button>';
+  }).join('');
+  return '<div class="sub-op-selector">' + inner + '</div>';
+}
+
+function renderCase(qid, row, slotIdx, cellIdx, content, cap, dis, figee){
+  const st = CONSTR[qid]._etats[row];
+  const vide = !content;
+  const selActive = (st.sel !== null);
+  const cls = (content ? ' filled' : '') + (figee ? ' figee' : '') +
+              ((vide && selActive && !figee) ? ' receptive' : '');
+  const action = (vide && !figee)
+    ? 'constrPlaceAt(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')'
+    : 'constrUnplace(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')';
+  return '<div class="constr-slot-wrap">' +
+    '<button class="constr-slot' + cls + '"' + dis +
+    ' onclick="' + action + '">' +
+    (content ? '\\(' + content + '\\)' : '?') + '</button>' +
+    '<span class="constr-slot-cap">' + cap + '</span>' +
+  '</div>';
+}
+
+function capsFromOp(op, nb){
+  if(op === 'fraction')   return ['numérateur', 'dénominateur'];
+  if(op === 'difference') return ['1er terme', '2e terme'];
+  if(op === 'produit')    return Array(nb).fill('facteur');
+  if(op === 'somme')      return Array(nb).fill('terme');
+  return Array(nb).fill('position');
+}
+
+function symFromOp(op){
+  if(op === 'fraction')   return '/';
+  if(op === 'difference') return '−';
+  if(op === 'produit')    return '×';
+  if(op === 'somme')      return '+';
+  return '?';
+}
+
+function previewTexCell(cell){
+  return cell || "\\square";
+}
+
+function previewTexSlot(slotInterne){
+  if(slotInterne.cells.length === 1){
+    return previewTexCell(slotInterne.cells[0]);
+  }
+  const a = previewTexCell(slotInterne.cells[0]);
+  const b = previewTexCell(slotInterne.cells[1]);
+  if(slotInterne.subop === "produit")    return a + " \\times " + b;
+  if(slotInterne.subop === "somme")      return a + " + " + b;
+  if(slotInterne.subop === "difference") return a + " - " + b;
+  return a + " \\,?\\, " + b;
+}
+
+function previewTexSlotParen(slotInterne){
+  // Dans une somme/différence principale, un slot à 2 cases dont la sous-opération est additive
+  // (+ ou −) doit être parenthésé pour rester correct (ex. y − (a + x)).
+  // Un produit n'a jamais besoin de parenthèses (y − a×x).
+  const tex = previewTexSlot(slotInterne);
+  if(slotInterne.cells.length === 2 &&
+     (slotInterne.subop === "somme" || slotInterne.subop === "difference")){
+    return "\\left(" + tex + "\\right)";
+  }
+  return tex;
+}
+
+function previewTex(grandeur, st){
+  if(!st.op && st.slots.every(s => s.cells.every(c => !c))){
+    return grandeur + ' = \\square\\,?\\,\\square';
+  }
+  if(st.op === 'fraction'){
+    return grandeur + ' = \\dfrac{' + previewTexSlot(st.slots[0]) + '}{' + previewTexSlot(st.slots[1]) + '}';
+  }
+  // produit : 1 case par slot (pas de sous-op) -> previewTexCell ; somme/difference : previewTexSlot (sous-op possible)
+  if(st.op === 'produit'){
+    const parts = st.slots.map(s => previewTexCell(s.cells[0]));
+    return grandeur + ' = ' + parts.join(' \\times ');
+  }
+  const parts = st.slots.map(s => previewTexSlotParen(s));
+  if(st.op === 'somme')      return grandeur + ' = ' + parts.join(' + ');
+  if(st.op === 'difference') return grandeur + ' = ' + parts[0] + ' - ' + parts[1];
+  return grandeur + ' = ' + parts.join(' \\,?\\, ');
+}
+
+function refreshConstrRow(qid, i){
+  const el = document.getElementById('constr-row-' + qid + '-' + i);
+  if(!el) return;
+  el.innerHTML = renderConstrRow(qid, i);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]);
+}
+
+function constrSetOp(qid, row, op){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  st.op = (st.op === op) ? null : op;
+  // Si la nouvelle opération n'autorise pas les sous-cases (produit / aucune) :
+  // les 2e cases disparaissent, leurs lettres retournent dans la banque
+  if(st.op !== 'fraction' && st.op !== 'difference' && st.op !== 'somme'){
+    st.slots.forEach(slot => {
+      slot.subop = null;
+      slot.cells = [slot.cells[0]];
+    });
+  }
+  refreshConstrRow(qid, row);
+}
+
+function estPlacee(st, letter){
+  return st.slots.some(slot => slot.cells.includes(letter));
+}
+
+function constrSelect(qid, row, letter){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(estPlacee(st, letter)) return;              // lettre déjà posée → ne pas la reprendre
+  st.sel = (st.sel === letter) ? null : letter;  // reclic sur la même étiquette = on la lâche
+  refreshConstrRow(qid, row);
+}
+
+function constrPlaceAt(qid, row, slotIdx, cellIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(st.sel === null) return;                            // aucune lettre en main → ne rien faire
+  if(st.slots[slotIdx].cells[cellIdx] !== null) return; // case déjà occupée → ne rien faire
+  st.slots[slotIdx].cells[cellIdx] = st.sel;            // on pose ICI la lettre en main
+  st.sel = null;                                        // la main se vide
+  refreshConstrRow(qid, row);
+}
+
+// (LEGACY — placement automatique séquentiel. REMPLACÉ par constrSelect + constrPlaceAt ; conservé pour historique, plus câblé.)
+function constrPlace(qid, row, letter){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(estPlacee(st, letter)) return;
+  for(let i = 0; i < st.slots.length; i++){
+    const cells = st.slots[i].cells;
+    for(let j = 0; j < cells.length; j++){
+      if(cells[j] === null){
+        cells[j] = letter;
+        refreshConstrRow(qid, row);
+        return;
+      }
+    }
+  }
+}
+
+function constrUnplace(qid, row, slotIdx, cellIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const cells = st.slots[slotIdx].cells;
+  if(cells[cellIdx] === null) return;
+  cells[cellIdx] = null;
+  refreshConstrRow(qid, row);
+}
+
+function constrAddSubCase(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(st.op !== "fraction" && st.op !== "difference" && st.op !== "somme") return;
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length >= 2) return;
+  slot.subop = "produit";
+  slot.cells.push(null);
+  refreshConstrRow(qid, row);
+}
+
+function constrRemoveSubCase(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length < 2) return;
+  slot.subop = null;
+  slot.cells = [slot.cells[0]];
+  refreshConstrRow(qid, row);
+}
+
+function constrSetSubOp(qid, row, slotIdx, subop){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length !== 2) return;
+  slot.subop = subop;
+  refreshConstrRow(qid, row);
+}
+
+function evalSlot(slotAttendu, slotEleve){
+  if(typeof slotAttendu === "string"){
+    return slotEleve.cells.length === 1 && slotEleve.cells[0] === slotAttendu;
+  }
+  if(slotEleve.cells.length !== 2) return false;
+  if(slotEleve.subop !== slotAttendu.subop) return false;
+  if(slotAttendu.subop === "difference"){
+    return slotEleve.cells[0] === slotAttendu.cells[0]
+        && slotEleve.cells[1] === slotAttendu.cells[1];
+  }
+  const tri1 = [...slotEleve.cells].sort();
+  const tri2 = [...slotAttendu.cells].sort();
+  return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+}
+
+function evalLigne(opChoisie, opAttendue, slotsRemplis, slotsAttendus){
+  if(opChoisie !== opAttendue) return false;
+  if(slotsRemplis.length !== slotsAttendus.length) return false;
+  if(opAttendue === 'fraction' || opAttendue === 'difference'){
+    return slotsRemplis.every((slotR, i) => evalSlot(slotsAttendus[i], slotR));
+  }
+  // Commutatif (produit, somme) : comparaison de multi-ensembles sur les 1res cases
+  const tri1 = slotsRemplis.map(s => s.cells[0]).sort();
+  const tri2 = slotsAttendus.map(s => (typeof s === "string" ? s : null)).sort();
+  return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+}
+
+// Représentation interne de la solution (pour révélation en fin de 2e tentative)
+function solutionInterne(lg){
+  return {
+    op: lg.op,
+    slots: lg.slots.map(s => (typeof s === "string") ?
+      { subop: null, cells: [s] } :
+      { subop: s.subop, cells: [...s.cells] })
+  };
+}
+
+function validerConstr(qid){
+  const cfg = CONSTR[qid];
+  const t = etat[qid];
+  const multi = cfg.lignes.length > 1;
+
+  for(let i = 0; i < cfg.lignes.length; i++){
+    if(cfg._ligneFigee[i]) continue;
+    const st = cfg._etats[i];
+    if(!st.op){
+      alert("Choisis d'abord l'opération (× / fraction / + / −).");
+      return;
+    }
+    if(st.slots.some(slot => slot.cells.some(c => c === null))){
+      alert("Remplis toutes les cases avant de valider.");
+      return;
+    }
+  }
+
+  t.tentative++;
+
+  const resultats = cfg.lignes.map((lg, i) => {
+    if(cfg._ligneFigee[i]) return true;
+    const st = cfg._etats[i];
+    return evalLigne(st.op, lg.op, st.slots, lg.slots);
+  });
+
+  const toutBon = resultats.every(r => r);
+  const repEleve = reponseConstr(qid);   // capture avant toute révélation de solution
+  const fb = document.getElementById('fb_' + qid);
+  const btnv = document.getElementById('btnv_' + qid);
+  const btnr = document.getElementById('btnr_' + qid);
+  const bloc = document.getElementById(qid);
+
+  if(toutBon){
+    fb.className = 'fb ok'; fb.innerHTML = cfg.fbok; fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    cfg._ligneFigee = cfg.lignes.map(() => true);
+    cfg.lignes.forEach((_, i) => refreshConstrRow(qid, i));
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc');
+    fb.className = 'fb ko';
+
+    if(t.tentative === 1){
+      if(multi){
+        let nbOk = 0, nbTotal = cfg.lignes.length;
+        cfg.lignes.forEach((lg, i) => {
+          if(resultats[i]){
+            cfg._ligneFigee[i] = true;
+            nbOk++;
+          } else {
+            cfg._etats[i].op = null;
+            cfg._etats[i].slots = lg.slots.map(() => normalizeSlot());
+          }
+          refreshConstrRow(qid, i);
+        });
+        fb.innerHTML = "✗ " + nbOk + " ligne(s) sur " + nbTotal +
+                       " correctes. Revois celle(s) effacée(s).<br>" + cfg.fb1;
+      } else {
+        cfg._etats[0].op = null;
+        cfg._etats[0].slots = cfg.lignes[0].slots.map(() => normalizeSlot());
+        refreshConstrRow(qid, 0);
+        fb.innerHTML = "✗ " + cfg.fb1;
+      }
+      fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      cfg.lignes.forEach((lg, i) => {
+        if(!resultats[i]){
+          const sol = solutionInterne(lg);
+          cfg._etats[i].op = sol.op;
+          cfg._etats[i].slots = sol.slots;
+        }
+        cfg._ligneFigee[i] = true;
+        refreshConstrRow(qid, i);
+      });
+      fb.className = 'fb ko2';
+      fb.innerHTML = "✗ " + cfg.fb2 + (EN_CLASSE ? RELANCE_PROF : '');
+      fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryConstr(qid){
+  document.getElementById('fb_' + qid).style.display = 'none';
+  document.getElementById('btnr_' + qid).style.display = 'none';
+  document.getElementById('btnv_' + qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+function texToPlain(s){
+  return String(s)
+    .replace(/\\rho/g, "rho")
+    .replace(/\\lambda/g, "lambda")
+    .replace(/\\ell/g, "l")
+    .replace(/\\dfrac/g, "")
+    .replace(/[\\{}]/g, "");
+}
+
+// Sérialise un emplacement (gère la sous-opération à 2 cases : fractions, différences et sommes)
+function slotToPlain(slot){
+  const cells = slot.cells.map(c => texToPlain(c || "?"));
+  if(cells.length === 1) return cells[0];
+  const symMap = { produit: "*", somme: "+", difference: "-" };
+  return "(" + cells[0] + (symMap[slot.subop] || "?") + cells[1] + ")";
+}
+
+// Reconstruit la formule complète de l'élève en texte lisible
+function reponseConstr(qid){
+  const cfg = CONSTR[qid];
+  return cfg.lignes.map((lg, i) => {
+    const st = cfg._etats[i];
+    const g = texToPlain(lg.grandeur);
+    const parts = st.slots.map(slotToPlain);
+    if(st.op === "fraction")   return g + "=" + parts[0] + "/" + parts[1];
+    if(st.op === "produit")    return g + "=" + parts.join("*");
+    if(st.op === "somme")      return g + "=" + parts.join("+");
+    if(st.op === "difference") return g + "=" + parts[0] + "-" + parts[1];
+    return g + "=?";
+  }).join(" ; ");
+}
+
+
+// ============================================================
+//  Scores (2 notes), bilan EN BAS (sans tableau), fin
+// ============================================================
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if(r === 'ok1'){ n1++; n2++; } else if(r === 'ok2'){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+function majScores(){ /* pas de bandeau en haut */ }
+function verifierFin(){
+  if(TOUS_IDS.every(id => etat[id].resultat !== null)) afficherBilan();
+}
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById('bilan-n1').textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById('bilan-n2').textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById('bilan').style.display = 'block';
+  if(TOUS_IDS.every(id => etat[id].resultat !== null)) scormReport(sc.n1);
+}
+
+// ============================================================
+//  Couche SCORM 1.2 — MODE ENTRAÎNEMENT (silence total hors LMS)
+// ============================================================
+var scormAPI = null, scormInit = false, scormNbInter = 0;
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+function scormEnd(){ try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){} }
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){}
+}
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+
+// ============================================================
+//  Initialisation (mode entraînement)
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  scormStart();
+  construireBlocsQuestions();
+  TOUS_IDS.forEach(construireConstr);
+  const btnReload = document.getElementById('btn-reload');
+  if(btnReload) btnReload.onclick = () => location.reload();
+  function renderMath(){
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+    else { setTimeout(renderMath, 100); }
+  }
+  renderMath();
+});
+
+</script>
+</body>
+</html>

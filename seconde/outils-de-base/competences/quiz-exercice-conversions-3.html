@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde : Conversions — niveau 3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:130px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.disp.actif{border-color:var(--bleu-cl);box-shadow:0 0 0 2px rgba(44,111,173,.16)}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:68px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.egal{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--bleu);padding:0 2px}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.exp-btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:5px 9px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu-cl);cursor:pointer;transition:all .14s}
+.exp-btn:hover{background:#eef4fa}
+.exp-btn:disabled{opacity:.4;cursor:default}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+  .disp{min-width:104px}
+}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Conversions — niveau 3 (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="consigne">
+    📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+  </div>
+
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="contexte">
+    Pour chaque question, écris la conversion <b>complète</b> : recopie d'abord la valeur de départ avec son unité <b>à gauche</b> du signe <b>=</b>, puis écris la valeur convertie avec son unité <b>à droite</b>.<br>
+    Clique sur une case de valeur pour la sélectionner (elle s'encadre en bleu), puis utilise le clavier. Les unités se tapent au clavier de l'ordinateur.<br>
+    Les deux écritures sont acceptées pour la valeur convertie : écriture décimale <b>ou</b> notation scientifique (touche ×10<sup>x</sup> du clavier).<br>
+    <i>De nouvelles valeurs, de nouvelles unités et un nouvel ordre des questions sont tirés au sort à chaque chargement de la page : tu peux recommencer autant de fois que tu veux pour t'entraîner !</i>
+  </div>
+
+  <div id="zone-questions"></div>
+
+  <div class="barre-finale">
+    <button class="btn-global btn-valider-tout" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" onclick="location.reload()">&#8634; Recommencer (nouvelles valeurs)</button>
+  </div>
+
+  <div id="bilan">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1<sup>er</sup> essai) : <span class="score-res-val" id="res1">—</span></div>
+      <div class="score-res-item">Note 2 (1<sup>er</sup> ou 2<sup>e</sup> essai) : <span class="score-res-val" id="res2">—</span></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Exercice Conversions — 3 · Chapitre 0 · Seconde – 1re
+   Valeurs de départ avec puissance de 10, tirées au sort
+   à chaque chargement.
+   Couche SCORM 1.2 : remontée de la Note 1 question par
+   question vers Éléa ; silencieux hors LMS.
+   ============================================================ */
+
+// ============================================================
+// Préfixes et définitions des 10 conversions (structure fixe,
+// mantisse aléatoire)
+// ============================================================
+const PREFPOW = { "p": -12, "n": -9, "µ": -6, "m": -3, "c": -2, "k": 3, "M": 6, "G": 9, "T": 12 };
+const PINFO = {
+  "p": { nom: "pico",  fact: "10⁻¹²" },
+  "n": { nom: "nano",  fact: "10⁻⁹" },
+  "µ": { nom: "micro", fact: "10⁻⁶" },
+  "m": { nom: "milli", fact: "10⁻³" },
+  "c": { nom: "centi", fact: "10⁻²" },
+  "k": { nom: "kilo",  fact: "10³"  },
+  "M": { nom: "méga",  fact: "10⁶"  },
+  "G": { nom: "giga",  fact: "10⁹"  },
+  "T": { nom: "téra",  fact: "10¹²" }
+};
+
+function rnd(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// mantisse à 1 décimale, ex "3,7" (jamais ,0)
+function genDec1(){
+  let n;
+  do { n = rnd(11, 99); } while (n % 10 === 0);
+  return String(Math.floor(n / 10)) + "," + String(n % 10);
+}
+// chiffre seul, ex "7"
+function genInt1(){
+  return String(rnd(2, 9));
+}
+// Exposant de la puissance de 10 de la valeur de départ
+const EXPOSANTS = [-3, -2, 2, 3];
+function tirerExp(pref){
+  const ok = EXPOSANTS.filter(e => Math.abs(e + PREFPOW[pref]) <= 10);
+  return ok[rnd(0, ok.length - 1)];
+}
+
+// ============================================================
+// Tirage aléatoire des 10 conversions : chaque unité de base
+// apparaît au moins une fois (+ 2 doublons avec un autre préfixe),
+// préfixe et mantisse tirés au sort, ordre mélangé (Fisher-Yates).
+// ============================================================
+function melanger(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const UNITES_POOL = {
+  "m": ["k", "c", "m", "µ", "n", "p"],
+  "s": ["m", "µ", "n", "p"],
+  "g": ["k", "m", "µ"],
+  "L": ["m", "c"],
+  "V": ["k", "m", "M", "T"],
+  "A": ["m", "µ", "k", "p", "T"],
+  "J": ["k", "M", "m"],
+  "W": ["k", "M", "m", "G"]
+};
+
+const GENS = [genDec1, genInt1];
+
+function tirerDefs(){
+  const bases = Object.keys(UNITES_POOL);
+  // bases compatibles pour chaque préfixe (déduit de UNITES_POOL)
+  const basesPref = {};
+  bases.forEach(b => UNITES_POOL[b].forEach(p => {
+    (basesPref[p] = basesPref[p] || []).push(b);
+  }));
+  const prefixes = Object.keys(PREFPOW);   // les 9 préfixes p → T
+  // Colonne vertébrale : chaque préfixe 1×, base compatible, ≤ 2 par base.
+  function tenterSquelette(){
+    const usage = {}; bases.forEach(b => usage[b] = 0);
+    const ordre = melanger(prefixes.slice())
+      .sort((a, b) => basesPref[a].length - basesPref[b].length); // + contraint d'abord
+    const paires = [];
+    for (const p of ordre){
+      const dispo = melanger(basesPref[p].filter(b => usage[b] < 2));
+      if (!dispo.length) return null;
+      usage[dispo[0]]++;
+      paires.push({ pref: p, base: dispo[0] });
+    }
+    return { paires: paires, usage: usage };
+  }
+  let sq = null;
+  for (let t = 0; t < 40 && !sq; t++) sq = tenterSquelette();
+  const paires = sq.paires, usage = sq.usage;
+  // 1 question bonus : base sous le plafond, préfixe pas déjà posé sur cette base
+  const bonusBases = melanger(bases.filter(b => usage[b] < 2));
+  for (const b of bonusBases){
+    const dejaB = paires.filter(x => x.base === b).map(x => x.pref);
+    const pool = melanger(UNITES_POOL[b].filter(p => !dejaB.includes(p)));
+    if (pool.length){ paires.push({ pref: pool[0], base: b }); break; }
+  }
+  while (paires.length < 10){
+    const b = bases[rnd(0, bases.length - 1)];
+    const dejaB = paires.filter(x => x.base === b).map(x => x.pref);
+    if (dejaB.length >= 2) continue;
+    const pool = UNITES_POOL[b].filter(p => !dejaB.includes(p));
+    if (!pool.length) continue;
+    paires.push({ pref: pool[rnd(0, pool.length - 1)], base: b });
+  }
+  const defs = melanger(paires).map(x => ({
+    pref: x.pref,
+    base: x.base,
+    gen: GENS[rnd(0, GENS.length - 1)],
+    label: "Conversion " + x.pref + x.base + " → " + x.base
+  }));
+  return defs.map((d, i) => { d.id = "q" + (i + 1); return d; });
+}
+const CONVDEFS = tirerDefs();
+
+const TOUS_IDS = CONVDEFS.map(d => d.id);
+const TOTAL = TOUS_IDS.length;
+const LABELS = {};
+const SCORM_IDS = {};
+CONVDEFS.forEach(d => {
+  LABELS[d.id] = d.label;
+  const pSan = (d.pref === "µ") ? "u" : d.pref;
+  SCORM_IDS[d.id] = "convertir_" + pSan + d.base + "_vers_" + d.base;
+});
+
+const etat = {};
+TOUS_IDS.forEach(id => { etat[id] = { resultat: null, tentative: 0 }; });
+
+const MODE_QUIZ = "entrainement";
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+// ============================================================
+// Mise en forme des nombres (écriture décimale + scientifique)
+// ============================================================
+function supExp(n){
+  const map = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+                "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  return String(n).split("").map(c => map[c] || c).join("");
+}
+
+function grouper(intP, fracP){
+  const i = intP.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F");
+  const f = fracP ? fracP.replace(/(\d{3})(?=\d)/g, "$1\u202F") : "";
+  return f ? i + "," + f : i;
+}
+
+// Calcule, à partir d'une mantisse française ("3,5") et d'une puissance
+// de 10 (préfixe), les deux écritures de la valeur convertie + sa valeur num.
+function calcFormes(mantStr, exp){
+  const s = mantStr.replace(",", ".");
+  const parts = s.split(".");
+  const brut = parts[0] + (parts[1] || "");
+  const digits = brut.replace(/^0+(?=\d)/, "");
+  const stripped = brut.length - digits.length;
+  const pp = parts[0].length + exp - stripped;
+  let intP, fracP;
+  if (pp <= 0){ intP = "0"; fracP = "0".repeat(-pp) + digits; }
+  else if (pp >= digits.length){ intP = digits + "0".repeat(pp - digits.length); fracP = ""; }
+  else { intP = digits.slice(0, pp); fracP = digits.slice(pp); }
+  fracP = fracP.replace(/0+$/, "");
+  const dec = grouper(intP, fracP);
+  let dts = digits.replace(/0+$/, "");
+  if (dts === "") dts = "0";
+  const mant = (dts.length > 1) ? dts[0] + "," + dts.slice(1) : dts;
+  const e = pp - 1;
+  const sci = mant + " × 10" + supExp(e);
+  return { dec: dec, sci: sci, val: parseFloat(s) * Math.pow(10, exp), cs: dts.length, e: e };
+}
+
+// ============================================================
+// Génération des questions (valeurs aléatoires) + dict CONV
+// ============================================================
+const CONV = {};
+
+function construireQuestions(){
+  const zone = document.getElementById("zone-questions");
+  let html = "";
+  CONVDEFS.forEach((def, idx) => {
+    const mantStr = def.gen();
+    const e0 = tirerExp(def.pref);
+    const exp = e0 + PREFPOW[def.pref];
+    const f = calcFormes(mantStr, exp);
+    const uPref = def.pref + def.base;
+    const info = PINFO[def.pref];
+    const affG = mantStr + " × 10" + supExp(e0);
+    const valG = parseFloat(mantStr.replace(",", ".")) * Math.pow(10, e0);
+    let chaine = affG + " " + uPref + " = " + f.dec + " " + def.base;
+    if (f.e !== 0) chaine += " = " + f.sci + " " + def.base;
+    const csTxt = (f.cs === 1) ? "1 chiffre significatif" : f.cs + " chiffres significatifs";
+    CONV[def.id] = {
+      affG: affG,
+      valG: valG,
+      uPref: uPref,
+      uBase: def.base,
+      valD: f.val,
+      corr: chaine + " (" + csTxt + ")",
+      fbValD: "Rappel : « " + info.nom + " » (" + def.pref + ") signifie ×" + info.fact +
+              ", donc 1 " + uPref + " = " + info.fact + " " + def.base +
+              ". Repars de la valeur de départ et applique ce facteur.",
+      fbok: "&#10003; Exact ! " + chaine + " &mdash; valeur à " + csTxt +
+            " : une conversion ne change jamais le nombre de chiffres significatifs."
+    };
+    const btnMu = (def.pref === "µ")
+      ? '<button type="button" class="exp-btn" onclick="insMu(\'' + def.id + '\')" id="mu_' + def.id + '" title="Insérer le symbole micro">µ</button>'
+      : "";
+    html +=
+      '<div class="qbloc" id="' + def.id + '">' +
+        '<div class="qenonce"><span class="qnum">' + (idx + 1) + '</span>' +
+        '<span>Convertis <b>' + affG + "&nbsp;" + uPref + '</b> en <b>' + def.base + '</b>.</span></div>' +
+        '<div class="qcont">' +
+          '<div class="saisie-ligne">' +
+            '<div class="disp" id="dispG_' + def.id + '" title="Valeur de départ"></div>' +
+            '<input class="sunit" id="unitG_' + def.id + '" type="text" autocomplete="off" spellcheck="false" title="Unité de départ">' +
+            btnMu +
+            '<span class="egal">=</span>' +
+            '<div class="disp" id="dispD_' + def.id + '" title="Valeur convertie"></div>' +
+            '<input class="sunit" id="unitD_' + def.id + '" type="text" autocomplete="off" spellcheck="false" title="Unité d\u2019arrivée">' +
+          '</div>' +
+          '<div id="clav_' + def.id + '"></div>' +
+          '<div class="fb" id="fb_' + def.id + '"></div>' +
+          '<div style="margin-top:10px">' +
+            '<button class="btn-v" id="btnv_' + def.id + '" onclick="validerConv(\'' + def.id + '\')">Valider</button>' +
+            '<button class="btn-r" id="btnr_' + def.id + '" onclick="retryConv(\'' + def.id + '\')">2<sup>e</sup> essai</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+  zone.innerHTML = html;
+}
+
+// ============================================================
+// Clavier scientifique (2 zones de saisie par question)
+// ============================================================
+const TOUCHES = [
+  { l: "7", t: "ch", v: "7" }, { l: "8", t: "ch", v: "8" }, { l: "9", t: "ch", v: "9" }, { l: "(", t: "op", v: "(" }, { l: ")", t: "op", v: ")" },
+  { l: "4", t: "ch", v: "4" }, { l: "5", t: "ch", v: "5" }, { l: "6", t: "ch", v: "6" }, { l: "×", t: "op", v: "×" }, { l: "÷", t: "op", v: "÷" },
+  { l: "1", t: "ch", v: "1" }, { l: "2", t: "ch", v: "2" }, { l: "3", t: "ch", v: "3" }, { l: "+", t: "op", v: "+" }, { l: "−", t: "op", v: "−" },
+  { l: "0", t: "ch", v: "0" }, { l: ",", t: "ch", v: "," }, { l: ".", t: "ch", v: "." }, { l: "×10ˣ", t: "sp", v: "EXP" }, { l: "⌫", t: "del", v: "DEL" }
+];
+
+const saisi = {};
+const actif = {};
+const fige = {};
+TOUS_IDS.forEach(id => { saisi[id] = { g: "", d: "" }; actif[id] = "g"; fige[id] = false; });
+
+function construireClavier(containerId, qid){
+  const div = document.getElementById(containerId);
+  if (!div) return;
+  const wrap = document.createElement("div");
+  wrap.className = "clavier";
+  TOUCHES.forEach(t => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "k" + (t.t === "op" ? " k-op" : t.t === "sp" ? " k-spec" : t.t === "del" ? " k-del" : "");
+    btn.textContent = t.l;
+    btn.addEventListener("click", () => toucheClavier(qid, t.v));
+    wrap.appendChild(btn);
+  });
+  div.innerHTML = "";
+  div.appendChild(wrap);
+}
+
+function toucheClavier(qid, val){
+  if (fige[qid]) return;
+  const cote = actif[qid];
+  if (val === "DEL"){
+    let c = saisi[qid][cote];
+    const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+    if (m){
+      if (m[4].length > 0) c = m[1] + m[2] + m[3] + m[4].slice(0, -1);
+      else if (m[3].length > 0) c = m[1] + m[2];
+      else c = m[1];
+    } else { c = c.slice(0, -1); }
+    saisi[qid][cote] = c;
+  } else if (val === "EXP"){
+    saisi[qid][cote] += "×10^";
+  } else {
+    saisi[qid][cote] += val;
+  }
+  renderDisp(qid);
+}
+
+function renderDisp(qid){
+  ["g", "d"].forEach(cote => {
+    const raw = saisi[qid][cote];
+    const rendu = raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => "×10<sup>" + sg + exp + "</sup>");
+    const el = document.getElementById((cote === "g" ? "dispG_" : "dispD_") + qid);
+    if (!el) return;
+    const curseur = (!fige[qid] && actif[qid] === cote)
+      ? '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>'
+      : "";
+    el.innerHTML = rendu + curseur;
+    el.classList.toggle("actif", !fige[qid] && actif[qid] === cote);
+  });
+}
+
+function setActif(qid, cote){
+  if (fige[qid]) return;
+  actif[qid] = cote;
+  renderDisp(qid);
+}
+
+function insMu(qid){
+  const f = document.getElementById("unitG_" + qid);
+  if (f && !f.disabled){ f.value += "µ"; f.focus(); }
+}
+
+// ============================================================
+// Analyse de la saisie
+// ============================================================
+function parseVal(raw){
+  try {
+    const s = raw
+      .replace(/,/g, ".")
+      .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => "e-" + e)
+      .replace(/×10\^(\d+)/g, (_, e) => "e+" + e)
+      .replace(/[×x]/g, "*")
+      .replace(/÷/g, "/")
+      .replace(/−/g, "-");
+    if (s.trim() === "") return NaN;
+    return parseFloat(s);
+  } catch (e){ return NaN; }
+}
+
+// Normalisation d'unité : casse SENSIBLE (mJ ≠ MJ), espaces supprimés,
+// mu grec U+03BC ramené au signe micro U+00B5.
+function normUnite(str){
+  return str.replace(/\s/g, "").replace(/\u03BC/g, "\u00B5");
+}
+
+function egalRel(a, b){
+  if (isNaN(a) || isNaN(b)) return false;
+  return Math.abs(a - b) <= 1e-9 * Math.abs(b);
+}
+
+// ============================================================
+// Validation
+// ============================================================
+function validerConv(qid){
+  const cfg = CONV[qid];
+  const t = etat[qid];
+  t.tentative++;
+
+  const vG = parseVal(saisi[qid].g);
+  const vD = parseVal(saisi[qid].d);
+  const uGraw = document.getElementById("unitG_" + qid).value.trim();
+  const uDraw = document.getElementById("unitD_" + qid).value.trim();
+  const uG = normUnite(uGraw);
+  const uD = normUnite(uDraw);
+
+  // Réponse élève capturée AVANT toute révélation de solution
+  const repEleve = saisi[qid].g + " " + uGraw + " = " + saisi[qid].d + " " + uDraw;
+
+  const gValOk = egalRel(vG, cfg.valG);
+  const gUniOk = (uG === cfg.uPref);
+  const dValOk = egalRel(vD, cfg.valD);
+  const dUniOk = (uD === cfg.uBase);
+  const isOk = gValOk && gUniOk && dValOk && dUniOk;
+
+  const dispG = document.getElementById("dispG_" + qid);
+  const dispD = document.getElementById("dispD_" + qid);
+  const uinpG = document.getElementById("unitG_" + qid);
+  const uinpD = document.getElementById("unitD_" + qid);
+  const fb = document.getElementById("fb_" + qid);
+  const btnv = document.getElementById("btnv_" + qid);
+  const btnr = document.getElementById("btnr_" + qid);
+  const bloc = document.getElementById(qid);
+  const btnMu = document.getElementById("mu_" + qid);
+
+  // gel des saisies
+  fige[qid] = true;
+  renderDisp(qid);
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => b.disabled = true);
+  uinpG.disabled = true; uinpD.disabled = true;
+  if (btnMu) btnMu.disabled = true;
+
+  if (isOk){
+    dispG.classList.add("ok"); uinpG.classList.add("ok");
+    dispD.classList.add("ok"); uinpD.classList.add("ok");
+    fb.className = "fb ok";
+    fb.innerHTML = cfg.fbok;
+    fb.style.display = "block";
+    t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+    scormInteraction(qid, true, repEleve, t.tentative);
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+  } else {
+    bloc.classList.add("warn-bloc");
+    fb.className = "fb ko";
+    let msg = "";
+    if (!gValOk || !gUniOk){
+      if (!gValOk) dispG.classList.add("ko");
+      if (!gUniOk) uinpG.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "&#10007; Commence par recopier, à gauche du signe =, la valeur de départ avec son unité, exactement comme dans l'énoncé."
+        : "&#10007; À gauche du signe =, il fallait écrire : " + cfg.affG + " " + cfg.uPref +
+          ". &mdash; Réponse attendue : " + cfg.corr;
+    } else if (!dValOk){
+      dispD.classList.add("ko");
+      if (!dUniOk) uinpD.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "&#10007; " + cfg.fbValD
+        : "&#10007; La valeur convertie est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    } else {
+      uinpD.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "La valeur convertie est correcte, mais vérifie l'unité d'arrivée demandée dans l'énoncé."
+        : "&#10007; L'unité d'arrivée est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    }
+    fb.innerHTML = msg;
+    fb.style.display = "block";
+
+    if (t.tentative === 1){
+      btnv.disabled = true; btnr.style.display = "inline-block";
+    } else {
+      fb.className = "fb ko2";
+      fb.innerHTML += (EN_CLASSE ? RELANCE_PROF : "");
+      t.resultat = "ko";
+      scormInteraction(qid, false, repEleve, t.tentative);
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+    }
+  }
+  verifierFin();
+}
+
+function retryConv(qid){
+  // les saisies sont conservées : l'élève corrige ce qui est faux
+  fige[qid] = false;
+  ["dispG_", "dispD_"].forEach(p => document.getElementById(p + qid).classList.remove("ok", "ko"));
+  ["unitG_", "unitD_"].forEach(p => {
+    const f = document.getElementById(p + qid);
+    f.classList.remove("ok", "ko");
+    f.disabled = false;
+  });
+  const btnMu = document.getElementById("mu_" + qid);
+  if (btnMu) btnMu.disabled = false;
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => b.disabled = false);
+  document.getElementById("fb_" + qid).style.display = "none";
+  document.getElementById("btnr_" + qid).style.display = "none";
+  document.getElementById("btnv_" + qid).disabled = false;
+  document.getElementById(qid).classList.remove("warn-bloc");
+  renderDisp(qid);
+}
+
+// ============================================================
+// Bilan, scores, fin
+// ============================================================
+function verifierFin(){
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if (fini) afficherBilan();
+}
+
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if (r === "ok1"){ n1++; n2++; }
+    else if (r === "ok2"){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById("res1").textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById("res2").textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById("bilan").style.display = "block";
+  scormReport(sc.n1);
+}
+
+// ============================================================
+//  SCORM 1.2 — remontée de la Note 1 + notes question par question
+//  (sans effet si le fichier est ouvert hors LMS)
+// ============================================================
+
+var scormAPI = null;
+var scormInit = false;
+
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; }
+    else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+
+var scormNbInter = 0;
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    // Note chiffrée de la question via un objectif SCORM dédié
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    const sc = calculerScores();
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(sc.n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormReport(note1){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note1));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormEnd(){
+  try{
+    if(scormInit){
+      scormAPI.LMSFinish("");
+      scormInit = false;
+    }
+  }catch(e){ /* silencieux */ }
+}
+
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+// ============================================================
+// Init
+// ============================================================
+window.addEventListener("DOMContentLoaded", () => {
+  construireQuestions();
+  scormStart();
+  TOUS_IDS.forEach(qid => {
+    construireClavier("clav_" + qid, qid);
+    document.getElementById("dispG_" + qid).addEventListener("click", () => setActif(qid, "g"));
+    document.getElementById("dispD_" + qid).addEventListener("click", () => setActif(qid, "d"));
+    renderDisp(qid);
+  });
+});
+</script>
+</body>
+</html>

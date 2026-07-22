@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<!--Titre du QCM-->
+	<question type="category">
+		<category>
+			<text><![CDATA[<infos><name>**2PC0 QCM Vidéo 2 et 3</name><answernumbering>123</answernumbering><niveau>2NDE</niveau><matiere>PHYSIQUE-CHIMIE</matiere></infos>]]></text>
+		</category>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Pour isoler une grandeur dans une formule, que fait-on à chaque étape ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[L'opération inverse, des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[On applique l'opération inverse, et toujours des DEUX côtés du égal, pour garder l'équilibre.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[L'opération inverse, mais d'un seul côté du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On remplace directement les lettres par des nombres]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On recopie la formule sans jamais la transformer]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans U = U1 + U2, pour isoler U1 il faut retirer le « + U2 ». Quelle opération fait-on ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On additionne U2 des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On soustrait U2 des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[L'inverse de l'addition est la soustraction : on fait « − U2 » de chaque côté.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On multiplie par U2 des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On divise par U2 des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Après avoir fait « − U2 » à droite, on obtient « + U2 − U2 ». Que se passe-t-il ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Les deux termes s'additionnent et donnent 2 U2]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On garde l'écriture « + U2 − U2 » telle quelle]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On ne peut pas simplifier cette écriture-là]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Les deux termes s'annulent, il reste U1]]></text>
+			<feedback>
+				<text><![CDATA[+ U2 − U2 = 0 : les deux s'annulent, et U1 se retrouve seule.]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans la loi d'Ohm U = R × I, comment isole-t-on la résistance R ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On multiplie par I des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On soustrait I de chaque côté du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On divise par I des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[L'inverse de la multiplication est la division : on divise par I de chaque côté, puis I se simplifie.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On additionne I de chaque côté du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans ρ = m / V (masse volumique), comment isole-t-on la masse m ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On multiplie par V des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[m est divisée par V ; l'inverse est « × V » des deux côtés, ce qui donne m = ρ × V.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On divise encore par V des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On soustrait V de chaque côté du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On additionne V de chaque côté du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans une formule où les grandeurs sont séparées par des points, par quoi remplace-t-on ces points avant de calculer ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par des divisé, comme si un point séparait une division]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Par des multiplié : un point veut dire multiplier]]></text>
+			<feedback>
+				<text><![CDATA[Un point entre deux grandeurs signifie « multiplié » : on remplace chaque point par ×.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par des plus, pour additionner toutes les grandeurs entre elles]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par des moins, pour soustraire toutes les grandeurs entre elles]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Dans Ep = m × g × h, pour isoler la hauteur h rapidement, comment traite-t-on « m × g » ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On enlève m d'abord, puis g séparément ensuite]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On additionne m et g pour réduire l'écriture]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On laisse m × g, on ne peut pas vraiment l'enlever]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Comme un seul bloc, qu'on divise des deux côtés]]></text>
+			<feedback>
+				<text><![CDATA[On considère « m × g » comme un bloc et on divise les deux côtés par ce bloc : h = Ep / (m × g).]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Une grandeur est élevée au carré (par exemple a²) et on veut l'isoler seule. Quelle opération utilise-t-on ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[La racine carrée, qui est l'inverse du carré]]></text>
+			<feedback>
+				<text><![CDATA[L'inverse du carré est la racine carrée : √(a²) = a. On l'applique des deux côtés du égal.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Une division par 2 des deux côtés du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Une soustraction du carré de chaque côté du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Rien, car a² et a sont vraiment la même grandeur]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Pour isoler une grandeur prise dans une multiplication ET une parenthèse, dans quel ordre défait-on les opérations ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Dans l'ordre des priorités : la parenthèse en premier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[En commençant toujours par la grandeur recherchée seule]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[À l'inverse des priorités : la multiplication d'abord]]></text>
+			<feedback>
+				<text><![CDATA[On détricote à l'inverse de l'ordre de priorité : on défait d'abord la multiplication (en divisant), la parenthèse en dernier.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Dans n'importe quel ordre, cela revient exactement au même]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Un terme au carré se trouve au dénominateur (comme d² dans la force gravitationnelle). Comment le fait-on passer au numérateur ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[En divisant une nouvelle fois par d² des deux côtés]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[En multipliant par d² des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[Au dénominateur, c'est « diviser par d² » ; l'inverse est « × d² » des deux côtés, et d² remonte au numérateur.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[En prenant la racine carrée des deux côtés du égal]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[En soustrayant d² de chaque côté du égal entier]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+</quiz>

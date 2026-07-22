@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les bases : Conversions — 4</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;   /* couleurs de bandeau : évaluation (émeraude sourd) / état des lieux (aubergine) */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+/* === Classe utilitaire pour formules chimiques dans conteneurs flex === */
+/* À utiliser systématiquement pour toute formule chimique (avec indices/exposants) */
+/* placée dans un conteneur flex : étiquettes Type 3, emplacements de reconstitution, etc. */
+.cm{display:inline-block}
+.cm sub,.cm sup{font-size:.72em}
+/* === Verrouillage progressif (Type 3 : étapes a → b → c) === */
+.qbloc.locked .qcont{display:none}
+.qbloc.locked .verrou{display:block}
+.verrou{display:none;padding:13px 15px;font-size:.88rem;color:#666;font-style:italic;background:#f8f6f2}
+/* === Widget EXPR (Type 4 : expression à coefficients) === */
+.expr-zone{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px;background:#f8f6f2;border-radius:var(--r);margin:8px 0 12px}
+.expr-fixe{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--bleu)}
+.expr-term{display:inline-flex;align-items:center;gap:4px;background:#f4f1ea;border:1px solid var(--gris-l);border-radius:var(--r);padding:3px 8px}
+.expr-term select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:3px 5px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);cursor:pointer}
+.expr-term select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.expr-term select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.expr-term .lab{font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.expr-term .lab sub{font-size:.72em}
+/* === Bouton d'insertion d'exposant ⁻¹ (à côté du champ unité) === */
+.exp-btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:5px 9px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu-cl);cursor:pointer;transition:all .14s}
+.exp-btn:hover{background:#eef4fa}
+.exp-btn:disabled{opacity:.4;cursor:default}
+/* === Widget CONSTR (Type 5 : construction de formule) === */
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+/* === Widget CONSTR — Extension sous-opérations dans les fractions === */
+.frac-zone{display:flex;align-items:center;gap:8px;padding:8px;border:1.5px dashed #d4cfc0;border-radius:6px;background:#fafaf6}
+/* Case-fantôme : suggère "tu peux ajouter une case ici" */
+.add-case{font-family:'JetBrains Mono',monospace;font-size:1.05rem;min-width:50px;min-height:42px;padding:6px 14px;border:2px dashed #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;color:#aaa;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.add-case:hover{border-color:var(--bleu-cl);background:#eef4fa;color:var(--bleu-cl)}
+/* Icône corbeille pour supprimer la 2e case */
+.del-case{font-size:1.2rem;width:28px;height:28px;border:none;background:transparent;cursor:pointer;align-self:center;opacity:.55;transition:opacity .15s;padding:0}
+.del-case:hover{opacity:1}
+/* Sélecteur de sous-opération (× / + / −) */
+.sub-op-selector{display:inline-flex;border:1.5px solid var(--bleu-cl);border-radius:6px;overflow:hidden;font-family:'JetBrains Mono',monospace;align-self:center}
+.sub-op-btn{background:var(--blanc);border:none;padding:6px 10px;font-size:.95rem;cursor:pointer;color:#555;border-right:1px solid var(--bleu-cl)}
+.sub-op-btn:last-child{border-right:none}
+.sub-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);font-weight:bold}
+.sub-op-btn:hover:not(.selected){background:#eef4fa}
+/* Barre de fraction visuelle entre numérateur et dénominateur (interface horizontale) */
+.frac-bar{align-self:center;font-size:1.8rem;color:var(--bleu);font-weight:bold;margin:0 4px}
+/* Mini-aide (icône ? + bulle) */
+.constr-row{position:relative}
+.help-icon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:#ddd;color:#555;text-align:center;font-size:.85rem;font-weight:bold;cursor:pointer;line-height:22px;user-select:none;border:none;padding:0}
+.help-icon:hover{background:var(--bleu-cl);color:var(--blanc)}
+.help-bubble{position:absolute;top:38px;right:10px;max-width:380px;background:var(--blanc);border:1px solid var(--bleu-cl);border-radius:6px;padding:12px 16px;font-size:.88rem;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:10}
+.help-bubble.visible{display:block}
+/* === Type 6 : transformations nucléaires === */
+/* Classement par zones (réutilisé aussi par Type 3 étape a si besoin) */
+.class-zones{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.zone{flex:1;min-width:200px;border:2px dashed var(--gris-m);border-radius:var(--r);padding:10px;min-height:96px;background:#f8f6f2;cursor:pointer;transition:all .14s}
+.zone:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.zone-titre{font-size:.82rem;font-weight:600;color:var(--bleu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:center}
+.zone-drop{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;min-height:42px}
+/* Banques d'étiquettes — style UNIFIÉ, partagé entre Type 6 et Type 7 (encadré complet + fond, décision du 06/06/2026) */
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--gris-l);border-radius:var(--r);background:#f8f6f2;align-items:center}
+.bank-label{width:100%;font-size:.8rem;color:#888;font-style:italic;margin-bottom:2px}
+.etq{font-family:'Source Serif 4',serif;font-size:.92rem;padding:6px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s;user-select:none}
+.etq:hover{background:#eef4fa}
+.etq.sel{background:var(--bleu-cl);color:var(--blanc)}
+.etq.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.etq.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.etq.placed{cursor:pointer}
+.etq.fige{cursor:default}
+/* Reconstitution d'équation nucléaire (squelette à 5 emplacements) */
+.recon-skel{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;background:#f8f6f2;border-radius:var(--r);margin:6px 0 10px;min-height:60px}
+.slot{min-width:60px;min-height:44px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);display:flex;align-items:center;justify-content:center;padding:4px 8px;cursor:pointer;font-size:1.05rem;transition:all .14s}
+.slot.op-slot{min-width:42px}
+.slot:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.slot.filled{border-style:solid;border-color:var(--bleu-cl)}
+.slot.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.slot.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.slot.fige{cursor:default}
+.etq-noy{font-size:1.05rem}
+/* Complétion d'équation nucléaire : équation avec champs de saisie A, Z, X */
+.equation-nuc{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:1.12rem;margin:6px 0 14px;line-height:2.2;padding:12px;background:#f8f6f2;border-radius:var(--r)}
+.equation-nuc .op{font-family:'JetBrains Mono',monospace;color:var(--bleu-cl);font-weight:600;font-size:1rem}
+.equation-nuc .coef{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.02rem}
+.noyau-edit{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;border:1.5px dashed var(--bleu-cl);border-radius:var(--r);padding:3px 6px;background:var(--blanc)}
+.noyau-az{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px}
+.nf{width:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:2px 3px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--texte)}
+.nf:focus{border-color:var(--bleu-cl);outline:none}
+.nf.fixe{border:none;background:none;color:#555;width:auto;min-width:24px;padding:0 2px}
+.nf.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.nf.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.nfx{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:600;text-align:center;width:58px;padding:3px 4px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--bleu)}
+.nfx:focus{border-color:var(--bleu-cl);outline:none}
+.nfx.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)}
+.nfx.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)}
+.noyau-sym{font-size:1.3rem;font-weight:600;color:var(--bleu);padding:0 3px}
+/* Tableau de conservation dynamique (utilisé par Type 3 et Type 6) */
+.cons-table{width:100%;border-collapse:collapse;margin:4px 0 12px;font-size:.88rem}
+.cons-table th,.cons-table td{padding:7px 11px;border:1px solid var(--gris-l);text-align:center}
+.cons-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.82rem}
+.cons-table td:first-child{font-weight:600;text-align:left;background:#f8f6f2}
+.cons-val{font-family:'JetBrains Mono',monospace}
+/* Bouton « Tout remettre » (auxiliaire, pour classement et reconstitution) */
+.btn-aux{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s}
+.btn-aux:hover{background:#fff3e0}
+/* === Type 7 : tableau à étiquettes === */
+/* Conteneur des banques empilées (.bank garde le style unifié ci-dessus) */
+.banques{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.etq-mono{font-family:'JetBrains Mono',monospace}
+.bank-vide{font-style:italic;color:#888;font-size:.85rem}
+/* Tableau à compléter (les noms .prefixe-table / tb_prefixes s'adaptent au contenu du quiz) */
+.prefixe-table{width:100%;border-collapse:collapse;margin-top:6px}
+.prefixe-table th,.prefixe-table td{padding:6px 8px;border:1px solid var(--gris-l);text-align:center;font-size:.9rem}
+.prefixe-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.cell-fixe{font-weight:600;color:var(--texte);background:#f0ede6}
+.cell-fixe.mono{font-family:'JetBrains Mono',monospace}
+.tslot{font-family:'Source Serif 4',serif;font-size:.9rem;width:100%;min-height:38px;padding:6px 8px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;color:var(--texte)}
+.tslot:hover:not(:disabled):not(.fige){border-color:var(--bleu-cl);background:#eef4fa}
+.tslot.sel{border-color:var(--bleu-cl);border-style:solid;background:#ddeef8}
+.tslot.filled{border-style:solid;border-color:var(--bleu-cl);color:var(--bleu);font-weight:600}
+.tslot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.tslot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.tslot.fige{cursor:default}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+  /* Type 7 (et étiquettes en général) */
+  .prefixe-table th,.prefixe-table td{padding:4px 4px;font-size:.82rem}
+  .tslot{min-height:34px;padding:5px 4px;font-size:.82rem}
+  .etq{font-size:.85rem;padding:5px 9px}
+}
+/* === Type 8 : tableau de calcul (test de proportionnalité) === */
+.ct-scroll{overflow-x:auto;margin:6px 0 12px}
+.ct-table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.ct-table th,.ct-table td{border:1px solid var(--gris-l);padding:6px 8px;text-align:center;white-space:nowrap}
+.ct-gr{font-weight:600;text-align:left!important;background:#f8f6f2;color:var(--bleu);position:sticky;left:0}
+.ct-gr .ct-sym{color:#888;font-weight:400}
+.ct-val{font-family:'JetBrains Mono',monospace}
+.ct-calc-row td{background:#fbfaf6}
+.ct-head-cell{background:#eef4fa!important;min-width:78px}
+.ct-cell-input{width:74px;font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:5px 4px;border:1.5px solid #ccc;border-radius:4px;text-align:center;background:var(--blanc);color:var(--texte)}
+.ct-cell-input:focus{border-color:var(--bleu-cl);outline:none}
+.ct-cell-input:disabled{background:#f0f0f0;cursor:not-allowed}
+.ct-cell-input.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.ct-cell-input.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+/* menu personnalisé à fractions verticales (MathJax) */
+.fdrop{position:relative;display:inline-block;font-family:'Source Serif 4',serif}
+.fdrop-cur{min-width:62px;min-height:46px;padding:4px 22px 4px 10px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--bleu)}
+.fdrop-cur::after{content:'▾';position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--bleu-cl)}
+.fdrop-cur.placeholder{color:#aaa;font-style:italic;font-size:.82rem}
+.fdrop-cur.figee{border-color:var(--vert);background:#e6f4eb;cursor:default}
+.fdrop-cur.figee::after{display:none}
+.fdrop-menu{display:none;position:absolute;z-index:20;top:50px;left:0;background:var(--blanc);border:1.5px solid var(--bleu-cl);border-radius:var(--r);box-shadow:0 3px 12px rgba(0,0,0,.14);padding:5px;min-width:150px}
+.fdrop-menu.open{display:flex;flex-wrap:wrap;gap:5px}
+.fdrop-opt{flex:1 1 40%;min-height:44px;padding:4px 8px;border:1px solid var(--gris-l);border-radius:4px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bleu)}
+.fdrop-opt:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Conversions — 4 (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="consigne">
+  📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+</div>
+
+  <div class="consignes-titre">CONSIGNES</div>
+
+  <div class="contexte">
+    Pour chaque question, écris la conversion <b>complète</b> : recopie d'abord la valeur de départ avec son unité <b>à gauche</b> du signe <b>=</b>, puis écris la valeur convertie avec son unité <b>à droite</b>.<br>
+    Clique sur une case de valeur pour la sélectionner (elle s'encadre en bleu), puis utilise le clavier. Les unités se tapent au clavier de l'ordinateur.<br>
+    Les deux écritures sont acceptées pour la valeur convertie : écriture décimale <b>ou</b> notation scientifique (touche ×10<sup>x</sup> du clavier).<br>
+    <i>De nouvelles valeurs, de nouvelles unités et un nouvel ordre des questions sont tirés au sort à chaque chargement de la page : tu peux recommencer autant de fois que tu veux pour t'entraîner !</i>
+  </div>
+
+  <div id="zone-questions"></div>
+
+  <div class="barre-finale">
+    <button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" id="btn-reload" onclick="location.reload()">&#8634; Recommencer (nouvelles valeurs)</button>
+  </div>
+
+  <div id="bilan" style="display:none">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1<sup>er</sup> essai)<br><span class="score-res-val" id="bilan-n1">— / 10</span></div>
+      <div class="score-res-item">Note 2 (1<sup>er</sup> ou 2<sup>e</sup> essai)<br><span class="score-res-val" id="bilan-n2">— / 10</span></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+"use strict";
+
+const MODE_QUIZ = "entrainement";
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+/* ============================================================
+   Exercice Conversions — 4 · Chapitre 0 · Seconde – 1re
+   Panaché : 3 types de valeurs de départ (sans zéro initial,
+   avec zéros initiaux, avec puissance de 10), répartition
+   4+3+3 tirée au sort à chaque chargement.
+   Couche SCORM 1.2 : remontée de la Note 1 question par
+   question vers Éléa ; silencieux hors LMS.
+   ============================================================ */
+
+// ============================================================
+// Préfixes et définitions des 10 conversions (structure fixe,
+// mantisse aléatoire)
+// ============================================================
+const PREFPOW = { "p": -12, "n": -9, "µ": -6, "m": -3, "c": -2, "k": 3, "M": 6, "G": 9, "T": 12 };
+const PINFO = {
+  "p": { nom: "pico",  fact: "10⁻¹²" },
+  "n": { nom: "nano",  fact: "10⁻⁹" },
+  "µ": { nom: "micro", fact: "10⁻⁶" },
+  "m": { nom: "milli", fact: "10⁻³" },
+  "c": { nom: "centi", fact: "10⁻²" },
+  "k": { nom: "kilo",  fact: "10³"  },
+  "M": { nom: "méga",  fact: "10⁶"  },
+  "G": { nom: "giga",  fact: "10⁹"  },
+  "T": { nom: "téra",  fact: "10¹²" }
+};
+
+function rnd(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// ---- Type A : sans zéro initial (exo 1)
+// mantisse à 1 décimale, ex "3,7" (jamais ,0)
+function genDec1(){
+  let n;
+  do { n = rnd(11, 99); } while (n % 10 === 0);
+  return String(Math.floor(n / 10)) + "," + String(n % 10);
+}
+// entier à 2 chiffres non multiple de 10, ex "47"
+function genInt2(){
+  let n;
+  do { n = rnd(11, 99); } while (n % 10 === 0);
+  return String(n);
+}
+// entier à 3 chiffres terminé par 0, ex "580"
+function genCent(){
+  return genInt2() + "0";
+}
+// centaine ronde, ex "400"
+function genHund(){
+  return String(rnd(2, 9)) + "00";
+}
+// ---- Type B : zéros initiaux (exo 2)
+// "0,0X", ex "0,07"
+function genCentieme1(){
+  return "0,0" + String(rnd(2, 9));
+}
+// "0,0XY", ex "0,047"
+function genCentieme2(){
+  return "0,0" + genInt2();
+}
+// "0,00X", ex "0,008"
+function genMillieme(){
+  return "0,00" + String(rnd(2, 9));
+}
+// "0,XY", ex "0,45"
+function genDixieme(){
+  return "0," + genInt2();
+}
+// ---- Type C : puissance de 10 dans la valeur de départ (exo 3)
+// chiffre seul, ex "7"
+function genInt1(){
+  return String(rnd(2, 9));
+}
+const EXPOSANTS = [-3, -2, 2, 3];
+function tirerExp(pref){
+  const ok = EXPOSANTS.filter(e => Math.abs(e + PREFPOW[pref]) <= 10);
+  return ok[rnd(0, ok.length - 1)];
+}
+// Répartition fixe 4 A + 3 B + 3 C, attribuée au hasard aux questions
+const GENS_PAR_TYPE = {
+  "A": [genDec1, genInt2, genCent, genHund],
+  "B": [genCentieme1, genCentieme2, genMillieme, genDixieme],
+  "C": [genDec1, genInt1]
+};
+const TYPES_MIX = ["A", "A", "A", "A", "B", "B", "B", "C", "C", "C"];
+
+// ============================================================
+// Tirage aléatoire des 10 conversions : chaque unité de base
+// apparaît au moins une fois (+ 2 doublons avec un autre préfixe),
+// préfixe et mantisse tirés au sort, ordre mélangé (Fisher-Yates).
+// ============================================================
+function melanger(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const UNITES_POOL = {
+  "m": ["k", "c", "m", "µ", "n", "p"],
+  "s": ["m", "µ", "n", "p"],
+  "g": ["k", "m", "µ"],
+  "L": ["m", "c"],
+  "V": ["k", "m", "M", "T"],
+  "A": ["m", "µ", "k", "p", "T"],
+  "J": ["k", "M", "m"],
+  "W": ["k", "M", "m", "G"]
+};
+
+function tirerDefs(){
+  const bases = Object.keys(UNITES_POOL);
+  // bases compatibles pour chaque préfixe (déduit de UNITES_POOL)
+  const basesPref = {};
+  bases.forEach(b => UNITES_POOL[b].forEach(p => {
+    (basesPref[p] = basesPref[p] || []).push(b);
+  }));
+  const prefixes = Object.keys(PREFPOW);   // les 9 préfixes p → T
+  // Colonne vertébrale : chaque préfixe 1×, base compatible, ≤ 2 par base.
+  function tenterSquelette(){
+    const usage = {}; bases.forEach(b => usage[b] = 0);
+    const ordre = melanger(prefixes.slice())
+      .sort((a, b) => basesPref[a].length - basesPref[b].length); // + contraint d'abord
+    const paires = [];
+    for (const p of ordre){
+      const dispo = melanger(basesPref[p].filter(b => usage[b] < 2));
+      if (!dispo.length) return null;
+      usage[dispo[0]]++;
+      paires.push({ pref: p, base: dispo[0] });
+    }
+    return { paires: paires, usage: usage };
+  }
+  let sq = null;
+  for (let t = 0; t < 40 && !sq; t++) sq = tenterSquelette();
+  const paires = sq.paires, usage = sq.usage;
+  // 1 question bonus : base sous le plafond, préfixe pas déjà posé sur cette base
+  const bonusBases = melanger(bases.filter(b => usage[b] < 2));
+  for (const b of bonusBases){
+    const dejaB = paires.filter(x => x.base === b).map(x => x.pref);
+    const pool = melanger(UNITES_POOL[b].filter(p => !dejaB.includes(p)));
+    if (pool.length){ paires.push({ pref: pool[0], base: b }); break; }
+  }
+  while (paires.length < 10){
+    const b = bases[rnd(0, bases.length - 1)];
+    const dejaB = paires.filter(x => x.base === b).map(x => x.pref);
+    if (dejaB.length >= 2) continue;
+    const pool = UNITES_POOL[b].filter(p => !dejaB.includes(p));
+    if (!pool.length) continue;
+    paires.push({ pref: pool[rnd(0, pool.length - 1)], base: b });
+  }
+  const types = melanger(TYPES_MIX);
+  const defs = melanger(paires).map((x, idx) => {
+    const type = types[idx];
+    const gl = GENS_PAR_TYPE[type];
+    return {
+      pref: x.pref,
+      base: x.base,
+      type: type,
+      gen: gl[rnd(0, gl.length - 1)],
+      label: "Conversion " + x.pref + x.base + " → " + x.base
+    };
+  });
+  return defs.map((d, i) => { d.id = "q" + (i + 1); return d; });
+}
+const CONVDEFS = tirerDefs();
+
+const TOUS_IDS = CONVDEFS.map(d => d.id);
+const TOTAL = TOUS_IDS.length;
+const LABELS = {};
+const SCORM_IDS = {};
+CONVDEFS.forEach(d => {
+  LABELS[d.id] = d.label;
+  const pSan = (d.pref === "µ") ? "u" : d.pref;
+  SCORM_IDS[d.id] = "convertir_" + pSan + d.base + "_vers_" + d.base;
+});
+
+const etat = {};
+TOUS_IDS.forEach(id => { etat[id] = { resultat: null, tentative: 0 }; });
+
+// ============================================================
+// Mise en forme des nombres (écriture décimale + scientifique)
+// ============================================================
+function supExp(n){
+  const map = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴",
+                "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  return String(n).split("").map(c => map[c] || c).join("");
+}
+
+function grouper(intP, fracP){
+  const i = intP.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F");
+  const f = fracP ? fracP.replace(/(\d{3})(?=\d)/g, "$1\u202F") : "";
+  return f ? i + "," + f : i;
+}
+
+// Calcule, à partir d'une mantisse française ("3,5") et d'une puissance
+// de 10 (préfixe), les deux écritures de la valeur convertie + sa valeur num.
+function calcFormes(mantStr, exp){
+  const s = mantStr.replace(",", ".");
+  const parts = s.split(".");
+  const brut = parts[0] + (parts[1] || "");
+  const digits = brut.replace(/^0+(?=\d)/, "");
+  const stripped = brut.length - digits.length;
+  const pp = parts[0].length + exp - stripped;
+  let intP, fracP;
+  if (pp <= 0){ intP = "0"; fracP = "0".repeat(-pp) + digits; }
+  else if (pp >= digits.length){ intP = digits + "0".repeat(pp - digits.length); fracP = ""; }
+  else { intP = digits.slice(0, pp); fracP = digits.slice(pp); }
+  fracP = fracP.replace(/0+$/, "");
+  const dec = grouper(intP, fracP);
+  let dts = digits.replace(/0+$/, "");
+  if (dts === "") dts = "0";
+  const mant = (dts.length > 1) ? dts[0] + "," + dts.slice(1) : dts;
+  const e = pp - 1;
+  const sci = mant + " × 10" + supExp(e);
+  return { dec: dec, sci: sci, val: parseFloat(s) * Math.pow(10, exp), cs: dts.length, e: e };
+}
+
+// ============================================================
+// Génération des questions (valeurs aléatoires) + dict CONV
+// ============================================================
+const CONV = {};
+
+function construireQuestions(){
+  const zone = document.getElementById("zone-questions");
+  let html = "";
+  CONVDEFS.forEach((def, idx) => {
+    const mantStr = def.gen();
+    const e0 = (def.type === "C") ? tirerExp(def.pref) : 0;
+    const exp = e0 + PREFPOW[def.pref];
+    const f = calcFormes(mantStr, exp);
+    const uPref = def.pref + def.base;
+    const info = PINFO[def.pref];
+    const affG = (def.type === "C") ? mantStr + " × 10" + supExp(e0) : mantStr;
+    const valG = parseFloat(mantStr.replace(",", ".")) * Math.pow(10, e0);
+    let chaine = affG + " " + uPref + " = " + f.dec + " " + def.base;
+    if (f.e !== 0) chaine += " = " + f.sci + " " + def.base;
+    const csTxt = (f.cs === 1) ? "1 chiffre significatif" : f.cs + " chiffres significatifs";
+    CONV[def.id] = {
+      affG: affG,
+      valG: valG,
+      uPref: uPref,
+      uBase: def.base,
+      valD: f.val,
+      corr: chaine + " (" + csTxt + ")",
+      fbValD: "Rappel : « " + info.nom + " » (" + def.pref + ") signifie ×" + info.fact +
+              ", donc 1 " + uPref + " = " + info.fact + " " + def.base +
+              ". Repars de la valeur de départ et applique ce facteur.",
+      fbok: "&#10003; Exact ! " + chaine + " &mdash; valeur à " + csTxt +
+            " : une conversion ne change jamais le nombre de chiffres significatifs."
+    };
+    const btnMu = (def.pref === "µ")
+      ? '<button type="button" class="exp-btn" onclick="insMu(\'' + def.id + '\')" id="mu_' + def.id + '" title="Insérer le symbole micro">µ</button>'
+      : "";
+    html +=
+      '<div class="qbloc" id="' + def.id + '">' +
+        '<div class="qenonce"><span class="qnum">' + (idx + 1) + '</span>' +
+        '<span>Convertis <b>' + affG + "&nbsp;" + uPref + '</b> en <b>' + def.base + '</b>.</span></div>' +
+        '<div class="qcont">' +
+          '<div class="saisie-ligne">' +
+            '<div class="disp" id="dispG_' + def.id + '" title="Valeur de départ"></div>' +
+            '<input class="sunit" id="unitG_' + def.id + '" type="text" autocomplete="off" spellcheck="false" title="Unité de départ">' +
+            btnMu +
+            '<span class="egal">=</span>' +
+            '<div class="disp" id="dispD_' + def.id + '" title="Valeur convertie"></div>' +
+            '<input class="sunit" id="unitD_' + def.id + '" type="text" autocomplete="off" spellcheck="false" title="Unité d\u2019arrivée">' +
+          '</div>' +
+          '<div id="clav_' + def.id + '"></div>' +
+          '<div class="fb" id="fb_' + def.id + '"></div>' +
+          '<div style="margin-top:10px">' +
+            '<button class="btn-v" id="btnv_' + def.id + '" onclick="validerConv(\'' + def.id + '\')">Valider</button>' +
+            '<button class="btn-r" id="btnr_' + def.id + '" onclick="retryConv(\'' + def.id + '\')">2<sup>e</sup> essai</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  });
+  zone.innerHTML = html;
+}
+
+// ============================================================
+// Clavier scientifique (2 zones de saisie par question)
+// ============================================================
+const TOUCHES = [
+  { l: "7", t: "ch", v: "7" }, { l: "8", t: "ch", v: "8" }, { l: "9", t: "ch", v: "9" }, { l: "(", t: "op", v: "(" }, { l: ")", t: "op", v: ")" },
+  { l: "4", t: "ch", v: "4" }, { l: "5", t: "ch", v: "5" }, { l: "6", t: "ch", v: "6" }, { l: "×", t: "op", v: "×" }, { l: "÷", t: "op", v: "÷" },
+  { l: "1", t: "ch", v: "1" }, { l: "2", t: "ch", v: "2" }, { l: "3", t: "ch", v: "3" }, { l: "+", t: "op", v: "+" }, { l: "−", t: "op", v: "−" },
+  { l: "0", t: "ch", v: "0" }, { l: ",", t: "ch", v: "," }, { l: ".", t: "ch", v: "." }, { l: "×10ˣ", t: "sp", v: "EXP" }, { l: "⌫", t: "del", v: "DEL" }
+];
+
+const saisi = {};
+const actif = {};
+const fige = {};
+TOUS_IDS.forEach(id => { saisi[id] = { g: "", d: "" }; actif[id] = "g"; fige[id] = false; });
+
+function construireClavier(containerId, qid){
+  const div = document.getElementById(containerId);
+  if (!div) return;
+  const wrap = document.createElement("div");
+  wrap.className = "clavier";
+  TOUCHES.forEach(t => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "k" + (t.t === "op" ? " k-op" : t.t === "sp" ? " k-spec" : t.t === "del" ? " k-del" : "");
+    btn.textContent = t.l;
+    btn.addEventListener("click", () => toucheClavier(qid, t.v));
+    wrap.appendChild(btn);
+  });
+  div.innerHTML = "";
+  div.appendChild(wrap);
+}
+
+function toucheClavier(qid, val){
+  if (fige[qid]) return;
+  const cote = actif[qid];
+  if (val === "DEL"){
+    let c = saisi[qid][cote];
+    const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+    if (m){
+      if (m[4].length > 0) c = m[1] + m[2] + m[3] + m[4].slice(0, -1);
+      else if (m[3].length > 0) c = m[1] + m[2];
+      else c = m[1];
+    } else { c = c.slice(0, -1); }
+    saisi[qid][cote] = c;
+  } else if (val === "EXP"){
+    saisi[qid][cote] += "×10^";
+  } else {
+    saisi[qid][cote] += val;
+  }
+  renderDisp(qid);
+}
+
+function renderDisp(qid){
+  ["g", "d"].forEach(cote => {
+    const raw = saisi[qid][cote];
+    const rendu = raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => "×10<sup>" + sg + exp + "</sup>");
+    const el = document.getElementById((cote === "g" ? "dispG_" : "dispD_") + qid);
+    if (!el) return;
+    const curseur = (!fige[qid] && actif[qid] === cote)
+      ? '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>'
+      : "";
+    el.innerHTML = rendu + curseur;
+    el.classList.toggle("actif", !fige[qid] && actif[qid] === cote);
+  });
+}
+
+function setActif(qid, cote){
+  if (fige[qid]) return;
+  actif[qid] = cote;
+  renderDisp(qid);
+}
+
+function insMu(qid){
+  const f = document.getElementById("unitG_" + qid);
+  if (f && !f.disabled){ f.value += "µ"; f.focus(); }
+}
+
+// ============================================================
+// Analyse de la saisie
+// ============================================================
+function parseVal(raw){
+  try {
+    const s = raw
+      .replace(/,/g, ".")
+      .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => "e-" + e)
+      .replace(/×10\^(\d+)/g, (_, e) => "e+" + e)
+      .replace(/[×x]/g, "*")
+      .replace(/÷/g, "/")
+      .replace(/−/g, "-");
+    if (s.trim() === "") return NaN;
+    return parseFloat(s);
+  } catch (e){ return NaN; }
+}
+
+// Normalisation d'unité : casse SENSIBLE (mJ ≠ MJ), espaces supprimés,
+// mu grec U+03BC ramené au signe micro U+00B5.
+function normUnite(str){
+  return str.replace(/\s/g, "").replace(/\u03BC/g, "\u00B5");
+}
+
+function egalRel(a, b){
+  if (isNaN(a) || isNaN(b)) return false;
+  return Math.abs(a - b) <= 1e-9 * Math.abs(b);
+}
+
+// ============================================================
+// Validation
+// ============================================================
+function validerConv(qid){
+  const cfg = CONV[qid];
+  const t = etat[qid];
+  t.tentative++;
+
+  const vG = parseVal(saisi[qid].g);
+  const vD = parseVal(saisi[qid].d);
+  const uGraw = document.getElementById("unitG_" + qid).value.trim();
+  const uDraw = document.getElementById("unitD_" + qid).value.trim();
+  const uG = normUnite(uGraw);
+  const uD = normUnite(uDraw);
+
+  // Réponse élève capturée AVANT toute révélation de solution
+  const repEleve = saisi[qid].g + " " + uGraw + " = " + saisi[qid].d + " " + uDraw;
+
+  const gValOk = egalRel(vG, cfg.valG);
+  const gUniOk = (uG === cfg.uPref);
+  const dValOk = egalRel(vD, cfg.valD);
+  const dUniOk = (uD === cfg.uBase);
+  const isOk = gValOk && gUniOk && dValOk && dUniOk;
+
+  const dispG = document.getElementById("dispG_" + qid);
+  const dispD = document.getElementById("dispD_" + qid);
+  const uinpG = document.getElementById("unitG_" + qid);
+  const uinpD = document.getElementById("unitD_" + qid);
+  const fb = document.getElementById("fb_" + qid);
+  const btnv = document.getElementById("btnv_" + qid);
+  const btnr = document.getElementById("btnr_" + qid);
+  const bloc = document.getElementById(qid);
+  const btnMu = document.getElementById("mu_" + qid);
+
+  // gel des saisies
+  fige[qid] = true;
+  renderDisp(qid);
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => b.disabled = true);
+  uinpG.disabled = true; uinpD.disabled = true;
+  if (btnMu) btnMu.disabled = true;
+
+  if (isOk){
+    dispG.classList.add("ok"); uinpG.classList.add("ok");
+    dispD.classList.add("ok"); uinpD.classList.add("ok");
+    fb.className = "fb ok";
+    fb.innerHTML = cfg.fbok;
+    fb.style.display = "block";
+    t.resultat = (t.tentative === 1) ? "ok1" : "ok2";
+    scormInteraction(qid, true, repEleve, t.tentative);
+    btnv.disabled = true; btnr.style.display = "none";
+    bloc.classList.remove("warn-bloc"); bloc.classList.add("ok-bloc");
+  } else {
+    bloc.classList.add("warn-bloc");
+    fb.className = "fb ko";
+    let msg = "";
+    if (!gValOk || !gUniOk){
+      if (!gValOk) dispG.classList.add("ko");
+      if (!gUniOk) uinpG.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "&#10007; Commence par recopier, à gauche du signe =, la valeur de départ avec son unité, exactement comme dans l'énoncé."
+        : "&#10007; À gauche du signe =, il fallait écrire : " + cfg.affG + " " + cfg.uPref +
+          ". &mdash; Réponse attendue : " + cfg.corr;
+    } else if (!dValOk){
+      dispD.classList.add("ko");
+      if (!dUniOk) uinpD.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "&#10007; " + cfg.fbValD
+        : "&#10007; La valeur convertie est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    } else {
+      uinpD.classList.add("ko");
+      msg = (t.tentative === 1)
+        ? "La valeur convertie est correcte, mais vérifie l'unité d'arrivée demandée dans l'énoncé."
+        : "&#10007; L'unité d'arrivée est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+    }
+    fb.innerHTML = msg;
+    fb.style.display = "block";
+
+    if (t.tentative === 1){
+      btnv.disabled = true; btnr.style.display = "inline-block";
+    } else {
+      fb.className = "fb ko2";
+      fb.innerHTML = msg + (EN_CLASSE ? RELANCE_PROF : "");
+      t.resultat = "ko";
+      scormInteraction(qid, false, repEleve, t.tentative);
+      btnv.disabled = true; btnr.style.display = "none";
+      bloc.classList.remove("warn-bloc"); bloc.classList.add("ko-bloc");
+    }
+  }
+  verifierFin();
+}
+
+function retryConv(qid){
+  // les saisies sont conservées : l'élève corrige ce qui est faux
+  fige[qid] = false;
+  ["dispG_", "dispD_"].forEach(p => document.getElementById(p + qid).classList.remove("ok", "ko"));
+  ["unitG_", "unitD_"].forEach(p => {
+    const f = document.getElementById(p + qid);
+    f.classList.remove("ok", "ko");
+    f.disabled = false;
+  });
+  const btnMu = document.getElementById("mu_" + qid);
+  if (btnMu) btnMu.disabled = false;
+  document.getElementById("clav_" + qid).querySelectorAll("button").forEach(b => b.disabled = false);
+  document.getElementById("fb_" + qid).style.display = "none";
+  document.getElementById("btnr_" + qid).style.display = "none";
+  document.getElementById("btnv_" + qid).disabled = false;
+  document.getElementById(qid).classList.remove("warn-bloc");
+  renderDisp(qid);
+}
+
+// ============================================================
+// Bilan, scores, fin
+// ============================================================
+function verifierFin(){
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if (fini) afficherBilan();
+}
+
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if (r === "ok1"){ n1++; n2++; }
+    else if (r === "ok2"){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById("bilan-n1").textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById("bilan-n2").textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById("bilan").style.display = "block";
+  scormReport(sc.n1);
+}
+
+// ============================================================
+//  SCORM 1.2 — remontée de la Note 1 + notes question par question
+//  (sans effet si le fichier est ouvert hors LMS)
+// ============================================================
+
+var scormAPI = null;
+var scormInit = false;
+
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; }
+    else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+
+var scormNbInter = 0;
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    // Note chiffrée de la question via un objectif SCORM dédié
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    const sc = calculerScores();
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(sc.n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormReport(note1){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note1));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormEnd(){
+  try{
+    if(scormInit){
+      scormAPI.LMSFinish("");
+      scormInit = false;
+    }
+  }catch(e){ /* silencieux */ }
+}
+
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+// ============================================================
+// Init
+// ============================================================
+window.addEventListener("DOMContentLoaded", () => {
+  construireQuestions();
+  scormStart();
+  TOUS_IDS.forEach(qid => {
+    construireClavier("clav_" + qid, qid);
+    document.getElementById("dispG_" + qid).addEventListener("click", () => setActif(qid, "g"));
+    document.getElementById("dispD_" + qid).addEventListener("click", () => setActif(qid, "d"));
+    renderDisp(qid);
+  });
+});
+</script>
+</body>
+</html>

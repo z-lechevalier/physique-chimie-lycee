@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde : Isoler une grandeur — niveau 2</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;   /* couleurs de bandeau : évaluation (émeraude sourd) / état des lieux (aubergine) */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.btable{width:100%;border-collapse:collapse;font-size:.87rem;margin-bottom:18px}
+.btable th{background:var(--bleu);color:var(--blanc);padding:7px 11px;text-align:left;font-weight:600}
+.btable td{padding:7px 11px;border-bottom:1px solid var(--gris-l)}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:#f8f6f2}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.77rem;font-weight:600}
+.b-ok{background:#e6f4eb;color:var(--vert)}
+.b-ok2{background:#fff3e0;color:var(--orange)}
+.b-ko{background:#fdecea;color:var(--rouge)}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+/* === Classe utilitaire pour formules chimiques dans conteneurs flex === */
+/* À utiliser systématiquement pour toute formule chimique (avec indices/exposants) */
+/* placée dans un conteneur flex : étiquettes Type 3, emplacements de reconstitution, etc. */
+.cm{display:inline-block}
+.cm sub,.cm sup{font-size:.72em}
+/* === Verrouillage progressif (Type 3 : étapes a → b → c) === */
+.qbloc.locked .qcont{display:none}
+.qbloc.locked .verrou{display:block}
+.verrou{display:none;padding:13px 15px;font-size:.88rem;color:#666;font-style:italic;background:#f8f6f2}
+/* === Widget EXPR (Type 4 : expression à coefficients) === */
+.expr-zone{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px;background:#f8f6f2;border-radius:var(--r);margin:8px 0 12px}
+.expr-fixe{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--bleu)}
+.expr-term{display:inline-flex;align-items:center;gap:4px;background:#f4f1ea;border:1px solid var(--gris-l);border-radius:var(--r);padding:3px 8px}
+.expr-term select{font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:3px 5px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);cursor:pointer}
+.expr-term select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.expr-term select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.expr-term .lab{font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.expr-term .lab sub{font-size:.72em}
+/* === Bouton d'insertion d'exposant ⁻¹ (à côté du champ unité) === */
+.exp-btn{font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:5px 9px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu-cl);cursor:pointer;transition:all .14s}
+.exp-btn:hover{background:#eef4fa}
+.exp-btn:disabled{opacity:.4;cursor:default}
+/* === Widget CONSTR (Type 5 : construction de formule) === */
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+/* === Widget CONSTR — Extension sous-opérations dans les fractions === */
+.frac-zone{display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 6px}
+/* Case-fantôme : suggère "tu peux ajouter une case ici" */
+.add-case{font-family:'JetBrains Mono',monospace;font-size:1.05rem;min-width:50px;min-height:42px;padding:6px 14px;border:2px dashed #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;color:#aaa;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.add-case:hover{border-color:var(--bleu-cl);background:#eef4fa;color:var(--bleu-cl)}
+/* Icône corbeille pour supprimer la 2e case */
+.del-case{font-size:1.2rem;width:28px;height:28px;border:none;background:transparent;cursor:pointer;align-self:center;opacity:.55;transition:opacity .15s;padding:0}
+.del-case:hover{opacity:1}
+/* Sélecteur de sous-opération (× / + / −) */
+.sub-op-selector{display:inline-flex;border:1.5px solid var(--bleu-cl);border-radius:6px;overflow:hidden;font-family:'JetBrains Mono',monospace;align-self:center}
+.sub-op-btn{background:var(--blanc);border:none;padding:6px 10px;font-size:.95rem;cursor:pointer;color:#555;border-right:1px solid var(--bleu-cl)}
+.sub-op-btn:last-child{border-right:none}
+.sub-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);font-weight:bold}
+.sub-op-btn:hover:not(.selected){background:#eef4fa}
+.frac-stack{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frac-line{align-self:stretch;height:3px;background:var(--bleu);border-radius:2px;margin:1px 0}
+/* Mini-aide (icône ? + bulle) */
+.constr-row{position:relative}
+.help-icon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:#ddd;color:#555;text-align:center;font-size:.85rem;font-weight:bold;cursor:pointer;line-height:22px;user-select:none;border:none;padding:0}
+.help-icon:hover{background:var(--bleu-cl);color:var(--blanc)}
+.help-bubble{position:absolute;top:38px;right:10px;max-width:380px;background:var(--blanc);border:1px solid var(--bleu-cl);border-radius:6px;padding:12px 16px;font-size:.88rem;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:10}
+.help-bubble.visible{display:block}
+/* === Type 6 : transformations nucléaires === */
+/* Classement par zones (réutilisé aussi par Type 3 étape a si besoin) */
+.class-zones{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.zone{flex:1;min-width:200px;border:2px dashed var(--gris-m);border-radius:var(--r);padding:10px;min-height:96px;background:#f8f6f2;cursor:pointer;transition:all .14s}
+.zone:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.zone-titre{font-size:.82rem;font-weight:600;color:var(--bleu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;text-align:center}
+.zone-drop{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;min-height:42px}
+/* Banques d'étiquettes — style UNIFIÉ, partagé entre Type 6 et Type 7 (encadré complet + fond, décision du 06/06/2026) */
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--gris-l);border-radius:var(--r);background:#f8f6f2;align-items:center}
+.bank-label{width:100%;font-size:.8rem;color:#888;font-style:italic;margin-bottom:2px}
+.etq{font-family:'Source Serif 4',serif;font-size:.92rem;padding:6px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s;user-select:none}
+.etq:hover{background:#eef4fa}
+.etq.sel{background:var(--bleu-cl);color:var(--blanc)}
+.etq.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.etq.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.etq.placed{cursor:pointer}
+.etq.fige{cursor:default}
+/* Reconstitution d'équation nucléaire (squelette à 5 emplacements) */
+.recon-skel{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;background:#f8f6f2;border-radius:var(--r);margin:6px 0 10px;min-height:60px}
+.slot{min-width:60px;min-height:44px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);display:flex;align-items:center;justify-content:center;padding:4px 8px;cursor:pointer;font-size:1.05rem;transition:all .14s}
+.slot.op-slot{min-width:42px}
+.slot:hover{border-color:var(--bleu-cl);background:#eef4fa}
+.slot.filled{border-style:solid;border-color:var(--bleu-cl)}
+.slot.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.slot.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.slot.fige{cursor:default}
+.etq-noy{font-size:1.05rem}
+/* Complétion d'équation nucléaire : équation avec champs de saisie A, Z, X */
+.equation-nuc{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:1.12rem;margin:6px 0 14px;line-height:2.2;padding:12px;background:#f8f6f2;border-radius:var(--r)}
+.equation-nuc .op{font-family:'JetBrains Mono',monospace;color:var(--bleu-cl);font-weight:600;font-size:1rem}
+.equation-nuc .coef{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.02rem}
+.noyau-edit{display:inline-flex;align-items:center;gap:4px;vertical-align:middle;border:1.5px dashed var(--bleu-cl);border-radius:var(--r);padding:3px 6px;background:var(--blanc)}
+.noyau-az{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px}
+.nf{width:50px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:2px 3px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--texte)}
+.nf:focus{border-color:var(--bleu-cl);outline:none}
+.nf.fixe{border:none;background:none;color:#555;width:auto;min-width:24px;padding:0 2px}
+.nf.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.nf.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.nfx{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:600;text-align:center;width:58px;padding:3px 4px;border:1.5px solid #ccc;border-radius:4px;background:var(--blanc);color:var(--bleu)}
+.nfx:focus{border-color:var(--bleu-cl);outline:none}
+.nfx.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)}
+.nfx.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)}
+.noyau-sym{font-size:1.3rem;font-weight:600;color:var(--bleu);padding:0 3px}
+/* Tableau de conservation dynamique (utilisé par Type 3 et Type 6) */
+.cons-table{width:100%;border-collapse:collapse;margin:4px 0 12px;font-size:.88rem}
+.cons-table th,.cons-table td{padding:7px 11px;border:1px solid var(--gris-l);text-align:center}
+.cons-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.82rem}
+.cons-table td:first-child{font-weight:600;text-align:left;background:#f8f6f2}
+.cons-val{font-family:'JetBrains Mono',monospace}
+/* Bouton « Tout remettre » (auxiliaire, pour classement et reconstitution) */
+.btn-aux{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s}
+.btn-aux:hover{background:#fff3e0}
+/* === Type 7 : tableau à étiquettes === */
+/* Conteneur des banques empilées (.bank garde le style unifié ci-dessus) */
+.banques{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.etq-mono{font-family:'JetBrains Mono',monospace}
+.bank-vide{font-style:italic;color:#888;font-size:.85rem}
+/* Tableau à compléter (les noms .prefixe-table / tb_prefixes s'adaptent au contenu du quiz) */
+.prefixe-table{width:100%;border-collapse:collapse;margin-top:6px}
+.prefixe-table th,.prefixe-table td{padding:6px 8px;border:1px solid var(--gris-l);text-align:center;font-size:.9rem}
+.prefixe-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.cell-fixe{font-weight:600;color:var(--texte);background:#f0ede6}
+.cell-fixe.mono{font-family:'JetBrains Mono',monospace}
+.tslot{font-family:'Source Serif 4',serif;font-size:.9rem;width:100%;min-height:38px;padding:6px 8px;border:2px dashed var(--gris-m);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;color:var(--texte)}
+.tslot:hover:not(:disabled):not(.fige){border-color:var(--bleu-cl);background:#eef4fa}
+.tslot.sel{border-color:var(--bleu-cl);border-style:solid;background:#ddeef8}
+.tslot.filled{border-style:solid;border-color:var(--bleu-cl);color:var(--bleu);font-weight:600}
+.tslot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.tslot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.tslot.fige{cursor:default}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+  /* Type 7 (et étiquettes en général) */
+  .prefixe-table th,.prefixe-table td{padding:4px 4px;font-size:.82rem}
+  .tslot{min-height:34px;padding:5px 4px;font-size:.82rem}
+  .etq{font-size:.85rem;padding:5px 9px}
+}
+/* === Type 8 : tableau de calcul (test de proportionnalité) === */
+.ct-scroll{overflow-x:auto;margin:6px 0 12px}
+.ct-table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.ct-table th,.ct-table td{border:1px solid var(--gris-l);padding:6px 8px;text-align:center;white-space:nowrap}
+.ct-gr{font-weight:600;text-align:left!important;background:#f8f6f2;color:var(--bleu);position:sticky;left:0}
+.ct-gr .ct-sym{color:#888;font-weight:400}
+.ct-val{font-family:'JetBrains Mono',monospace}
+.ct-calc-row td{background:#fbfaf6}
+.ct-head-cell{background:#eef4fa!important;min-width:78px}
+.ct-cell-input{width:74px;font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:5px 4px;border:1.5px solid #ccc;border-radius:4px;text-align:center;background:var(--blanc);color:var(--texte)}
+.ct-cell-input:focus{border-color:var(--bleu-cl);outline:none}
+.ct-cell-input:disabled{background:#f0f0f0;cursor:not-allowed}
+.ct-cell-input.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.ct-cell-input.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+/* menu personnalisé à fractions verticales (MathJax) */
+.fdrop{position:relative;display:inline-block;font-family:'Source Serif 4',serif}
+.fdrop-cur{min-width:62px;min-height:46px;padding:4px 22px 4px 10px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--bleu)}
+.fdrop-cur::after{content:'▾';position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--bleu-cl)}
+.fdrop-cur.placeholder{color:#aaa;font-style:italic;font-size:.82rem}
+.fdrop-cur.figee{border-color:var(--vert);background:#e6f4eb;cursor:default}
+.fdrop-cur.figee::after{display:none}
+.fdrop-menu{display:none;position:absolute;z-index:20;top:50px;left:0;background:var(--blanc);border:1.5px solid var(--bleu-cl);border-radius:var(--r);box-shadow:0 3px 12px rgba(0,0,0,.14);padding:5px;min-width:150px}
+.fdrop-menu.open{display:flex;flex-wrap:wrap;gap:5px}
+.fdrop-opt{flex:1 1 40%;min-height:44px;padding:4px 8px;border:1px solid var(--gris-l);border-radius:4px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bleu)}
+.fdrop-opt:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+</style>
+</head>
+<body>
+
+<header class="mode-entrainement">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien-chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Isoler une grandeur — niveau 2 (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+<div class="consigne">
+  📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+</div>
+
+<div class="consignes-titre">CONSIGNES</div>
+<div class="contexte">
+  Choisis l'opération, puis <strong>clique sur une étiquette</strong> dans la banque et <strong>clique sur la case</strong> où tu veux la poser. Dans une fraction, la <strong>case grise vide</strong> à côté d'une case ajoute une 2<sup>e</sup> case avec un sous-opérateur (× par défaut) ; l'icône corbeille 🗑 la retire ; l'icône <strong>?</strong> rappelle tout ça.
+</div>
+
+<div id="zone-questions"></div>
+
+<button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+<button class="btn-global btn-recommencer" id="btn-reload">&#8634; Recommencer</button>
+
+<div id="bilan" style="display:none">
+  <div class="score-res">
+    <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 10</span></div>
+    <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 10</span></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+const CATALOGUE = {
+  "c01": { qid:"c01", grandeur:"U", schema:false,
+    enonce:"On a la formule \\(E = U \\times I \\times t\\). Isole la grandeur \\(U\\).",
+    lettres:["E", "I", "t"],
+    lignes:[{ grandeur:"U", op:"fraction", slots:["E", { subop: "produit", cells: ["I", "t"] }] }],
+    fb1:"Dans \\(E = U \\times I \\times t\\), la grandeur \\(U\\) est multipliée par DEUX grandeurs à la fois : \\(I\\) et \\(t\\). Par quel produit faut-il diviser \\(E\\) ?",
+    fb2:"On divise les deux membres par le produit \\(I \\times t\\) : \\(U = \\dfrac{E}{I \\times t}\\).",
+    fbok:"&#10003; Exact ! "+"\\(U = \\dfrac{E}{I \\times t}\\).",
+    label:"Isoler U dans E = U × I × t", sid:"isoler_U_energie_elec" },
+  "c02": { qid:"c02", grandeur:"t", schema:false,
+    enonce:"On a la formule \\(E = U \\times I \\times t\\). Isole la grandeur \\(t\\).",
+    lettres:["E", "U", "I"],
+    lignes:[{ grandeur:"t", op:"fraction", slots:["E", { subop: "produit", cells: ["U", "I"] }] }],
+    fb1:"Dans \\(E = U \\times I \\times t\\), la grandeur \\(t\\) est multipliée par \\(U\\) ET par \\(I\\). Par quel produit faut-il diviser \\(E\\) ?",
+    fb2:"On divise les deux membres par le produit \\(U \\times I\\) : \\(t = \\dfrac{E}{U \\times I}\\).",
+    fbok:"&#10003; Exact ! "+"\\(t = \\dfrac{E}{U \\times I}\\).",
+    label:"Isoler t dans E = U × I × t", sid:"isoler_t_energie_elec" },
+  "c03": { qid:"c03", grandeur:"L", schema:false,
+    enonce:"On a la formule \\(V = L \\times \\ell \\times h\\). Isole la grandeur \\(L\\).",
+    lettres:["V", "\\ell", "h"],
+    lignes:[{ grandeur:"L", op:"fraction", slots:["V", { subop: "produit", cells: ["\\ell", "h"] }] }],
+    fb1:"Dans \\(V = L \\times \\ell \\times h\\), la grandeur \\(L\\) est multipliée par \\(\\ell\\) ET par \\(h\\). Par quel produit faut-il diviser \\(V\\) ?",
+    fb2:"On divise les deux membres par le produit \\(\\ell \\times h\\) : \\(L = \\dfrac{V}{\\ell \\times h}\\).",
+    fbok:"&#10003; Exact ! "+"\\(L = \\dfrac{V}{\\ell \\times h}\\).",
+    label:"Isoler L dans V = L × l × h", sid:"isoler_L_volume_pave" },
+  "c04": { qid:"c04", grandeur:"h", schema:false,
+    enonce:"On a la formule \\(V = L \\times \\ell \\times h\\). Isole la grandeur \\(h\\).",
+    lettres:["V", "L", "\\ell"],
+    lignes:[{ grandeur:"h", op:"fraction", slots:["V", { subop: "produit", cells: ["L", "\\ell"] }] }],
+    fb1:"Dans \\(V = L \\times \\ell \\times h\\), la grandeur \\(h\\) est multipliée par \\(L\\) ET par \\(\\ell\\). Par quel produit faut-il diviser \\(V\\) ?",
+    fb2:"On divise les deux membres par le produit \\(L \\times \\ell\\) : \\(h = \\dfrac{V}{L \\times \\ell}\\).",
+    fbok:"&#10003; Exact ! "+"\\(h = \\dfrac{V}{L \\times \\ell}\\).",
+    label:"Isoler h dans V = L × l × h", sid:"isoler_h_volume_pave" },
+  "c05": { qid:"c05", grandeur:"a", schema:false,
+    enonce:"On a la formule \\(m = \\dfrac{a \\times b}{c}\\). Isole la grandeur \\(a\\).",
+    lettres:["m", "c", "b"],
+    lignes:[{ grandeur:"a", op:"fraction", slots:[{ subop: "produit", cells: ["m", "c"] }, "b"] }],
+    fb1:"Dans \\(m = \\dfrac{a \\times b}{c}\\), commence par faire « remonter » \\(c\\) : multiplie les deux membres par \\(c\\), ce qui donne \\(m \\times c = a \\times b\\). Il ne reste plus qu'à isoler \\(a\\). Pense à la 2ᵉ case au numérateur.",
+    fb2:"On multiplie par \\(c\\) puis on divise par \\(b\\) : \\(a = \\dfrac{m \\times c}{b}\\). La grandeur \\(c\\), qui était au dénominateur, se retrouve au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(a = \\dfrac{m \\times c}{b}\\).",
+    label:"Isoler a dans m = (a×b)/c", sid:"isoler_a_frac_ndeux" },
+  "c06": { qid:"c06", grandeur:"c", schema:false,
+    enonce:"On a la formule \\(m = \\dfrac{a \\times b}{c}\\). Isole la grandeur \\(c\\).",
+    lettres:["a", "b", "m"],
+    lignes:[{ grandeur:"c", op:"fraction", slots:[{ subop: "produit", cells: ["a", "b"] }, "m"] }],
+    fb1:"Dans \\(m = \\dfrac{a \\times b}{c}\\), la grandeur \\(c\\) est au dénominateur. Astuce : fais-la « remonter » en multipliant par \\(c\\), puis isole-la. Que reste-t-il au numérateur ?",
+    fb2:"On obtient \\(m \\times c = a \\times b\\), puis on divise par \\(m\\) : \\(c = \\dfrac{a \\times b}{m}\\). Le produit \\(a \\times b\\) reste groupé au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(c = \\dfrac{a \\times b}{m}\\).",
+    label:"Isoler c dans m = (a×b)/c", sid:"isoler_c_frac_ddeux" },
+  "c07": { qid:"c07", grandeur:"p", schema:false,
+    enonce:"On a la formule \\(F = \\dfrac{p \\times q}{r}\\). Isole la grandeur \\(p\\).",
+    lettres:["F", "r", "q"],
+    lignes:[{ grandeur:"p", op:"fraction", slots:[{ subop: "produit", cells: ["F", "r"] }, "q"] }],
+    fb1:"Dans \\(F = \\dfrac{p \\times q}{r}\\), fais d'abord « remonter » \\(r\\) : \\(F \\times r = p \\times q\\). Il ne reste plus qu'à isoler \\(p\\).",
+    fb2:"On multiplie par \\(r\\) puis on divise par \\(q\\) : \\(p = \\dfrac{F \\times r}{q}\\).",
+    fbok:"&#10003; Exact ! "+"\\(p = \\dfrac{F \\times r}{q}\\).",
+    label:"Isoler p dans F = (p×q)/r", sid:"isoler_p_frac_ndeux" },
+  "c08": { qid:"c08", grandeur:"r", schema:false,
+    enonce:"On a la formule \\(F = \\dfrac{p \\times q}{r}\\). Isole la grandeur \\(r\\).",
+    lettres:["p", "q", "F"],
+    lignes:[{ grandeur:"r", op:"fraction", slots:[{ subop: "produit", cells: ["p", "q"] }, "F"] }],
+    fb1:"Dans \\(F = \\dfrac{p \\times q}{r}\\), la grandeur \\(r\\) est au dénominateur. Fais-la « remonter » en multipliant par \\(r\\), puis isole-la.",
+    fb2:"On obtient \\(F \\times r = p \\times q\\), puis on divise par \\(F\\) : \\(r = \\dfrac{p \\times q}{F}\\).",
+    fbok:"&#10003; Exact ! "+"\\(r = \\dfrac{p \\times q}{F}\\).",
+    label:"Isoler r dans F = (p×q)/r", sid:"isoler_r_frac_ddeux" },
+  "c09": { qid:"c09", grandeur:"x", schema:false,
+    enonce:"On a la formule \\(D = \\dfrac{x}{y \\times z}\\). Isole la grandeur \\(x\\).",
+    lettres:["D", "y", "z"],
+    lignes:[{ grandeur:"x", op:"produit", slots:["D", "y", "z"] }],
+    fb1:"Dans \\(D = \\dfrac{x}{y \\times z}\\), la grandeur \\(x\\) est divisée par le produit \\(y \\times z\\). Quelle opération appliquer aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(y \\times z\\) : \\(x = D \\times y \\times z\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(x = D \\times y \\times z\\).",
+    label:"Isoler x dans D = x/(y×z)", sid:"isoler_x_frac_ddeuxbas" },
+  "c10": { qid:"c10", grandeur:"y", schema:false,
+    enonce:"On a la formule \\(D = \\dfrac{x}{y \\times z}\\). Isole la grandeur \\(y\\).",
+    lettres:["x", "D", "z"],
+    lignes:[{ grandeur:"y", op:"fraction", slots:["x", { subop: "produit", cells: ["D", "z"] }] }],
+    fb1:"Dans \\(D = \\dfrac{x}{y \\times z}\\), la grandeur \\(y\\) est au dénominateur, avec \\(z\\). Astuce : isole d'abord le produit \\(y \\times z\\), puis \\(y\\) tout seul. Que se retrouve au dénominateur ?",
+    fb2:"On obtient \\(y \\times z = \\dfrac{x}{D}\\), puis on divise par \\(z\\) : \\(y = \\dfrac{x}{D \\times z}\\). La grandeur \\(D\\) « descend » au dénominateur.",
+    fbok:"&#10003; Exact ! "+"\\(y = \\dfrac{x}{D \\times z}\\).",
+    label:"Isoler y dans D = x/(y×z)", sid:"isoler_y_frac_ddeuxbas" },
+  "c11": { qid:"c11", grandeur:"a", schema:false,
+    enonce:"On a la formule \\(N = \\dfrac{a}{b \\times c}\\). Isole la grandeur \\(a\\).",
+    lettres:["N", "b", "c"],
+    lignes:[{ grandeur:"a", op:"produit", slots:["N", "b", "c"] }],
+    fb1:"Dans \\(N = \\dfrac{a}{b \\times c}\\), la grandeur \\(a\\) est divisée par le produit \\(b \\times c\\). Quelle opération applique-t-on aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(b \\times c\\) : \\(a = N \\times b \\times c\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(a = N \\times b \\times c\\).",
+    label:"Isoler a dans N = a/(b×c)", sid:"isoler_a_frac_ddeuxbas" },
+  "c12": { qid:"c12", grandeur:"c", schema:false,
+    enonce:"On a la formule \\(N = \\dfrac{a}{b \\times c}\\). Isole la grandeur \\(c\\).",
+    lettres:["a", "N", "b"],
+    lignes:[{ grandeur:"c", op:"fraction", slots:["a", { subop: "produit", cells: ["N", "b"] }] }],
+    fb1:"Dans \\(N = \\dfrac{a}{b \\times c}\\), la grandeur \\(c\\) est au dénominateur, avec \\(b\\). Isole d'abord le produit \\(b \\times c\\), puis \\(c\\) tout seul.",
+    fb2:"On obtient \\(b \\times c = \\dfrac{a}{N}\\), puis on divise par \\(b\\) : \\(c = \\dfrac{a}{N \\times b}\\).",
+    fbok:"&#10003; Exact ! "+"\\(c = \\dfrac{a}{N \\times b}\\).",
+    label:"Isoler c dans N = a/(b×c)", sid:"isoler_c_frac_ddeuxbas" },
+  "c13": { qid:"c13", grandeur:"e", schema:false,
+    enonce:"On a la formule \\(K = \\dfrac{e \\times f}{g}\\). Isole la grandeur \\(e\\).",
+    lettres:["K", "g", "f"],
+    lignes:[{ grandeur:"e", op:"fraction", slots:[{ subop: "produit", cells: ["K", "g"] }, "f"] }],
+    fb1:"Dans \\(K = \\dfrac{e \\times f}{g}\\), commence par faire « remonter » \\(g\\) : multiplie les deux membres par \\(g\\), ce qui donne \\(K \\times g = e \\times f\\). Il ne reste plus qu'à isoler \\(e\\). Pense à la 2ᵉ case au numérateur.",
+    fb2:"On multiplie par \\(g\\) puis on divise par \\(f\\) : \\(e = \\dfrac{K \\times g}{f}\\). La grandeur \\(g\\), qui était au dénominateur, se retrouve au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(e = \\dfrac{K \\times g}{f}\\).",
+    label:"Isoler e dans K = (e×f)/g", sid:"isoler_e_frac_ndeux" },
+  "c14": { qid:"c14", grandeur:"g", schema:false,
+    enonce:"On a la formule \\(K = \\dfrac{e \\times f}{g}\\). Isole la grandeur \\(g\\).",
+    lettres:["e", "f", "K"],
+    lignes:[{ grandeur:"g", op:"fraction", slots:[{ subop: "produit", cells: ["e", "f"] }, "K"] }],
+    fb1:"Dans \\(K = \\dfrac{e \\times f}{g}\\), la grandeur \\(g\\) est au dénominateur. Astuce : fais-la « remonter » en multipliant par \\(g\\), puis isole-la. Que reste-t-il au numérateur ?",
+    fb2:"On obtient \\(K \\times g = e \\times f\\), puis on divise par \\(K\\) : \\(g = \\dfrac{e \\times f}{K}\\). Le produit \\(e \\times f\\) reste groupé au numérateur.",
+    fbok:"&#10003; Exact ! "+"\\(g = \\dfrac{e \\times f}{K}\\).",
+    label:"Isoler g dans K = (e×f)/g", sid:"isoler_g_frac_ddeux" },
+  "c15": { qid:"c15", grandeur:"m", schema:false,
+    enonce:"On a la formule \\(T = \\dfrac{m}{n \\times p}\\). Isole la grandeur \\(m\\).",
+    lettres:["T", "n", "p"],
+    lignes:[{ grandeur:"m", op:"produit", slots:["T", "n", "p"] }],
+    fb1:"Dans \\(T = \\dfrac{m}{n \\times p}\\), la grandeur \\(m\\) est divisée par le produit \\(n \\times p\\). Quelle opération applique-t-on aux deux membres pour la libérer ? Combien de facteurs obtiens-tu ?",
+    fb2:"On multiplie les deux membres par le produit \\(n \\times p\\) : \\(m = T \\times n \\times p\\), un produit de trois facteurs.",
+    fbok:"&#10003; Exact ! "+"\\(m = T \\times n \\times p\\).",
+    label:"Isoler m dans T = m/(n×p)", sid:"isoler_m_frac_ddeuxbas" },
+  "c16": { qid:"c16", grandeur:"n", schema:false,
+    enonce:"On a la formule \\(T = \\dfrac{m}{n \\times p}\\). Isole la grandeur \\(n\\).",
+    lettres:["m", "T", "p"],
+    lignes:[{ grandeur:"n", op:"fraction", slots:["m", { subop: "produit", cells: ["T", "p"] }] }],
+    fb1:"Dans \\(T = \\dfrac{m}{n \\times p}\\), la grandeur \\(n\\) est au dénominateur, avec \\(p\\). Astuce : isole d'abord le produit \\(n \\times p\\), puis \\(n\\) tout seul. Que se retrouve au dénominateur ?",
+    fb2:"On obtient \\(n \\times p = \\dfrac{m}{T}\\), puis on divise par \\(p\\) : \\(n = \\dfrac{m}{T \\times p}\\). La grandeur \\(T\\) « descend » au dénominateur.",
+    fbok:"&#10003; Exact ! "+"\\(n = \\dfrac{m}{T \\times p}\\).",
+    label:"Isoler n dans T = m/(n×p)", sid:"isoler_n_frac_ddeuxbas" }
+};
+
+// ============================================================
+//  Tirage d'un sous-ensemble (mécanique du socle) — ENTRAÎNEMENT
+// ============================================================
+const MODE_QUIZ = "entrainement";
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+const N_TIRAGE = 10;
+const CLES = Object.keys(CATALOGUE);
+
+function melanger(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const TOUS_IDS = melanger(CLES).slice(0, N_TIRAGE);
+let TOTAL = TOUS_IDS.length;
+const CONSTR = {};
+const LABELS = {};
+const SCORM_IDS = {};
+const etat = {};
+TOUS_IDS.forEach(id => {
+  CONSTR[id] = CATALOGUE[id];
+  LABELS[id] = CATALOGUE[id].label;
+  SCORM_IDS[id] = CATALOGUE[id].sid;
+  etat[id] = { resultat: null, tentative: 0 };
+});
+
+function construireBlocsQuestions(){
+  const zone = document.getElementById("zone-questions");
+  zone.innerHTML = "";
+  TOUS_IDS.forEach((qid, i) => {
+    const q = CONSTR[qid];
+    const bloc = document.createElement("div");
+    bloc.className = "qbloc";
+    bloc.id = qid;
+    bloc.innerHTML =
+      '<div class="qenonce"><span class="qnum">' + (i + 1) + '</span>' +
+        '<span>' + q.enonce + '</span></div>' +
+      '<div class="qcont">' +
+        '<div id="constr_' + qid + '"></div>' +
+        '<div class="fb" id="fb_' + qid + '"></div>' +
+        '<div style="margin-top:10px">' +
+          '<button class="btn-v" id="btnv_' + qid + '">Valider</button>' +
+          '<button class="btn-r" id="btnr_' + qid + '" style="display:none">2<sup>e</sup> essai</button>' +
+        '</div>' +
+      '</div>';
+    zone.appendChild(bloc);
+  });
+}
+
+function normalizeSlot(){
+  // Au démarrage, toujours 1 case vide par emplacement,
+  // même si la solution attendue en comporte 2 (l'élève décide d'ajouter la 2e case).
+  return { subop: null, cells: [null] };
+}
+
+function construireConstr(qid){
+  const cfg = CONSTR[qid];
+  if(!cfg) return;
+  cfg._etats = cfg.lignes.map(lg => ({
+    op: null,
+    sel: null,                          // lettre actuellement "en main" (placement explicite : on prend une étiquette, puis on choisit la case)
+    slots: lg.slots.map(() => normalizeSlot())
+  }));
+  cfg._ligneFigee = cfg.lignes.map(() => false);
+  cfg._bankComplete = [...cfg.lettres, ...(cfg.distracteurs || [])];
+  cfg._bankOrder = melanger(cfg._bankComplete);
+
+  const container = document.getElementById("constr_" + qid);
+  const helpHtml =
+    '<button class="help-icon" onclick="toggleHelp(\'' + qid + '\')" title="Aide">?</button>' +
+    '<div class="help-bubble" id="helpbubble_' + qid + '">' +
+      "<strong>💡 Comment utiliser ce widget</strong>" +
+      '<ul style="margin:8px 0;padding-left:20px">' +
+        "<li>Choisis d'abord l'opération (× / fraction / + / −) en cliquant sur un bouton.</li>" +
+        "<li>Clique une étiquette dans la banque pour la <strong>prendre</strong> (elle s'illumine), puis clique la <strong>case</strong> où la poser. Reclique l'étiquette pour la lâcher.</li>" +
+        "<li>Clic sur une lettre déjà placée → elle retourne dans la banque.</li>" +
+      '</ul>' +
+      "<strong>Pour les fractions :</strong>" +
+      '<ul style="margin:8px 0;padding-left:20px">' +
+        "<li>Clic sur la case grise vide à côté d'une case remplie → ajoute une 2\u1d49 case avec un sous-opérateur (×, + ou − au choix).</li>" +
+        "<li>Sélecteur × / + / − → change le sous-opérateur à tout moment (les lettres restent).</li>" +
+        "<li>Icône corbeille 🗑 → retire la 2\u1d49 case (les lettres reviennent dans la banque).</li>" +
+      '</ul>' +
+      "<em>Tu peux revenir en arrière à n'importe quel moment, rien n'est définitif avant de cliquer sur « Valider ».</em>" +
+    '</div>';
+  container.innerHTML = '<div class="constr-wrap">' + helpHtml +
+    cfg.lignes.map((lg, i) =>
+      '<div class="constr-row" id="constr-row-' + qid + '-' + i + '">' +
+      renderConstrRow(qid, i) +
+      '</div>'
+    ).join('') +
+  '</div>';
+  document.getElementById('btnv_' + qid).onclick = () => validerConstr(qid);
+  document.getElementById('btnr_' + qid).onclick = () => retryConstr(qid);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([container]);
+}
+
+function toggleHelp(qid){
+  const bubble = document.getElementById("helpbubble_" + qid);
+  if(bubble) bubble.classList.toggle("visible");
+}
+
+function banqueDisponible(cfg, row){
+  const st = cfg._etats[row];
+  const placees = new Set();
+  st.slots.forEach(slot => {
+    slot.cells.forEach(c => { if(c) placees.add(c); });
+  });
+  return cfg._bankOrder.filter(L => !placees.has(L));
+}
+
+function renderConstrRow(qid, i){
+  const cfg = CONSTR[qid];
+  const lg = cfg.lignes[i];
+  const st = cfg._etats[i];
+  const figee = cfg._ligneFigee[i];
+  const nbSlots = st.slots.length;
+
+  const bank = banqueDisponible(cfg, i);
+  const sym = symFromOp(st.op);
+
+  const opsDispo =
+    [['produit','× produit'], ['fraction','fraction'],
+     ['somme','+ somme'], ['difference','− différence']];
+
+  const opsHtml = opsDispo.map(([op, lbl]) => {
+    const sel = (st.op === op) ? ' selected' : '';
+    const dis = figee ? ' disabled' : '';
+    return '<button class="constr-op-btn' + sel + '"' + dis +
+           " onclick=\"constrSetOp('" + qid + "'," + i + ",'" + op + "')\">" + lbl + "</button>";
+  }).join('');
+
+  // Zone des emplacements
+  let slotsHtml;
+  if(st.op === 'fraction'){
+    slotsHtml =
+      '<div class="frac-stack">' +
+        '<div class="frac-zone">' + renderSlot(qid, i, 0) + '</div>' +
+        '<div class="frac-line"></div>' +
+        '<div class="frac-zone">' + renderSlot(qid, i, 1) + '</div>' +
+      '</div>';
+  } else {
+    slotsHtml = st.slots.map((slot, s) => {
+      const symAfter = (s < nbSlots - 1) ?
+        '<span class="constr-sym">' + sym + '</span>' : '';
+      return renderSlot(qid, i, s) + symAfter;
+    }).join('');
+  }
+
+  const bankHtml = figee ? '<span class="constr-bank-figee">— ligne validée —</span>' :
+    (bank.length ? bank.map(L =>
+      "<button class=\"constr-token" + (st.sel === L ? " selected" : "") + "\" onclick=\"constrSelect('" + qid + "'," + i + ",'" + L.replace(/\\/g, "\\\\") + "')\">\\(" + L + "\\)</button>"
+    ).join('') :
+    '<span class="constr-bank-empty">— toutes les lettres sont placées —</span>');
+
+  const preview = previewTex(lg.grandeur, st);
+
+  const headStyle = figee ? ' style="color:var(--vert);font-weight:700"' : '';
+  return '<div class="constr-head"' + headStyle + '>\\(' + preview + '\\)</div>' +
+    '<div class="constr-ops">' + opsHtml + '</div>' +
+    '<div class="constr-slots">' + slotsHtml + '</div>' +
+    '<div class="constr-bank">' + bankHtml + '</div>';
+}
+
+function renderSlot(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  const st = cfg._etats[row];
+  const opPrincipale = st.op;
+  const slot = st.slots[slotIdx];
+  const cap = capsFromOp(opPrincipale, st.slots.length)[slotIdx];
+  const figee = cfg._ligneFigee[row];
+  const dis = figee ? ' disabled' : '';
+
+  // Opération principale produit (ou non choisie) : 1 case par slot, pas de sous-op possible
+  if(opPrincipale !== "fraction" && opPrincipale !== "difference" && opPrincipale !== "somme"){
+    return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+  }
+
+  // Fraction : 1 case + case-fantôme OU 2 cases + sélecteur + corbeille
+  if(slot.cells.length === 1){
+    const html = renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+    if(!figee){
+      const phantom = '<button class="add-case" onclick="constrAddSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Ajouter une 2e case avec un sous-opérateur">⎕</button>';
+      return html + phantom;
+    }
+    return html;
+  }
+
+  const selHtml = !figee ? renderSubOpSelector(qid, row, slotIdx, slot.subop) :
+    '<span class="constr-sym">' + subSym(slot.subop) + '</span>';
+  const trashHtml = !figee ? '<button class="del-case" onclick="constrRemoveSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Retirer cette case">🗑</button>' : "";
+  return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee) +
+         selHtml +
+         renderCase(qid, row, slotIdx, 1, slot.cells[1], cap, dis, figee) +
+         trashHtml;
+}
+
+function subSym(subop){
+  if(subop === 'produit')    return '×';
+  if(subop === 'somme')      return '+';
+  if(subop === 'difference') return '−';
+  return '?';
+}
+
+function renderSubOpSelector(qid, row, slotIdx, currentSubOp){
+  const ops = [["produit","×"], ["somme","+"], ["difference","−"]];
+  const inner = ops.map(([op, sym]) => {
+    const sel = (currentSubOp === op) ? ' selected' : '';
+    return '<button class="sub-op-btn' + sel + '" onclick="constrSetSubOp(\'' + qid + '\',' + row + ',' + slotIdx + ',\'' + op + '\')">' + sym + '</button>';
+  }).join('');
+  return '<div class="sub-op-selector">' + inner + '</div>';
+}
+
+function renderCase(qid, row, slotIdx, cellIdx, content, cap, dis, figee){
+  const st = CONSTR[qid]._etats[row];
+  const vide = !content;
+  const selActive = (st.sel !== null);
+  const cls = (content ? ' filled' : '') + (figee ? ' figee' : '') +
+              ((vide && selActive && !figee) ? ' receptive' : '');
+  const action = (vide && !figee)
+    ? 'constrPlaceAt(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')'
+    : 'constrUnplace(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')';
+  return '<div class="constr-slot-wrap">' +
+    '<button class="constr-slot' + cls + '"' + dis +
+    ' onclick="' + action + '">' +
+    (content ? '\\(' + content + '\\)' : '?') + '</button>' +
+    '<span class="constr-slot-cap">' + cap + '</span>' +
+  '</div>';
+}
+
+function capsFromOp(op, nb){
+  if(op === 'fraction')   return ['numérateur', 'dénominateur'];
+  if(op === 'difference') return ['1er terme', '2e terme'];
+  if(op === 'produit')    return Array(nb).fill('facteur');
+  if(op === 'somme')      return Array(nb).fill('terme');
+  return Array(nb).fill('position');
+}
+
+function symFromOp(op){
+  if(op === 'fraction')   return '/';
+  if(op === 'difference') return '−';
+  if(op === 'produit')    return '×';
+  if(op === 'somme')      return '+';
+  return '?';
+}
+
+function previewTexCell(cell){
+  return cell || "\\square";
+}
+
+function previewTexSlot(slotInterne){
+  if(slotInterne.cells.length === 1){
+    return previewTexCell(slotInterne.cells[0]);
+  }
+  const a = previewTexCell(slotInterne.cells[0]);
+  const b = previewTexCell(slotInterne.cells[1]);
+  if(slotInterne.subop === "produit")    return a + " \\times " + b;
+  if(slotInterne.subop === "somme")      return a + " + " + b;
+  if(slotInterne.subop === "difference") return a + " - " + b;
+  return a + " \\,?\\, " + b;
+}
+
+function previewTexSlotParen(slotInterne){
+  // Dans une somme/différence principale, un slot à 2 cases dont la sous-opération est additive
+  // (+ ou −) doit être parenthésé pour rester correct (ex. y − (a + x)).
+  // Un produit n'a jamais besoin de parenthèses (y − a×x).
+  const tex = previewTexSlot(slotInterne);
+  if(slotInterne.cells.length === 2 &&
+     (slotInterne.subop === "somme" || slotInterne.subop === "difference")){
+    return "\\left(" + tex + "\\right)";
+  }
+  return tex;
+}
+
+function previewTex(grandeur, st){
+  if(!st.op && st.slots.every(s => s.cells.every(c => !c))){
+    return grandeur + ' = \\square\\,?\\,\\square';
+  }
+  if(st.op === 'fraction'){
+    return grandeur + ' = \\dfrac{' + previewTexSlot(st.slots[0]) + '}{' + previewTexSlot(st.slots[1]) + '}';
+  }
+  // produit : 1 case par slot (pas de sous-op) -> previewTexCell ; somme/difference : previewTexSlot (sous-op possible)
+  if(st.op === 'produit'){
+    const parts = st.slots.map(s => previewTexCell(s.cells[0]));
+    return grandeur + ' = ' + parts.join(' \\times ');
+  }
+  const parts = st.slots.map(s => previewTexSlotParen(s));
+  if(st.op === 'somme')      return grandeur + ' = ' + parts.join(' + ');
+  if(st.op === 'difference') return grandeur + ' = ' + parts[0] + ' - ' + parts[1];
+  return grandeur + ' = ' + parts.join(' \\,?\\, ');
+}
+
+function refreshConstrRow(qid, i){
+  const el = document.getElementById('constr-row-' + qid + '-' + i);
+  if(!el) return;
+  el.innerHTML = renderConstrRow(qid, i);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]);
+}
+
+function constrSetOp(qid, row, op){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  st.op = (st.op === op) ? null : op;
+  // Si la nouvelle opération n'autorise pas les sous-cases (produit / aucune) :
+  // les 2e cases disparaissent, leurs lettres retournent dans la banque
+  if(st.op !== 'fraction' && st.op !== 'difference' && st.op !== 'somme'){
+    st.slots.forEach(slot => {
+      slot.subop = null;
+      slot.cells = [slot.cells[0]];
+    });
+  }
+  refreshConstrRow(qid, row);
+}
+
+function estPlacee(st, letter){
+  return st.slots.some(slot => slot.cells.includes(letter));
+}
+
+function constrSelect(qid, row, letter){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(estPlacee(st, letter)) return;              // lettre déjà posée → ne pas la reprendre
+  st.sel = (st.sel === letter) ? null : letter;  // reclic sur la même étiquette = on la lâche
+  refreshConstrRow(qid, row);
+}
+
+function constrPlaceAt(qid, row, slotIdx, cellIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(st.sel === null) return;                            // aucune lettre en main → ne rien faire
+  if(st.slots[slotIdx].cells[cellIdx] !== null) return; // case déjà occupée → ne rien faire
+  st.slots[slotIdx].cells[cellIdx] = st.sel;            // on pose ICI la lettre en main
+  st.sel = null;                                        // la main se vide
+  refreshConstrRow(qid, row);
+}
+
+// (LEGACY — placement automatique séquentiel. REMPLACÉ par constrSelect + constrPlaceAt ; conservé pour historique, plus câblé.)
+function constrPlace(qid, row, letter){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(estPlacee(st, letter)) return;
+  for(let i = 0; i < st.slots.length; i++){
+    const cells = st.slots[i].cells;
+    for(let j = 0; j < cells.length; j++){
+      if(cells[j] === null){
+        cells[j] = letter;
+        refreshConstrRow(qid, row);
+        return;
+      }
+    }
+  }
+}
+
+function constrUnplace(qid, row, slotIdx, cellIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const cells = st.slots[slotIdx].cells;
+  if(cells[cellIdx] === null) return;
+  cells[cellIdx] = null;
+  refreshConstrRow(qid, row);
+}
+
+function constrAddSubCase(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  if(st.op !== "fraction" && st.op !== "difference" && st.op !== "somme") return;
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length >= 2) return;
+  slot.subop = "produit";
+  slot.cells.push(null);
+  refreshConstrRow(qid, row);
+}
+
+function constrRemoveSubCase(qid, row, slotIdx){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length < 2) return;
+  slot.subop = null;
+  slot.cells = [slot.cells[0]];
+  refreshConstrRow(qid, row);
+}
+
+function constrSetSubOp(qid, row, slotIdx, subop){
+  const cfg = CONSTR[qid];
+  if(cfg._ligneFigee[row]) return;
+  const st = cfg._etats[row];
+  const slot = st.slots[slotIdx];
+  if(slot.cells.length !== 2) return;
+  slot.subop = subop;
+  refreshConstrRow(qid, row);
+}
+
+function evalSlot(slotAttendu, slotEleve){
+  if(typeof slotAttendu === "string"){
+    return slotEleve.cells.length === 1 && slotEleve.cells[0] === slotAttendu;
+  }
+  if(slotEleve.cells.length !== 2) return false;
+  if(slotEleve.subop !== slotAttendu.subop) return false;
+  if(slotAttendu.subop === "difference"){
+    return slotEleve.cells[0] === slotAttendu.cells[0]
+        && slotEleve.cells[1] === slotAttendu.cells[1];
+  }
+  const tri1 = [...slotEleve.cells].sort();
+  const tri2 = [...slotAttendu.cells].sort();
+  return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+}
+
+function evalLigne(opChoisie, opAttendue, slotsRemplis, slotsAttendus){
+  if(opChoisie !== opAttendue) return false;
+  if(slotsRemplis.length !== slotsAttendus.length) return false;
+  if(opAttendue === 'fraction' || opAttendue === 'difference'){
+    return slotsRemplis.every((slotR, i) => evalSlot(slotsAttendus[i], slotR));
+  }
+  // Commutatif (produit, somme) : comparaison de multi-ensembles sur les 1res cases
+  const tri1 = slotsRemplis.map(s => s.cells[0]).sort();
+  const tri2 = slotsAttendus.map(s => (typeof s === "string" ? s : null)).sort();
+  return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+}
+
+// Représentation interne de la solution (pour révélation en fin de 2e tentative)
+function solutionInterne(lg){
+  return {
+    op: lg.op,
+    slots: lg.slots.map(s => (typeof s === "string") ?
+      { subop: null, cells: [s] } :
+      { subop: s.subop, cells: [...s.cells] })
+  };
+}
+
+function validerConstr(qid){
+  const cfg = CONSTR[qid];
+  const t = etat[qid];
+  const multi = cfg.lignes.length > 1;
+
+  for(let i = 0; i < cfg.lignes.length; i++){
+    if(cfg._ligneFigee[i]) continue;
+    const st = cfg._etats[i];
+    if(!st.op){
+      alert("Choisis d'abord l'opération (× / fraction / + / −).");
+      return;
+    }
+    if(st.slots.some(slot => slot.cells.some(c => c === null))){
+      alert("Remplis toutes les cases avant de valider.");
+      return;
+    }
+  }
+
+  t.tentative++;
+
+  const resultats = cfg.lignes.map((lg, i) => {
+    if(cfg._ligneFigee[i]) return true;
+    const st = cfg._etats[i];
+    return evalLigne(st.op, lg.op, st.slots, lg.slots);
+  });
+
+  const toutBon = resultats.every(r => r);
+  const repEleve = reponseConstr(qid);   // capture avant toute révélation de solution
+  const fb = document.getElementById('fb_' + qid);
+  const btnv = document.getElementById('btnv_' + qid);
+  const btnr = document.getElementById('btnr_' + qid);
+  const bloc = document.getElementById(qid);
+
+  if(toutBon){
+    fb.className = 'fb ok'; fb.innerHTML = cfg.fbok; fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    cfg._ligneFigee = cfg.lignes.map(() => true);
+    cfg.lignes.forEach((_, i) => refreshConstrRow(qid, i));
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc');
+    fb.className = 'fb ko';
+
+    if(t.tentative === 1){
+      if(multi){
+        let nbOk = 0, nbTotal = cfg.lignes.length;
+        cfg.lignes.forEach((lg, i) => {
+          if(resultats[i]){
+            cfg._ligneFigee[i] = true;
+            nbOk++;
+          } else {
+            cfg._etats[i].op = null;
+            cfg._etats[i].slots = lg.slots.map(() => normalizeSlot());
+          }
+          refreshConstrRow(qid, i);
+        });
+        fb.innerHTML = "✗ " + nbOk + " ligne(s) sur " + nbTotal +
+                       " correctes. Revois celle(s) effacée(s).<br>" + cfg.fb1;
+      } else {
+        cfg._etats[0].op = null;
+        cfg._etats[0].slots = cfg.lignes[0].slots.map(() => normalizeSlot());
+        refreshConstrRow(qid, 0);
+        fb.innerHTML = "✗ " + cfg.fb1;
+      }
+      fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      cfg.lignes.forEach((lg, i) => {
+        if(!resultats[i]){
+          const sol = solutionInterne(lg);
+          cfg._etats[i].op = sol.op;
+          cfg._etats[i].slots = sol.slots;
+        }
+        cfg._ligneFigee[i] = true;
+        refreshConstrRow(qid, i);
+      });
+      fb.className = 'fb ko2';
+      fb.innerHTML = "✗ " + cfg.fb2 + (EN_CLASSE ? RELANCE_PROF : '');
+      fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryConstr(qid){
+  document.getElementById('fb_' + qid).style.display = 'none';
+  document.getElementById('btnr_' + qid).style.display = 'none';
+  document.getElementById('btnv_' + qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+function texToPlain(s){
+  return String(s)
+    .replace(/\\rho/g, "rho")
+    .replace(/\\lambda/g, "lambda")
+    .replace(/\\ell/g, "l")
+    .replace(/\\dfrac/g, "")
+    .replace(/[\\{}]/g, "");
+}
+
+// Sérialise un emplacement (gère la sous-opération à 2 cases : fractions, différences et sommes)
+function slotToPlain(slot){
+  const cells = slot.cells.map(c => texToPlain(c || "?"));
+  if(cells.length === 1) return cells[0];
+  const symMap = { produit: "*", somme: "+", difference: "-" };
+  return "(" + cells[0] + (symMap[slot.subop] || "?") + cells[1] + ")";
+}
+
+// Reconstruit la formule complète de l'élève en texte lisible
+function reponseConstr(qid){
+  const cfg = CONSTR[qid];
+  return cfg.lignes.map((lg, i) => {
+    const st = cfg._etats[i];
+    const g = texToPlain(lg.grandeur);
+    const parts = st.slots.map(slotToPlain);
+    if(st.op === "fraction")   return g + "=" + parts[0] + "/" + parts[1];
+    if(st.op === "produit")    return g + "=" + parts.join("*");
+    if(st.op === "somme")      return g + "=" + parts.join("+");
+    if(st.op === "difference") return g + "=" + parts[0] + "-" + parts[1];
+    return g + "=?";
+  }).join(" ; ");
+}
+
+
+// ============================================================
+//  Scores (2 notes), bilan EN BAS (sans tableau détaillé), fin
+// ============================================================
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if(r === 'ok1'){ n1++; n2++; } else if(r === 'ok2'){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+function majScores(){ /* pas de bandeau en haut : les notes ne s'affichent qu'en bas via afficherBilan */ }
+function verifierFin(){
+  if(TOUS_IDS.every(id => etat[id].resultat !== null)) afficherBilan();
+}
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById('bilan-n1').textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById('bilan-n2').textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById('bilan').style.display = 'block';
+  if(TOUS_IDS.every(id => etat[id].resultat !== null)) scormReport(sc.n1);
+}
+
+// ============================================================
+//  Couche SCORM 1.2 — MODE ENTRAÎNEMENT (silence total hors LMS)
+// ============================================================
+var scormAPI = null, scormInit = false, scormNbInter = 0;
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+function scormEnd(){ try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){} }
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){}
+}
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+
+// ============================================================
+//  Initialisation (mode entraînement)
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  scormStart();
+  construireBlocsQuestions();
+  TOUS_IDS.forEach(construireConstr);
+  const btnReload = document.getElementById('btn-reload');
+  if(btnReload) btnReload.onclick = () => location.reload();
+  function renderMath(){
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+    else { setTimeout(renderMath, 100); }
+  }
+  renderMath();
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde : Décrypter un énoncé</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;--activite:#ffe000;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+header.type-activite{background:var(--activite);color:var(--texte);border-bottom-color:var(--texte)}
+header.type-activite .h-phase{background:var(--texte);color:var(--activite)}
+header.type-activite .h-niveau,
+header.type-activite .h-sous,
+header.type-activite .h-prof{opacity:.72}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.opt-check{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.opt-check input[type="checkbox"]{margin-top:3px;cursor:pointer;flex-shrink:0}
+.opt-check.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-check.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-check.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.a-recopier{margin-top:9px;padding:8px 12px;background:#fff;border:1px dashed var(--bleu-cl);border-radius:var(--r);color:var(--texte);font-size:.9rem;line-height:1.55}
+.a-recopier strong{color:var(--bleu)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+.cm{display:inline-block}
+.cm sub,.cm sup{font-size:.72em}
+/* Clavier scientifique (Type 2, verbatim COMMUN) */
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.k:disabled{opacity:.45;cursor:default}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* Jetons / cases (CONSTR, verbatim COMMUN) */
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.bank-label{width:100%;font-size:.8rem;color:#888;font-style:italic;margin-bottom:2px}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-token:disabled{opacity:.45;cursor:default}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s;display:inline-flex;align-items:center;justify-content:center}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-slot.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert);border-style:solid}
+.constr-slot.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge);border-style:solid}
+/* Disposition propre au widget « traduire » (construction + valeur) — NOUVEAU, à documenter */
+.trad-rows{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}
+.trad-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.trad-mot{min-width:210px;font-weight:600;color:var(--texte)}
+.trad-eq{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.trad-sign{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;color:var(--bleu)}
+.trad-disp{min-width:96px;cursor:pointer}
+.disp.active{border-color:var(--bleu-cl)!important;box-shadow:0 0 0 3px rgba(44,111,173,.20)}
+.clavier-aide{font-size:.82rem;color:#888;font-style:italic;margin-top:6px}
+/* En-tête d'activité en classe */
+.activite-entete{border:2px solid var(--bleu);border-radius:var(--r);background:var(--blanc);padding:0 0 16px;margin-bottom:26px;box-shadow:0 1px 7px rgba(26,58,92,.13);overflow:hidden}
+.activite-bandeau{background:var(--texte);color:var(--activite);text-align:center;padding:5px 0;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em}
+.activite-titre{font-size:1.18rem;font-weight:700;color:var(--bleu);text-align:center;letter-spacing:.02em;padding:14px 18px 12px;margin:0 16px 14px;border-bottom:2px solid var(--or)}
+.activite-regles{font-size:.93rem;line-height:1.55;color:var(--texte);padding:0 20px;display:flex;flex-direction:column;gap:9px}
+.activite-regles div{display:flex;gap:9px;align-items:flex-start}
+.activite-regles .ico{flex:0 0 auto;font-size:1.05rem;line-height:1.4}
+.activite-regles strong{color:var(--bleu)}
+/* Titres de partie / sous-partie numérotés */
+.section-titre{font-size:1.12rem;font-weight:700;color:var(--bleu);margin:32px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.section-titre .num{color:var(--or);margin-right:.45em}
+.soussection-titre{font-size:1rem;font-weight:600;color:var(--bleu-cl);margin:24px 0 12px;padding-bottom:4px;border-bottom:1px solid var(--gris-m)}
+.soussection-titre .num{color:var(--or);margin-right:.45em}
+/* Verrou séquentiel entre parties */
+.situation.verrouillee{opacity:.5;pointer-events:none}
+.situation:not(.verrouillee) .verrou-note{display:none}
+.verrou-note{color:var(--orange);font-weight:600;font-size:.92rem;margin:6px 0 10px;border-left:3px solid var(--orange);padding-left:10px}
+.check-feuille label{display:inline-flex;align-items:center;gap:8px;font-size:.95rem}
+.check-feuille .qenonce{margin-bottom:6px}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+}
+</style>
+</head>
+<body>
+<header class="mode-entrainement type-activite">
+  <div class="hg">
+    <div class="h-niveau">Seconde</div>
+    <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+    <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Décrypter un énoncé (Entraînement)</div>
+  </div>
+  <div class="hd">
+    <div class="h-lycee">Lycée Henri Cornat</div>
+    <div class="h-ville">VALOGNES</div>
+    <div class="h-prof">Z. Lechevalier</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="activite-entete">
+    <div class="activite-bandeau">Activité en classe</div>
+    <div class="activite-titre">2PC0 · Seconde — Activité 3 : Décrypter un énoncé</div>
+    <div class="activite-regles">
+      <div><span class="ico">📄</span><span><strong>Cette activité est à rédiger entièrement sur une feuille</strong> correctement présentée (nom, prénom, classe, date) : <strong>une feuille par élève</strong>, et non une feuille pour deux.</span></div>
+      <div><span class="ico">✍️</span><span><strong>Le titre de l'activité (ci-dessus) doit être recopié en entier.</strong> Les titres des situations (1. Le livre, 2. La bille, 3. La combustion) doivent eux aussi être recopiés.</span></div>
+      <div><span class="ico">🔢</span><span><strong>Les questions ne se recopient pas</strong>, mais <strong>leur numéro, si</strong>.</span></div>
+    </div>
+  </div>
+
+  <div class="consignes-titre">CONSIGNES</div>
+  <div class="contexte">
+    Décrypter un énoncé, c'est le travail qu'on fait <strong>avant</strong> de calculer. Et la toute première question à se poser, ce n'est pas «&nbsp;quelles sont les données ?&nbsp;» mais <strong>«&nbsp;qu'est-ce que je cherche ?&nbsp;»</strong>. C'est le but qui commande : il dit quelle relation utiliser, donc de quelles grandeurs on a besoin — et c'est <strong>seulement là</strong> qu'on retourne à l'énoncé chercher leurs valeurs. Les nombres qui ne servent pas restent où ils sont.<br><br>
+    Dans cette activité, le but n'est pas de calculer la «&nbsp;bonne&nbsp;» valeur, mais de <strong>décortiquer cette démarche</strong> — et notamment les réflexes à acquérir au moment de la lecture —, démarche qui permettra d'arriver au résultat.
+  </div>
+
+  <!-- ============================ 1. LE LIVRE ============================ -->
+  <div class="situation" id="sit_livre">
+    <div class="section-titre"><span class="num">1.</span>Le livre</div>
+    <div class="contexte">Un livre de masse 450 g est posé sur une étagère située à 1,8 m du sol. La couverture du livre mesure 24 cm de hauteur. On prendra \(g = 9{,}8\) N/kg. On cherche l'énergie potentielle de position \(E_{pp}\) du livre par rapport au sol.</div>
+
+    <div class="qbloc" id="q1">
+      <div class="qenonce"><span class="qnum">1</span><span>Avant tout : qu'est-ce qu'on cherche dans cet énoncé ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q1"></ul><div class="fb" id="fb_q1"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q1">Valider</button><button class="btn-r" id="btnr_q1">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q2">
+      <div class="qenonce"><span class="qnum">2</span><span>Dans quelle unité s'exprime la grandeur cherchée ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q2"></ul><div class="fb" id="fb_q2"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q2">Valider</button><button class="btn-r" id="btnr_q2">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q3">
+      <div class="qenonce"><span class="qnum">3</span><span>Quelle relation permet de la calculer ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q3"></ul><div class="fb" id="fb_q3"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q3">Valider</button><button class="btn-r" id="btnr_q3">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q4">
+      <div class="qenonce"><span class="qnum">4</span><span>D'après cette relation, de quelles grandeurs as-tu besoin ? Coche <strong>la ou les</strong> réponses correctes.</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q4"></ul><div class="fb" id="fb_q4"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q4">Valider</button><button class="btn-r" id="btnr_q4">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q5">
+      <div class="qenonce"><span class="qnum">5</span><span>Retourne à l'énoncé chercher la valeur de chaque grandeur <strong>utile</strong> et écris-la. <em>Ne va pas chercher ce qui ne sert pas. L'ordre des lignes est libre.</em></span></div>
+      <div class="qcont"><div id="trad_q5"></div><div class="fb" id="fb_q5"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q5">Valider</button><button class="btn-r" id="btnr_q5">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q6">
+      <div class="qenonce"><span class="qnum">6</span><span>Quelle donnée de l'énoncé ne t'a <strong>pas</strong> servi ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q6"></ul><div class="fb" id="fb_q6"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q6">Valider</button><button class="btn-r" id="btnr_q6">2<sup>e</sup> essai</button></div></div>
+    </div>
+
+    <div class="contexte" style="border-left-color:var(--vert)">✅ <strong>Et après ?</strong> Une fois \(m\) convertie en kg : \(E_{pp} = m \times g \times h = 0{,}450 \times 9{,}8 \times 1{,}8\). Il n'y a plus qu'à taper le calcul, et ça donne \(E_{pp} \approx 7{,}9\) J.</div>
+
+    <div class="qbloc check-feuille">
+      <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+      <div class="qcont"><label><input type="checkbox" id="chk_livre" onchange="checkFeuille('livre')"> Oui, j'ai recopié et corrigé ma feuille.</label></div>
+    </div>
+  </div>
+
+  <!-- ============================ 2. LA BILLE ============================ -->
+  <div class="situation" id="sit_bille">
+    <div class="section-titre"><span class="num">2.</span>La bille</div>
+    <div class="verrou-note">🔒 Termine la situation précédente et coche la case pour débloquer celle-ci.</div>
+    <div class="contexte">Une bille de masse 50 g est lâchée, <strong>sans vitesse initiale</strong>, du haut d'une rampe de 1,2 m de long. On cherche son énergie cinétique \(E_c\) <strong>à l'instant où on la lâche</strong>.</div>
+
+    <div class="qbloc" id="q7">
+      <div class="qenonce"><span class="qnum">1</span><span>Qu'est-ce qu'on cherche dans cet énoncé ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q7"></ul><div class="fb" id="fb_q7"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q7">Valider</button><button class="btn-r" id="btnr_q7">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q8">
+      <div class="qenonce"><span class="qnum">2</span><span>Dans quelle unité s'exprime la grandeur cherchée ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q8"></ul><div class="fb" id="fb_q8"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q8">Valider</button><button class="btn-r" id="btnr_q8">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q9">
+      <div class="qenonce"><span class="qnum">3</span><span>Quelle relation permet de la calculer ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q9"></ul><div class="fb" id="fb_q9"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q9">Valider</button><button class="btn-r" id="btnr_q9">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q10">
+      <div class="qenonce"><span class="qnum">4</span><span>D'après cette relation, de quelles grandeurs as-tu besoin ? Coche <strong>la ou les</strong> réponses correctes.</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q10"></ul><div class="fb" id="fb_q10"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q10">Valider</button><button class="btn-r" id="btnr_q10">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q11">
+      <div class="qenonce"><span class="qnum">5</span><span>Retourne à l'énoncé chercher la valeur de chaque grandeur <strong>utile</strong> et écris-la. <em>Ne va pas chercher ce qui ne sert pas. L'ordre des lignes est libre.</em></span></div>
+      <div class="qcont"><div id="trad_q11"></div><div class="fb" id="fb_q11"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q11">Valider</button><button class="btn-r" id="btnr_q11">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q12">
+      <div class="qenonce"><span class="qnum">6</span><span>Quelle donnée de l'énoncé ne t'a <strong>pas</strong> servi ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q12"></ul><div class="fb" id="fb_q12"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q12">Valider</button><button class="btn-r" id="btnr_q12">2<sup>e</sup> essai</button></div></div>
+    </div>
+
+    <div class="contexte" style="border-left-color:var(--vert)">✅ <strong>Et après ?</strong> \(E_c = \tfrac{1}{2} \times m \times v^2 = \tfrac{1}{2} \times 0{,}050 \times 0^2 = 0\) J. «&nbsp;Lâchée sans vitesse initiale&nbsp;» voulait dire \(v = 0\) : la vitesse initiale nulle ne se jette pas, elle <strong>donne la réponse</strong>.</div>
+
+    <div class="qbloc check-feuille">
+      <div class="qenonce"><span>As-tu bien recopié et corrigé ta feuille ?</span></div>
+      <div class="qcont"><label><input type="checkbox" id="chk_bille" onchange="checkFeuille('bille')"> Oui, j'ai recopié et corrigé ma feuille.</label></div>
+    </div>
+  </div>
+
+  <!-- ============================ 3. LA COMBUSTION ============================ -->
+  <div class="situation" id="sit_combu">
+    <div class="section-titre"><span class="num">3.</span>La combustion</div>
+    <div class="verrou-note">🔒 Termine la situation précédente et coche la case pour débloquer celle-ci.</div>
+    <div class="contexte">Du méthane brûle dans le dioxygène : il se forme du dioxyde de carbone et de l'eau. On brûle 8,0 g de méthane avec 32 g de dioxygène ; il se forme 22 g de dioxyde de carbone. La flamme atteint 1 900 °C. On cherche la masse d'eau formée.</div>
+
+    <div class="qbloc" id="q13">
+      <div class="qenonce"><span class="qnum">1</span><span>Qu'est-ce qu'on cherche dans cet énoncé ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q13"></ul><div class="fb" id="fb_q13"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q13">Valider</button><button class="btn-r" id="btnr_q13">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q14">
+      <div class="qenonce"><span class="qnum">2</span><span>Dans quelle unité s'exprime la grandeur cherchée ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q14"></ul><div class="fb" id="fb_q14"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q14">Valider</button><button class="btn-r" id="btnr_q14">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q15">
+      <div class="qenonce"><span class="qnum">3</span><span>Quel principe permet de la trouver ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q15"></ul><div class="fb" id="fb_q15"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q15">Valider</button><button class="btn-r" id="btnr_q15">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q16">
+      <div class="qenonce"><span class="qnum">4</span><span>Pour appliquer ce principe, de quelles masses as-tu besoin ? Coche <strong>la ou les</strong> réponses correctes.</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q16"></ul><div class="fb" id="fb_q16"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q16">Valider</button><button class="btn-r" id="btnr_q16">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q17">
+      <div class="qenonce"><span class="qnum">5</span><span>Retourne à l'énoncé chercher les <strong>masses connues</strong> et écris-les. <em>L'eau, c'est l'inconnue : ne va pas la chercher. L'ordre des lignes est libre.</em></span></div>
+      <div class="qcont"><div id="trad_q17"></div><div class="fb" id="fb_q17"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q17">Valider</button><button class="btn-r" id="btnr_q17">2<sup>e</sup> essai</button></div></div>
+    </div>
+    <div class="qbloc" id="q18">
+      <div class="qenonce"><span class="qnum">6</span><span>Quelle donnée de l'énoncé ne t'a <strong>pas</strong> servi ?</span></div>
+      <div class="qcont"><ul class="opts" id="opts_q18"></ul><div class="fb" id="fb_q18"></div><div style="margin-top:10px"><button class="btn-v" id="btnv_q18">Valider</button><button class="btn-r" id="btnr_q18">2<sup>e</sup> essai</button></div></div>
+    </div>
+
+    <div class="contexte" style="border-left-color:var(--vert)">✅ <strong>Et après ?</strong> masse(réactifs) = masse(produits), donc 8,0 + 32 = 22 + \(m\)(eau). Il n'y a plus qu'à poser 8,0 + 32 − 22, et ça donne 18 g d'eau.</div>
+  </div>
+
+  <button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+  <button class="btn-global btn-recommencer" id="btn-reload" onclick="location.reload()">&#8634; Recommencer</button>
+
+  <div id="bilan" style="display:none">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 18</span></div>
+      <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 18</span></div>
+    </div>
+  </div>
+
+</main>
+<script>
+/* ===================== CONSTANTES ===================== */
+const MODE_QUIZ = "entrainement";
+
+const LABELS = {
+  q1:"Livre — qu'est-ce qu'on cherche", q2:"Livre — unité de la grandeur", q3:"Livre — relation",
+  q4:"Livre — grandeurs utiles", q5:"Livre — valeurs (construction)", q6:"Livre — donnée inutile",
+  q7:"Bille — qu'est-ce qu'on cherche", q8:"Bille — unité de la grandeur", q9:"Bille — relation",
+  q10:"Bille — grandeurs utiles", q11:"Bille — valeurs (construction)", q12:"Bille — donnée inutile",
+  q13:"Combustion — qu'est-ce qu'on cherche", q14:"Combustion — unité", q15:"Combustion — principe",
+  q16:"Combustion — masses utiles", q17:"Combustion — valeurs (construction)", q18:"Combustion — donnée inutile"
+};
+
+const SCORM_IDS = {
+  q1:"livre_cherche", q2:"livre_unite", q3:"livre_relation", q4:"livre_grandeurs", q5:"livre_valeurs", q6:"livre_inutile",
+  q7:"bille_cherche", q8:"bille_unite", q9:"bille_relation", q10:"bille_grandeurs", q11:"bille_valeurs", q12:"bille_inutile",
+  q13:"combu_cherche", q14:"combu_unite", q15:"combu_principe", q16:"combu_masses", q17:"combu_valeurs", q18:"combu_inutile"
+};
+
+const IDS_QCM       = ["q1","q2","q3","q6","q7","q8","q9","q12","q13","q14","q15","q18"];
+const IDS_QCM_MULTI = ["q4","q10","q16"];
+const IDS_ASSOC     = [];
+const IDS_TRAD      = ["q5","q11","q17"];
+
+const TOUS_IDS = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18"];
+const TOTAL = TOUS_IDS.length;
+
+const etat = {};
+TOUS_IDS.forEach(id => { etat[id] = {resultat:null, tentative:0}; });
+
+const EN_CLASSE = (MODE_QUIZ === "entrainement");
+const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé ou tu ne comprends pas la bonne réponse&nbsp;? Lève la main et demande de l\'aide&nbsp;: profite de l\'activité, le professeur est là, en classe, pour t\'expliquer. Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+/* ===================== PHRASES À RECOPIER (rédaction sur la feuille) ===================== */
+const PHRASES = {
+  q1:"On cherche l'énergie potentielle de position \\(E_{pp}\\) du livre.",
+  q2:"L'énergie potentielle se mesure en joules (J).",
+  q3:"La relation est \\(E_{pp} = m \\times g \\times h\\).",
+  q4:"Les grandeurs utiles sont la masse \\(m\\), l'intensité de pesanteur \\(g\\) et la hauteur \\(h\\).",
+  q6:"La donnée inutile est la hauteur de la couverture (24 cm).",
+  q7:"On cherche l'énergie cinétique \\(E_c\\) de la bille à l'instant du lâcher.",
+  q8:"L'énergie cinétique se mesure en joules (J).",
+  q9:"La relation est \\(E_c = \\tfrac{1}{2} \\times m \\times v^2\\).",
+  q10:"Les grandeurs utiles sont la masse \\(m\\) et la vitesse \\(v\\).",
+  q12:"La donnée inutile est la longueur de la rampe (1,2 m).",
+  q13:"On cherche la masse d'eau formée.",
+  q14:"Cette masse se mesure en grammes (g).",
+  q15:"D'après la conservation de la masse : masse des réactifs = masse des produits.",
+  q16:"Les masses utiles sont celles du méthane, du dioxygène et du dioxyde de carbone.",
+  q18:"La donnée inutile est la température de la flamme (1 900 °C)."
+};
+function recopier(qid){
+  var p = PHRASES[qid];
+  return p ? '<div class="a-recopier">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> &laquo;&nbsp;'+p+'&nbsp;&raquo;</div>' : '';
+}
+function recopierTrad(cfg){
+  var r = cfg.lignes.map(function(lg){ return '\\('+lg.sym+'\\) = '+lg.valTxt+(lg.unite?(' '+lg.unite):''); }).join(' ; ');
+  return '<div class="a-recopier">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> '+r+'</div>';
+}
+
+/* ===================== DICTIONNAIRES DE CONTENU ===================== */
+const QCM = {
+  q1: { props:[
+      { html:"l'énergie potentielle de position du livre", correct:true },
+      { html:"la masse du livre posé sur l'étagère", correct:false },
+      { html:"la hauteur de l'étagère par rapport au sol", correct:false },
+      { html:"la vitesse du livre au moment où il tombe", correct:false } ],
+    fb1:"Relis la dernière phrase de l'énoncé : « On cherche… ».",
+    fb2:"On cherche l'énergie potentielle de position \\(E_{pp}\\). C'est le but, et c'est lui qui commande la suite.",
+    fbok:"&#10003; C'est la première question à se poser : le but commande tout le reste." },
+  q2: { props:[
+      { html:"le joule (J)", correct:true },
+      { html:"le newton (N)", correct:false },
+      { html:"le kilogramme (kg)", correct:false },
+      { html:"le mètre (m)", correct:false } ],
+    fb1:"Une énergie, ça se mesure dans quelle unité ?",
+    fb2:"Une énergie s'exprime en joules (J).",
+    fbok:"&#10003; Une énergie se mesure en joules." },
+  q3: { props:[
+      { html:"\\(E_{pp} = m \\times g \\times h\\)", correct:true },
+      { html:"\\(E_{pp} = m \\times g \\div h\\)", correct:false },
+      { html:"\\(E_{pp} = (m \\times h) \\div g\\)", correct:false },
+      { html:"\\(E_{pp} = \\tfrac{1}{2} \\times m \\times h^2\\)", correct:false } ],
+    fb1:"Quelle relation relie l'énergie potentielle à la masse, à la pesanteur et à la hauteur ?",
+    fb2:"L'énergie potentielle de position s'écrit \\(E_{pp} = m \\times g \\times h\\).",
+    fbok:"&#10003; \\(E_{pp} = m \\times g \\times h\\)." },
+  q6: { props:[
+      { html:"la hauteur de la couverture (24 cm)", correct:true },
+      { html:"la masse du livre (450 g)", correct:false },
+      { html:"la hauteur de l'étagère (1,8 m)", correct:false },
+      { html:"l'intensité de pesanteur (9,8 N/kg)", correct:false } ],
+    fb1:"Parmi les nombres de l'énoncé, lequel n'entre dans aucune grandeur utile ?",
+    fb2:"La hauteur de la couverture (24 cm) n'apparaît dans aucune grandeur de la relation : c'est le décor.",
+    fbok:"&#10003; La couverture (24 cm), c'était le décor. La relation ne l'a jamais demandée." },
+
+  q7: { props:[
+      { html:"l'énergie cinétique de la bille au lâcher", correct:true },
+      { html:"la vitesse de la bille en bas de la rampe", correct:false },
+      { html:"la longueur totale de la rampe inclinée", correct:false },
+      { html:"la masse de la bille exprimée en kg", correct:false } ],
+    fb1:"Relis la dernière phrase : « On cherche… ».",
+    fb2:"On cherche l'énergie cinétique \\(E_c\\) au moment du lâcher.",
+    fbok:"&#10003; On cherche l'énergie cinétique \\(E_c\\) au moment du lâcher." },
+  q8: { props:[
+      { html:"le joule (J)", correct:true },
+      { html:"le mètre par seconde (m/s)", correct:false },
+      { html:"le mètre (m)", correct:false },
+      { html:"le gramme (g)", correct:false } ],
+    fb1:"Une énergie, même cinétique, se mesure dans quelle unité ?",
+    fb2:"Une énergie cinétique s'exprime en joules (J).",
+    fbok:"&#10003; Une énergie, même cinétique, se mesure en joules." },
+  q9: { props:[
+      { html:"\\(E_c = \\tfrac{1}{2} \\times m \\times v^2\\)", correct:true },
+      { html:"\\(E_c = \\tfrac{1}{2} \\times m^2 \\times v\\)", correct:false },
+      { html:"\\(E_c = \\tfrac{1}{2} \\times m \\times v\\)", correct:false },
+      { html:"\\(E_c = m \\times v^2\\)", correct:false } ],
+    fb1:"Quelle relation donne l'énergie cinétique en fonction de la masse et de la vitesse ?",
+    fb2:"L'énergie cinétique s'écrit \\(E_c = \\tfrac{1}{2} \\times m \\times v^2\\) (la vitesse est au carré).",
+    fbok:"&#10003; \\(E_c = \\tfrac{1}{2} \\times m \\times v^2\\) (la vitesse est au carré)." },
+  q12: { props:[
+      { html:"la longueur de la rampe (1,2 m)", correct:true },
+      { html:"la masse de la bille (50 g)", correct:false },
+      { html:"la vitesse au moment du lâcher (0)", correct:false },
+      { html:"aucune : toutes les données ont servi", correct:false } ],
+    fb1:"Quelle donnée n'apparaît dans aucune grandeur de la relation \\(E_c = \\tfrac{1}{2} m v^2\\) ?",
+    fb2:"La longueur de la rampe (1,2 m) ne sert pas : c'est le décor.",
+    fbok:"&#10003; La longueur de la rampe (1,2 m), c'était le décor." },
+
+  q13: { props:[
+      { html:"la masse d'eau formée", correct:true },
+      { html:"la masse de méthane", correct:false },
+      { html:"la température de la flamme", correct:false },
+      { html:"la masse de dioxygène", correct:false } ],
+    fb1:"Relis la dernière phrase : « On cherche… ».",
+    fb2:"On cherche la masse d'eau formée.",
+    fbok:"&#10003; On cherche la masse d'eau formée." },
+  q14: { props:[
+      { html:"le gramme (g)", correct:true },
+      { html:"le joule (J)", correct:false },
+      { html:"le degré Celsius (°C)", correct:false },
+      { html:"le mètre (m)", correct:false } ],
+    fb1:"On cherche une masse : dans quelle unité s'exprime-t-elle ici ?",
+    fb2:"Les masses de l'énoncé sont en grammes : la masse d'eau le sera aussi.",
+    fbok:"&#10003; Une masse se mesure ici en grammes." },
+  q15: { props:[
+      { html:"la masse des réactifs est égale à la masse des produits", correct:true },
+      { html:"la masse des produits est supérieure à celle des réactifs", correct:false },
+      { html:"la masse se conserve uniquement pour les gaz", correct:false },
+      { html:"la masse totale diminue au cours de la combustion", correct:false } ],
+    fb1:"Au cours d'une transformation chimique, que devient la masse totale ?",
+    fb2:"D'après la conservation de la masse, la masse des réactifs est égale à la masse des produits.",
+    fbok:"&#10003; Conservation de la masse : masse des réactifs = masse des produits." },
+  q18: { props:[
+      { html:"la température de la flamme (1 900 °C)", correct:true },
+      { html:"la masse de méthane brûlé (8,0 g)", correct:false },
+      { html:"la masse de dioxygène utilisé (32 g)", correct:false },
+      { html:"la masse de dioxyde de carbone formé (22 g)", correct:false } ],
+    fb1:"Quelle donnée n'entre pas dans le bilan des masses ?",
+    fb2:"La température de la flamme (1 900 °C) ne sert pas au calcul : c'est le décor.",
+    fbok:"&#10003; La température (1 900 °C), c'était le décor." }
+};
+
+const QCM_MULTI = {
+  q4: { props:[
+      { html:"la masse \\(m\\)", correct:true },
+      { html:"l'intensité de pesanteur \\(g\\)", correct:true },
+      { html:"la hauteur de l'étagère \\(h\\)", correct:true },
+      { html:"la hauteur de la couverture du livre", correct:false } ],
+    fb1:"Regarde la relation \\(E_{pp} = m \\times g \\times h\\) : quelles grandeurs y figurent ?",
+    fb2:"La relation n'utilise que \\(m\\), \\(g\\) et \\(h\\). La hauteur de la couverture n'y est pas.",
+    fbok:"&#10003; Trois grandeurs : \\(m\\), \\(g\\), \\(h\\). C'est elles qu'on ira chercher dans l'énoncé." },
+  q10: { props:[
+      { html:"la masse \\(m\\)", correct:true },
+      { html:"la vitesse \\(v\\)", correct:true },
+      { html:"la longueur de la rampe", correct:false },
+      { html:"le temps de chute", correct:false } ],
+    fb1:"Regarde la relation \\(E_c = \\tfrac{1}{2} m v^2\\) : quelles grandeurs y figurent ?",
+    fb2:"La relation n'utilise que \\(m\\) et \\(v\\). Ni la rampe, ni le temps.",
+    fbok:"&#10003; \\(m\\) et \\(v\\). Ni la rampe, ni le temps." },
+  q16: { props:[
+      { html:"la masse de méthane", correct:true },
+      { html:"la masse de dioxygène", correct:true },
+      { html:"la masse de dioxyde de carbone", correct:true },
+      { html:"la température de la flamme (1 900 °C)", correct:false } ],
+    fb1:"Pour égaler la masse des réactifs à celle des produits, de quelles masses as-tu besoin ?",
+    fb2:"Il faut les masses des réactifs (méthane, dioxygène) et de l'autre produit (dioxyde de carbone). Pas la température.",
+    fbok:"&#10003; Les trois masses connues. Pas la température." }
+};
+
+const ASSOC = {};
+
+const TRAD = {
+  q5: {
+    symboles: ["m","g","h","\u2113"],
+    lignes: [
+      { sym:"m", val:450, valTxt:"450", unite:"g" },
+      { sym:"g", val:9.8, valTxt:"9,8", unite:"N/kg" },
+      { sym:"h", val:1.8, valTxt:"1,8", unite:"m" }
+    ],
+    fbok:"&#10003; Tu n'es allé chercher que l'utile — \\(m\\), \\(g\\), \\(h\\) — et tu as laissé la couverture (\u2113) de côté. C'est ça, décrypter."
+  },
+  q11: {
+    symboles: ["m","v","\u2113","t"],
+    lignes: [
+      { sym:"m", val:50, valTxt:"50", unite:"g" },
+      { sym:"v", val:0, valTxt:"0", unite:"" }
+    ],
+    fbok:"&#10003; «&nbsp;Lâchée sans vitesse initiale&nbsp;» se fabrique en \\(v = 0\\) : la donnée qui décide tout. Et tu as laissé la rampe (\u2113) de côté."
+  },
+  q17: {
+    symboles: ["m(méthane)","m(dioxygène)","m(dioxyde de carbone)","m(eau)"],
+    lignes: [
+      { sym:"m(méthane)",            val:8.0, valTxt:"8,0", unite:"g" },
+      { sym:"m(dioxygène)",          val:32,  valTxt:"32",  unite:"g" },
+      { sym:"m(dioxyde de carbone)", val:22,  valTxt:"22",  unite:"g" }
+    ],
+    fbok:"&#10003; Les trois masses connues. \\(m\\)(eau), c'est l'inconnue : on ne va pas la chercher."
+  }
+};
+
+/* ===================== MÉLANGE (Fisher-Yates) ===================== */
+function melanger(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ===================== MOTEUR QCM (Type 1a) ===================== */
+function construireQCM(qid){
+  const q = QCM[qid];
+  const ul = document.getElementById('opts_'+qid);
+  ul.innerHTML = '';
+  melanger(q.props).forEach(p => {
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="opt-btn" data-correct="${p.correct}">${p.html}</button>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      ul.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('sel'));
+      this.classList.add('sel');
+    });
+  });
+  document.getElementById('btnv_'+qid).onclick = () => validerQCM(qid);
+  document.getElementById('btnr_'+qid).onclick = () => retryQCM(qid);
+}
+
+function validerQCM(qid){
+  const ul = document.getElementById('opts_'+qid);
+  const sel = ul.querySelector('.opt-btn.sel');
+  if(!sel){ alert("Sélectionne une réponse."); return; }
+  const isOk = sel.dataset.correct === 'true';
+  const repEleve = sel.textContent.trim();
+  const t = etat[qid]; t.tentative++;
+  ul.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  if(isOk){
+    sel.classList.add('ok');
+    fb.className = 'fb ok'; fb.innerHTML = QCM[qid].fbok + recopier(qid); fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    sel.classList.add('ko');
+    fb.className = 'fb ko'; bloc.classList.add('warn-bloc');
+    if(t.tentative === 1){
+      fb.innerHTML = '✗ ' + QCM[qid].fb1; fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      ul.querySelectorAll('.opt-btn').forEach(b => {
+        if(b.dataset.correct === 'true') b.classList.add('show-ok');
+      });
+      fb.className = 'fb ko2'; fb.innerHTML = '✗ ' + QCM[qid].fb2 + recopier(qid) + (EN_CLASSE ? RELANCE_PROF : ''); fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryQCM(qid){
+  const ul = document.getElementById('opts_'+qid);
+  ul.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('sel','ok','ko','show-ok');
+  });
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===================== MOTEUR QCM MULTI (Type 1b) ===================== */
+function construireQCMmulti(qid){
+  const q = QCM_MULTI[qid];
+  const ul = document.getElementById('opts_'+qid);
+  ul.innerHTML = '';
+  melanger(q.props).forEach((p, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<label class="opt-btn opt-check"><input type="checkbox" data-correct="${p.correct}"> <span>${p.html}</span></label>`;
+    ul.appendChild(li);
+  });
+  document.getElementById('btnv_'+qid).onclick = () => validerQCMmulti(qid);
+  document.getElementById('btnr_'+qid).onclick = () => retryQCMmulti(qid);
+}
+
+function validerQCMmulti(qid){
+  const ul = document.getElementById('opts_'+qid);
+  const checks = ul.querySelectorAll('input[type="checkbox"]');
+  const cochesAuMoinsUn = Array.from(checks).some(c => c.checked);
+  if(!cochesAuMoinsUn){ alert("Coche au moins une réponse avant de valider."); return; }
+  const repEleve = Array.from(checks).filter(c=>c.checked).map(c=>c.closest('label').textContent.trim()).join(' / ');
+  const t = etat[qid]; t.tentative++;
+  let toutBon = true;
+  checks.forEach(c => {
+    const correct = c.dataset.correct === 'true';
+    const label = c.closest('label');
+    label.classList.remove('ok','ko');
+    if(c.checked && correct)       label.classList.add('ok');
+    else if(c.checked && !correct){ label.classList.add('ko'); toutBon = false; }
+    else if(!c.checked && correct){ toutBon = false; }
+    c.disabled = true;
+  });
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  if(toutBon){
+    fb.className = 'fb ok'; fb.innerHTML = QCM_MULTI[qid].fbok + recopier(qid); fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc');
+    fb.className = 'fb ko';
+    if(t.tentative === 1){
+      fb.innerHTML = '✗ ' + QCM_MULTI[qid].fb1; fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      checks.forEach(c => {
+        const label = c.closest('label');
+        if(c.dataset.correct === 'true'){ label.classList.remove('ko'); label.classList.add('show-ok'); }
+      });
+      fb.className = 'fb ko2'; fb.innerHTML = '✗ ' + QCM_MULTI[qid].fb2 + recopier(qid) + (EN_CLASSE ? RELANCE_PROF : ''); fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryQCMmulti(qid){
+  const ul = document.getElementById('opts_'+qid);
+  ul.querySelectorAll('input[type="checkbox"]').forEach(c => {
+    c.disabled = false; c.checked = false;
+    c.closest('label').classList.remove('ok','ko','show-ok');
+  });
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===================== MOTEUR ASSOCIATION (Type 1bis-a, 1 colonne) ===================== */
+function construireAssoc(qid){
+  const cfg = ASSOC[qid];
+  if(!cfg || !cfg.paires) return;
+  cfg.paires.forEach(p => {
+    const sel = document.getElementById(p.id);
+    sel.innerHTML = '';
+    const opt0 = document.createElement('option');
+    opt0.value = ''; opt0.textContent = '—';
+    sel.appendChild(opt0);
+    melanger(cfg.options).forEach(v => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+    sel.value = '';
+  });
+  document.getElementById('btnv_'+qid).onclick = () => validerAssoc(qid);
+  document.getElementById('btnr_'+qid).onclick = () => retryAssoc(qid);
+}
+
+function validerAssoc(qid){
+  const cfg = ASSOC[qid];
+  if(!cfg || !cfg.paires) return;
+  for(const p of cfg.paires){
+    if(document.getElementById(p.id).value === ''){
+      alert("Complète toutes les listes avant de valider.");
+      return;
+    }
+  }
+  const repEleve = cfg.paires.map(p => p.item + "\u2192" + document.getElementById(p.id).value).join(' ; ');
+  const t = etat[qid]; t.tentative++;
+  let toutBon = true;
+  cfg.paires.forEach(p => {
+    const s = document.getElementById(p.id);
+    const ok = (s.value === p.good);
+    s.classList.remove('ok','ko'); s.classList.add(ok ? 'ok' : 'ko');
+    if(!ok) toutBon = false;
+  });
+  cfg.paires.forEach(p => { document.getElementById(p.id).disabled = true; });
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  if(toutBon){
+    fb.className = 'fb ok';
+    fb.innerHTML = cfg.fbok || "&#10003; Exact ! Toutes les associations sont correctes.";
+    fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc');
+    fb.className = 'fb ko';
+    if(t.tentative === 1){
+      fb.innerHTML = "✗ Certaines associations sont incorrectes (cases rouges). Tu peux réessayer.";
+      fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      let corr = "✗ <strong>À recopier sur ta feuille :</strong><ul style='margin:6px 0 0 18px'>";
+      cfg.paires.forEach(p => {
+        corr += "<li>" + p.item + " → <strong>" + p.good + "</strong></li>";
+      });
+      corr += "</ul>";
+      fb.className = 'fb ko2';
+      fb.innerHTML = corr + (EN_CLASSE ? RELANCE_PROF : '');
+      fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryAssoc(qid){
+  const cfg = ASSOC[qid];
+  if(!cfg || !cfg.paires) return;
+  cfg.paires.forEach(p => {
+    const s = document.getElementById(p.id);
+    s.disabled = false;
+    s.classList.remove('ok','ko');
+    s.value = '';
+  });
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===================== parseVal (verbatim COMMUN) ===================== */
+function parseVal(raw){
+  try {
+    let s = raw
+      .replace(/,/g, '.')
+      .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => 'e-' + e)
+      .replace(/×10\^(\d+)/g, (_, e) => 'e+' + e)
+      .replace(/[×x]/g, '*')
+      .replace(/÷/g, '/')
+      .replace(/−/g, '-');
+    return parseFloat(s);
+  } catch(e) { return NaN; }
+}
+
+/* ===================== WIDGET « TRADUIRE » (construction + valeur, clavier partagé) ===================== */
+/* NOUVEAU type — concaténation : dépôt de symbole (CONSTR) + saisie valeur/unité (Type 2).
+   Seul ajout au socle : l'aiguillage « case valeur active → clavier partagé ». À documenter dans les prompts. */
+const TRAD_ST = {};
+const TRAD_TOUCHES = [
+  {l:'7',t:'ch',v:'7'},{l:'8',t:'ch',v:'8'},{l:'9',t:'ch',v:'9'},{l:'(',t:'op',v:'('},{l:')',t:'op',v:')'},
+  {l:'4',t:'ch',v:'4'},{l:'5',t:'ch',v:'5'},{l:'6',t:'ch',v:'6'},{l:'×',t:'op',v:'×'},{l:'÷',t:'op',v:'÷'},
+  {l:'1',t:'ch',v:'1'},{l:'2',t:'ch',v:'2'},{l:'3',t:'ch',v:'3'},{l:'+',t:'op',v:'+'},{l:'−',t:'op',v:'−'},
+  {l:'0',t:'ch',v:'0'},{l:',',t:'ch',v:','},{l:'.',t:'ch',v:'.'},{l:'×10ˣ',t:'sp',v:'EXP'},{l:'⌫',t:'del',v:'DEL'}
+];
+function normUnit(u){ return String(u).replace(/\s/g,"").replace(/⁻¹/g,"-1").replace(/\^-1/g,"-1").replace(/·/g,"."); }
+function renderValeur(raw){ return raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => '×10<sup>' + sg + exp + '</sup>'); }
+
+function construireTrad(qid){
+  const cfg = TRAD[qid];
+  if(!cfg) return;
+  TRAD_ST[qid] = { sel:null, placed:cfg.lignes.map(()=>null), val:cfg.lignes.map(()=>''), active:null, fige:false, bankOrder:melanger(cfg.symboles) };
+  const cont = document.getElementById('trad_'+qid);
+  let h = '<div class="constr-bank" id="bank_'+qid+'"></div><div class="trad-rows">';
+  cfg.lignes.forEach((lg,i)=>{
+    h += '<div class="trad-row"><span class="trad-eq">'
+       + '<button class="constr-slot" id="slot_'+qid+'_'+i+'" onclick="tradSlot(\''+qid+'\','+i+')"></button>'
+       + '<span class="trad-sign">=</span>'
+       + '<div class="disp trad-disp" id="disp_'+qid+'_'+i+'" onclick="tradFocus(\''+qid+'\','+i+')"></div>'
+       + '<input class="sunit" id="unit_'+qid+'_'+i+'" type="text" autocomplete="off" placeholder="unité"></span></div>';
+  });
+  h += '</div><div class="clavier" id="clav_'+qid+'"></div><div class="clavier-aide">Touche une case « valeur » puis tape au clavier.</div>';
+  cont.innerHTML = h;
+  const clav = document.getElementById('clav_'+qid);
+  TRAD_TOUCHES.forEach(t=>{
+    const b = document.createElement('button');
+    b.className = 'k' + (t.t==='op' ? ' k-op' : t.t==='sp' ? ' k-spec' : t.t==='del' ? ' k-del' : '');
+    b.textContent = t.l;
+    b.addEventListener('click', ()=>toucheTrad(qid, t.v));
+    clav.appendChild(b);
+  });
+  document.getElementById('btnv_'+qid).onclick = ()=>validerTrad(qid);
+  document.getElementById('btnr_'+qid).onclick = ()=>retryTrad(qid);
+  refreshTrad(qid);
+}
+
+function refreshTrad(qid){
+  const cfg = TRAD[qid], st = TRAD_ST[qid];
+  const placedSyms = st.placed.filter(s=>s!==null);
+  let bh = '<span class="bank-label">Symboles à déposer :</span>';
+  st.bankOrder.forEach(sym=>{
+    if(placedSyms.includes(sym)) return;
+    bh += '<button class="constr-token'+(st.sel===sym?' selected':'')+'" onclick="tradSelect(\''+qid+'\',\''+sym.replace(/'/g,"\\'")+'\')">\\('+sym+'\\)</button>';
+  });
+  document.getElementById('bank_'+qid).innerHTML = bh;
+  cfg.lignes.forEach((lg,i)=>{
+    const slot = document.getElementById('slot_'+qid+'_'+i);
+    const placed = st.placed[i];
+    slot.innerHTML = (placed!==null) ? '\\('+placed+'\\)' : '';
+    slot.className = 'constr-slot' + (placed!==null?' filled':'') + ((placed===null && st.sel!==null)?' receptive':'');
+  });
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([document.getElementById('trad_'+qid)]); }
+}
+
+function tradSelect(qid, sym){
+  const st = TRAD_ST[qid]; if(st.fige) return;
+  if(st.placed.includes(sym)) return;
+  st.sel = (st.sel===sym) ? null : sym;
+  refreshTrad(qid);
+}
+
+function tradSlot(qid, i){
+  const st = TRAD_ST[qid]; if(st.fige) return;
+  if(st.placed[i]!==null){ st.placed[i]=null; refreshTrad(qid); return; }
+  if(st.sel===null) return;
+  st.placed[i]=st.sel; st.sel=null; refreshTrad(qid);
+}
+
+function tradFocus(qid, i){
+  const st = TRAD_ST[qid]; if(st.fige) return;
+  st.active = i;
+  TRAD[qid].lignes.forEach((_,j)=>{ document.getElementById('disp_'+qid+'_'+j).classList.toggle('active', j===i); });
+}
+
+function toucheTrad(qid, key){
+  const st = TRAD_ST[qid]; if(st.fige) return;
+  if(st.active===null) return;
+  const i = st.active; let c = st.val[i];
+  if(key==='DEL'){
+    const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+    if(m){ if(m[4].length>0) c=m[1]+m[2]+m[3]+m[4].slice(0,-1); else if(m[3].length>0) c=m[1]+m[2]; else c=m[1]; }
+    else c = c.slice(0,-1);
+  } else if(key==='EXP'){ c += '×10^'; } else { c += key; }
+  st.val[i] = c;
+  document.getElementById('disp_'+qid+'_'+i).innerHTML = renderValeur(c) + '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+}
+
+function validerTrad(qid){
+  const cfg = TRAD[qid], st = TRAD_ST[qid];
+  for(let i=0;i<cfg.lignes.length;i++){
+    if(st.placed[i]===null || st.val[i].trim()===''){ alert("Dépose tous les symboles et écris toutes les valeurs avant de valider."); return; }
+  }
+  const t = etat[qid]; t.tentative++;
+  // appariement ENSEMBLISTE : chaque ligne est jugée d'après le symbole qu'elle porte, peu importe l'ordre
+  const expBySym = {};
+  cfg.lignes.forEach(lg => { expBySym[lg.sym] = lg; });
+  let toutBon = true; const rep = [];
+  cfg.lignes.forEach((lg,i)=>{
+    const unitVal = document.getElementById('unit_'+qid+'_'+i).value;
+    const sym = st.placed[i];
+    const e = expBySym[sym];                                  // relation attendue correspondant au symbole posé
+    const symOk = !!e;                                        // symbole valide (pas un leurre)
+    const valOk = !!e && Math.abs(parseVal(st.val[i]) - e.val) < 1e-9;
+    const unitOk = !!e && (normUnit(unitVal) === normUnit(e.unite));
+    const slot = document.getElementById('slot_'+qid+'_'+i);
+    const disp = document.getElementById('disp_'+qid+'_'+i);
+    const unit = document.getElementById('unit_'+qid+'_'+i);
+    slot.classList.remove('ok','ko'); slot.classList.add(symOk?'ok':'ko');
+    disp.classList.remove('ok','ko','active'); disp.classList.add(valOk?'ok':'ko');
+    unit.classList.remove('ok','ko'); unit.classList.add(unitOk?'ok':'ko');
+    if(!(symOk && valOk && unitOk)) toutBon = false;
+    rep.push((sym||'?') + '=' + st.val[i] + (unitVal?(' '+unitVal):''));
+  });
+  st.fige = true;
+  document.querySelectorAll('#trad_'+qid+' .constr-token').forEach(b=>b.disabled=true);
+  document.querySelectorAll('#trad_'+qid+' .k').forEach(b=>b.disabled=true);
+  cfg.lignes.forEach((lg,i)=>{ document.getElementById('unit_'+qid+'_'+i).disabled=true; });
+  const repEleve = rep.join(' ; ');
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  if(toutBon){
+    fb.className = 'fb ok'; fb.innerHTML = (cfg.fbok || "&#10003; Exact ! Toutes les relations sont correctes.") + recopierTrad(cfg); fb.style.display='block';
+    t.resultat = (t.tentative===1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display='none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    scormInteraction(qid, true, repEleve, t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc');
+    if(t.tentative === 1){
+      fb.className = 'fb ko';
+      fb.innerHTML = "✗ Certaines relations sont incorrectes (cases rouges). Tu peux réessayer.";
+      fb.style.display = 'block';
+      btnv.disabled = true; btnr.style.display = 'inline-block';
+    } else {
+      let corr = "✗ <strong>À recopier sur ta feuille :</strong><ul style='margin:6px 0 0 18px'>";
+      cfg.lignes.forEach(lg=>{ corr += "<li><strong>\\(" + lg.sym + "\\) = " + lg.valTxt + (lg.unite ? (" " + lg.unite) : "") + "</strong></li>"; });
+      corr += "</ul>";
+      fb.className = 'fb ko2'; fb.innerHTML = corr + (EN_CLASSE ? RELANCE_PROF : ''); fb.style.display = 'block';
+      t.resultat = 'ko';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      scormInteraction(qid, false, repEleve, t.tentative);
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+
+function retryTrad(qid){
+  construireTrad(qid);
+  document.getElementById('fb_'+qid).style.display = 'none';
+  document.getElementById('btnr_'+qid).style.display = 'none';
+  document.getElementById('btnv_'+qid).disabled = false;
+  document.getElementById(qid).classList.remove('warn-bloc','ko-bloc','ok-bloc');
+}
+
+/* ===================== SCORES (mode entraînement) ===================== */
+function calculerScores(){
+  let n1 = 0, n2 = 0;
+  TOUS_IDS.forEach(id => {
+    const r = etat[id].resultat;
+    if (r === "ok1"){ n1++; n2++; }
+    else if (r === "ok2"){ n2++; }
+  });
+  return { n1: n1, n2: n2 };
+}
+
+function majScores(){
+  const sc = calculerScores();
+  const e1 = document.getElementById('sval-n1'); if(e1) e1.textContent = sc.n1 + " / " + TOTAL;
+  const e2 = document.getElementById('sval-n2'); if(e2) e2.textContent = sc.n2 + " / " + TOTAL;
+}
+
+function verifierFin(){
+  majScores();
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if(fini) afficherBilan();
+}
+
+function afficherBilan(){
+  const sc = calculerScores();
+  document.getElementById('bilan-n1').textContent = sc.n1 + " / " + TOTAL;
+  document.getElementById('bilan-n2').textContent = sc.n2 + " / " + TOTAL;
+  document.getElementById('bilan').style.display = 'block';
+  const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+  if(fini) scormReport(sc.n1);
+}
+
+/* ===================== COUCHE SCORM 1.2 (entraînement) ===================== */
+var scormAPI = null, scormInit = false;
+var scormNbInter = 0;
+
+function scormFindAPI(win){
+  let tries = 0;
+  while(win && !win.API && tries < 10){
+    if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+    tries++;
+  }
+  return (win && win.API) ? win.API : null;
+}
+
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min", "0");
+      scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){ /* hors LMS : silencieux */ }
+}
+
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre + "type", "performance");
+    scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre + "weighting", "1");
+    var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+    var po = "cmi.objectives." + n + ".";
+    scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(po + "score.min", "0");
+    scormAPI.LMSSetValue(po + "score.max", "1");
+    scormAPI.LMSSetValue(po + "score.raw", pts);
+    scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+    scormAPI.LMSCommit("");
+  }catch(e){ /* silencieux */ }
+}
+
+function scormEnd(){
+  try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){}
+}
+window.addEventListener("beforeunload", scormEnd);
+window.addEventListener("unload", scormEnd);
+
+/* ===================== VERROU SÉQUENTIEL (case feuille entre situations) ===================== */
+function checkFeuille(part){
+  const c = document.getElementById('chk_'+part);
+  if(!c || !c.checked) return;
+  c.disabled = true;
+  const suivant = { livre:'sit_bille', bille:'sit_combu' }[part];
+  if(suivant){ const sx = document.getElementById(suivant); if(sx){ sx.classList.remove('verrouillee'); sx.scrollIntoView({behavior:'smooth',block:'start'}); } }
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre + "id", part + "_feuille_recopiee");
+    scormAPI.LMSSetValue(pre + "type", "true-false");
+    scormAPI.LMSSetValue(pre + "student_response", "true");
+    scormAPI.LMSSetValue(pre + "result", "neutral");
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+
+/* ===================== INIT ===================== */
+window.addEventListener('DOMContentLoaded',()=>{
+  scormStart();
+  IDS_QCM.forEach(construireQCM);
+  IDS_QCM_MULTI.forEach(construireQCMmulti);
+  IDS_ASSOC.forEach(construireAssoc);
+  IDS_TRAD.forEach(construireTrad);
+  ["sit_bille","sit_combu"].forEach(id=>{
+    const sl=document.getElementById(id); if(sl) sl.classList.add("verrouillee");
+  });
+  function renderMath(){
+    if(window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([document.body]);}
+    else{setTimeout(renderMath,100);}
+  }
+  renderMath();
+});
+</script>
+</body>
+</html>

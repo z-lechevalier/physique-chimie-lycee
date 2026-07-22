@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2nde : Exercice 9</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .rappel-feuille,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:8px}
+.opt-btn{width:100%;text-align:left;padding:10px 13px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;line-height:1.6;color:var(--texte)}
+.opt-btn:hover:not(:disabled){border-color:var(--bleu-cl);background:#eef4fa}
+.opt-btn.sel{border-color:var(--bleu-cl);background:#ddeef8}
+.opt-btn.ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn.ko{border-color:var(--rouge)!important;background:#fdecea!important;color:var(--rouge)!important}
+.opt-btn.show-ok{border-color:var(--vert)!important;background:#e6f4eb!important;color:var(--vert)!important}
+.opt-btn:disabled{cursor:default}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.a-recopier{margin-top:9px;padding:8px 12px;background:#fff;border:1px dashed var(--bleu-cl);border-radius:var(--r);color:var(--texte);font-size:.9rem;line-height:1.55}
+.a-recopier strong{color:var(--bleu)}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:28px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.assoc-table{width:100%;border-collapse:collapse;margin-top:6px}
+.assoc-table th,.assoc-table td{padding:8px 10px;border:1px solid var(--gris-l);text-align:left;font-size:.9rem}
+.assoc-table th{background:#f0ede6;font-weight:600;color:var(--bleu);font-size:.84rem;letter-spacing:.02em}
+.assoc-table td:first-child{font-weight:600}
+.assoc-table select{font-family:'Source Serif 4',serif;font-size:.9rem;padding:5px 8px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:120px;cursor:pointer;transition:border-color .14s}
+.assoc-table select:focus{border-color:var(--bleu-cl);outline:none}
+.assoc-table select.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.assoc-table select.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.assoc-table select:disabled{cursor:default;opacity:.85}
+/* CONSTR (Type 5) */
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px;position:relative}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+.frac-zone{display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 6px}
+.add-case{font-family:'JetBrains Mono',monospace;font-size:1.05rem;min-width:50px;min-height:42px;padding:6px 14px;border:2px dashed #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;color:#aaa;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.add-case:hover{border-color:var(--bleu-cl);background:#eef4fa;color:var(--bleu-cl)}
+.del-case{font-size:1.2rem;width:28px;height:28px;border:none;background:transparent;cursor:pointer;align-self:center;opacity:.55;transition:opacity .15s;padding:0}
+.del-case:hover{opacity:1}
+.sub-op-selector{display:inline-flex;border:1.5px solid var(--bleu-cl);border-radius:6px;overflow:hidden;font-family:'JetBrains Mono',monospace;align-self:center}
+.sub-op-btn{background:var(--blanc);border:none;padding:6px 10px;font-size:.95rem;cursor:pointer;color:#555;border-right:1px solid var(--bleu-cl)}
+.sub-op-btn:last-child{border-right:none}
+.sub-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);font-weight:bold}
+.sub-op-btn:hover:not(.selected){background:#eef4fa}
+.frac-stack{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frac-line{align-self:stretch;height:3px;background:var(--bleu);border-radius:2px;margin:1px 0}
+.help-icon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:#ddd;color:#555;text-align:center;font-size:.85rem;font-weight:bold;cursor:pointer;line-height:22px;user-select:none;border:none;padding:0}
+.help-icon:hover{background:var(--bleu-cl);color:var(--blanc)}
+.help-bubble{position:absolute;top:38px;right:10px;max-width:380px;background:var(--blanc);border:1px solid var(--bleu-cl);border-radius:6px;padding:12px 16px;font-size:.88rem;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:10}
+.help-bubble.visible{display:block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* --- Exercice : bandeau feuille + note calculatrice (PROMPT_QUIZ_EXERCICE) --- */
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+.calc-note{margin-top:12px;padding-top:9px;border-top:1px dashed var(--gris-l);font-size:.86rem;line-height:1.55;color:#555}
+.calc-note b{color:var(--bleu)}
+/* --- Lecture graphique (moteur axes : figure + valeur, unité imposée) --- */
+.fig-axe{border:1px solid var(--gris-l);border-radius:var(--r);padding:8px;background:#fff;max-width:14cm;margin:6px auto 14px;cursor:zoom-in}
+.fig-axe img{display:block;width:100%;height:auto;max-width:none}
+.unite-fixe{font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#444}
+.disp.actif{border-color:var(--bleu);box-shadow:0 0 0 2px rgba(26,58,92,.15)}
+.disp.active{border-color:var(--bleu);box-shadow:0 0 0 2px rgba(26,58,92,.15)}
+.disp.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.disp .ph{color:#b9b3a6;font-style:italic}
+.qnum:empty{display:none}
+/* --- Widget REL Type 8 (relation ↔, variantes A/B) — verbatim PROMPT_QUIZ_COURS --- */
+.rel-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin:6px 0 12px}
+.rel-side{display:flex;align-items:center;gap:6px}
+.rel-arrow{font-size:1.7rem;color:var(--bleu-cl);line-height:1}
+.rel-field{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);color:var(--texte);min-height:40px;min-width:88px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rel-field.active{border-color:var(--bleu-cl);box-shadow:0 0 0 2px #dce8f4}
+.rel-field .ph{color:#b9b3a6;font-style:italic}
+.rel-field.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.rel-field.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.rel-dd{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:7px 6px;border:1.5px solid #ccc;border-radius:var(--r);width:104px;min-height:40px;background:var(--blanc);color:var(--texte);cursor:pointer}
+.rel-dd:focus{border-color:var(--bleu-cl);outline:none}
+.rel-dd.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.rel-dd.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.rel-aide{font-size:.84rem;color:#5a5346;background:#fbf6ec;border:1px solid #ecdfbf;border-radius:var(--r);padding:7px 11px;text-align:center;margin-bottom:10px}
+.sym-bank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:540px;margin:2px auto 12px}
+.sym-bank-lbl{font-size:.85rem;color:#555;margin-right:2px}
+.sym-bank.done{display:none}
+.sym-btn{font-family:'Source Serif 4',Georgia,serif;font-size:.95rem;min-width:34px;padding:3px 9px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.sym-btn:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.sym-btn.selected{background:var(--bleu-cl);color:#fff;border-color:var(--bleu-cl)}
+.sym-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:7px 12px;border:1.5px dashed #bbb;border-radius:var(--r);background:var(--blanc);color:var(--bleu);min-height:40px;min-width:64px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.sym-slot .ph{color:#b9b3a6;font-style:italic}
+.sym-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.sym-slot.ok{border-style:solid;border-color:var(--vert)!important;background:#e6f4eb!important}
+.sym-slot.ko{border-style:solid;border-color:var(--rouge)!important;background:#fdecea!important}
+.qbloc.locked .qcont{display:none}
+.qbloc.locked .verrou{display:block}
+.verrou{display:none;padding:13px 15px;font-size:.88rem;color:#666;font-style:italic;background:#f8f6f2}
+.rappel-feuille{display:flex;flex-direction:column;align-items:flex-start;gap:8px;font-size:.85rem;color:#5a4a1f;background:#fff8e8;border:1px dashed var(--or);border-radius:var(--r);padding:8px 12px;margin:-4px 0 18px}
+.rappel-feuille input[type=checkbox]{width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:var(--or)}
+.rappel-feuille label{cursor:pointer}
+.rf-txt{line-height:1.5}
+.rf-ok{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;color:#5a4a1f}
+.gated{opacity:.4;pointer-events:none;filter:grayscale(.4);transition:opacity .2s}
+.rappel-multi{align-items:flex-start}
+.rappel-multi label{line-height:1.75}
+.trame{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 10px}
+.trame-col{flex:1;min-width:240px;background:#faf8f3;border:1px solid var(--gris-l);border-radius:var(--r);padding:12px 14px}
+.trame-titre{font-weight:600;color:var(--bleu);margin-bottom:8px;font-size:.92rem}
+.trame-schema{font-size:.9rem;color:#555;margin:3px 0}
+.trame-formule{margin-top:8px;font-size:.98rem}
+.trame-note{font-size:.82rem;color:#888;font-style:italic;margin:2px 0 8px}
+/* --- Type 2 unité au menu + Aide (PROMPT_QUIZ_EXERCICE §720) --- */
+.unite-menu{font-family:'Source Serif 4',serif;font-size:.92rem;padding:6px 9px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);cursor:pointer}
+.unite-menu.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.unite-menu.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.aide-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:6px 12px;border-radius:var(--r);font-size:.82rem;cursor:pointer;font-family:'Source Serif 4',serif}
+.aide-btn:hover{background:#eef4fa}
+.aide-box{display:none;margin-top:8px;padding:8px 12px;background:#fff8ec;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;font-size:.86rem;line-height:1.55;color:#5a4a1f}
+.aide-box.visible{display:block}
+/* --- Légendes libres : champs de saisie texte --- */
+.leg-grid{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:4px 0 4px}
+.leg-field{display:flex;flex-direction:column;gap:3px}
+.leg-field label{font-size:.8rem;color:#555}
+.leg-inp{font-family:'Source Serif 4',serif;font-size:.92rem;padding:7px 9px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);color:var(--texte)}
+.leg-inp:focus{border-color:var(--bleu-cl);outline:none}
+.leg-inp.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.leg-inp.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+@media(max-width:600px){
+  header{flex-direction:column;gap:8px;padding:12px 14px}
+  .hd{text-align:left}
+  .h-chap{font-size:1.06rem}
+  main{padding:16px 12px 50px}
+  .clavier{grid-template-columns:repeat(5,38px)}
+  .k{height:32px;font-size:.74rem}
+}
+/* tableau de données (Type 8 - COMMUN) */
+.ct-scroll{overflow-x:auto;margin:6px 0 12px}
+.ct-table{border-collapse:collapse;font-size:.9rem;min-width:100%}
+.ct-table th,.ct-table td{border:1px solid var(--gris-l);padding:6px 8px;text-align:center;white-space:nowrap}
+.ct-gr{font-weight:600;text-align:left!important;background:#f8f6f2;color:var(--bleu);position:sticky;left:0}
+.ct-gr .ct-sym{color:#888;font-weight:400}
+.ct-val{font-family:'JetBrains Mono',monospace}
+/* selects de phrase */
+.phdrop{font-family:'Source Serif 4',serif;font-size:.92rem;padding:5px 9px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);min-width:150px;cursor:pointer;transition:border-color .14s}
+.phdrop:focus{border-color:var(--bleu-cl);outline:none}
+.phdrop.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.phdrop.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.phdrop:disabled{cursor:default;opacity:.85}
+/* widget de saisie de formule (Type 9) */
+.formule-ligne{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.f-champ{width:92px;font-family:'Cambria Math','STIX Two Math','Latin Modern Math','Times New Roman',serif;font-style:italic;font-size:1.12rem;padding:8px 6px;border:1.5px solid #ccc;border-radius:var(--r);text-align:center;background:var(--blanc);color:var(--texte)}
+.f-champ.f-num{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.95rem}
+.f-champ:focus{border-color:var(--bleu-cl);outline:none}
+.f-champ:disabled{background:#f0f0f0}
+.f-champ.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.f-champ.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.f-op{font-family:'JetBrains Mono',monospace;font-size:1.05rem;padding:8px 6px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;min-width:58px;text-align:center}
+.f-op:disabled{cursor:default;opacity:.9}
+.f-op.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.f-op.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.formule-ligne .disp{min-width:150px;margin:0;display:inline-flex;align-items:center;justify-content:center;padding:8px 10px}
+.formule-ligne .disp.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.formule-ligne .disp.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+/* gate recopie verrouillée tant que non validé */
+.rappel-feuille.gate-verrou{opacity:.55}
+.rappel-feuille.gate-verrou .rf-ok{cursor:not-allowed}
+.rappel-feuille.gate-verrou .rf-txt::after{content:' — valide d\'abord ta réponse ci-dessus.';font-style:italic;color:#a06a1f}
+</style>
+</head>
+<body>
+  <header class="mode-entrainement">
+    <div class="hg">
+      <div class="h-niveau">2nde</div>
+      <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+      <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Exercice 9 — Modéliser au tableur (Entraînement)</div>
+    </div>
+    <div class="hd">
+      <div class="h-lycee">Lycée Henri Cornat</div>
+      <div class="h-ville">VALOGNES</div>
+      <div class="h-prof">Z. Lechevalier</div>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="consigne">
+      📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.
+    </div>
+
+    <div class="consignes-titre">CONSIGNES</div>
+    <div class="contexte">
+      Dans cet exercice, tu utilises le tableur <strong>LibreOffice Calc</strong>. Une <strong>notice d'utilisation de LibreOffice Calc</strong> est disponible sur Éléa : tu peux t'en servir à tout moment.
+      <br><br>
+      2 essais par question. Relancer l'activité remet tout à zéro et remélange les propositions.
+    </div>
+
+<div class="partie-titre">Partie A — Le mouvement d'un drone</div>
+    <div class="contexte">
+      Dans cette partie, tu vas étudier le mouvement d'un drone. Le quiz te donne les valeurs, te guide question par question, vérifie tes réponses et te propose une rédaction pour ta correction.
+      <br><br>
+      Un drone se déplace en ligne droite. Un capteur enregistre la distance \(d\) qui le sépare de son point de départ à différents instants \(t\) après le lancement.
+      <div class="ct-scroll"><table class="ct-table"><tr><td class='ct-gr'>Temps <span class='ct-sym'>t (s)</span></td><td class='ct-val'>1</td><td class='ct-val'>2</td><td class='ct-val'>3</td><td class='ct-val'>4</td><td class='ct-val'>5</td><td class='ct-val'>6</td><td class='ct-val'>7</td><td class='ct-val'>8</td><td class='ct-val'>9</td><td class='ct-val'>10</td><td class='ct-val'>11</td><td class='ct-val'>12</td></tr><tr><td class='ct-gr'>Distance parcourue <span class='ct-sym'>d (m)</span></td><td class='ct-val'>15</td><td class='ct-val'>44</td><td class='ct-val'>62</td><td class='ct-val'>74</td><td class='ct-val'>86</td><td class='ct-val'>114</td><td class='ct-val'>150</td><td class='ct-val'>160</td><td class='ct-val'>173</td><td class='ct-val'>204</td><td class='ct-val'>230</td><td class='ct-val'>252</td></tr></table></div>
+    </div>
+
+  <div class="qbloc" id="qu1">
+    <div class="qenonce"><span class="qnum">1</span><span>Dans un tableur, comment saisit-on la série de valeurs ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qu1"></ul>
+      <div class="fb" id="fb_qu1"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu1">Valider</button><button class="btn-r" id="btnr_qu1">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk1" data-requires="qu1" data-gate="qu2" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu2">
+    <div class="qenonce"><span class="qnum">2</span><span>Dans le tableur, saisis les valeurs, <strong>trace le graphique de la distance en fonction du temps</strong> et <strong>légende-le entièrement</strong> (titre + les deux axes avec leur unité).</span></div>
+    <div class="qcont">
+      <div class="rappel-feuille"><div class="rf-txt">✏️ J'ai saisi les valeurs, tracé le graphique \(d = f(t)\) et légendé les axes.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_action2" data-gate="qu3" onchange="gateFeuille(this)"> C'est fait&nbsp;!</label></div>
+    </div>
+  </div>
+  <div class="qbloc" id="qu3">
+    <div class="qenonce"><span class="qnum">3</span><span>Complète la phrase en choisissant chaque grandeur dans la liste.</span></div>
+    <div class="qcont">
+      <p style="line-height:2.1;font-size:.95rem">Dans ce graphique, on a placé <select class="phdrop" id="qu3_x"></select> en <strong>abscisse</strong> et <select class="phdrop" id="qu3_y"></select> en <strong>ordonnée</strong>.</p>
+      <div class="fb" id="fb_qu3"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu3">Valider</button><button class="btn-r" id="btnr_qu3">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la phrase complète sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk3" data-requires="qu3" data-gate="qu4" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu4">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est l'allure du nuage de points ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qu4"></ul>
+      <div class="fb" id="fb_qu4"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu4">Valider</button><button class="btn-r" id="btnr_qu4">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk4" data-requires="qu4" data-gate="qu5" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu5">
+    <div class="qenonce"><span class="qnum">5</span><span>Quel type de courbe de tendance choisis-tu pour modéliser ce nuage ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qu5"></ul>
+      <div class="fb" id="fb_qu5"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu5">Valider</button><button class="btn-r" id="btnr_qu5">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk5" data-requires="qu5" data-gate="qu6" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu6">
+    <div class="qenonce"><span class="qnum">6</span><span>Faut-il forcer l'ordonnée à l'origine à 0 ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qu6"></ul>
+      <div class="fb" id="fb_qu6"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu6">Valider</button><button class="btn-r" id="btnr_qu6">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk6" data-requires="qu6" data-gate="qu7" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu7">
+    <div class="qenonce"><span class="qnum">7</span><span>Dans le tableur, <strong>ajoute la courbe de tendance</strong> au nuage de points et <strong>affiche son équation</strong>.</span></div>
+    <div class="qcont">
+      <div class="rappel-feuille"><div class="rf-txt">✏️ J'ai ajouté la courbe de tendance et affiché son équation.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_action7" data-gate="qu8" onchange="gateFeuille(this)"> C'est fait&nbsp;!</label></div>
+    </div>
+  </div>
+  <div class="qbloc" id="qu8">
+    <div class="qenonce"><span class="qnum">8</span><span>Écris l'équation affichée par le tableur. <span style="font-size:.86rem;color:#666">(Écris le coefficient avec 1 chiffre après la virgule.)</span></span></div>
+    <div class="qcont">
+      <div class="formule-ligne" id="formule_qu8">
+        <input class="f-champ" id="qu8_c0" type="text" autocomplete="off" placeholder="…">
+        <select class="f-op" id="qu8_o1"></select>
+        <input class="f-champ f-num" id="qu8_c2" type="text" autocomplete="off" placeholder="…">
+        <select class="f-op" id="qu8_o3"></select>
+        <input class="f-champ" id="qu8_c4" type="text" autocomplete="off" placeholder="…">
+      </div>
+      <div class="fb" id="fb_qu8"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu8" onclick="validerFormule('qu8')">Valider</button><button class="btn-r" id="btnr_qu8" onclick="retryFormule('qu8')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie l'équation sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk8" data-requires="qu8" data-gate="qu9" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu9">
+    <div class="qenonce"><span class="qnum">9</span><span>Complète la valeur du coefficient directeur de la droite.</span></div>
+    <div class="qcont">
+      <div class="saisie-ligne">
+        <label>\(k =\)</label>
+        <div class="disp" id="disp_qu9"></div>
+        <select id="unit_qu9" style="display:none"><option value="">—</option></select>
+      </div>
+      <div id="clav_qu9"></div>
+      <div class="fb" id="fb_qu9"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu9" onclick="validerNum('qu9')">Valider</button><button class="btn-r" id="btnr_qu9" onclick="retryNum('qu9')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la valeur sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk9" data-requires="qu9" data-gate="qu10" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu10">
+    <div class="qenonce"><span class="qnum">10</span><span>Dans l'équation \(f(x) = k \times x\), à quelle grandeur physique correspond chaque terme ?</span></div>
+    <div class="qcont">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'JetBrains Mono',monospace;min-width:52px">\(x\)</span><span style="color:var(--bleu-cl);font-size:1.35rem">⟷</span><select class="phdrop" id="qu10_x"></select></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'JetBrains Mono',monospace;min-width:52px">\(f(x)\)</span><span style="color:var(--bleu-cl);font-size:1.35rem">⟷</span><select class="phdrop" id="qu10_fx"></select></div>
+      </div>
+      <div class="fb" id="fb_qu10"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu10">Valider</button><button class="btn-r" id="btnr_qu10">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la correspondance sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk10" data-requires="qu10" data-gate="qu11" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu11">
+    <div class="qenonce"><span class="qnum">11</span><span>Remplace \(f(x)\) et \(x\) par les grandeurs portées en ordonnée et en abscisse, puis écris la relation de proportionnalité (avec la valeur du coefficient).</span></div>
+    <div class="qcont">
+      <div id="constr_qu11"></div>
+      <div class="fb" id="fb_qu11"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu11">Valider</button><button class="btn-r" id="btnr_qu11">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la relation sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk11" data-requires="qu11" data-gate="qu12" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qu12">
+    <div class="qenonce"><span class="qnum">12</span><span>Quelle est la vitesse \(v\) du drone ?</span></div>
+    <div class="qcont">
+      <div class="saisie-ligne">
+        <label>\(v =\)</label>
+        <div class="disp" id="disp_qu12"></div>
+        <label>Unité :</label>
+        <select class="phdrop" id="unit_qu12" style="min-width:90px"></select>
+      </div>
+      <div id="clav_qu12"></div>
+      <div class="fb" id="fb_qu12"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qu12" onclick="validerNum('qu12')">Valider</button><button class="btn-r" id="btnr_qu12" onclick="retryNum('qu12')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la conclusion sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk12" data-requires="qu12" data-gate="qb1" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+
+    <div class="partie-titre">Partie B — L'énergie consommée par une lampe</div>
+    <div class="contexte">
+      Dans cette partie, tu vas relier l'<strong>énergie électrique</strong> \(E\) consommée par une lampe à la <strong>durée</strong> \(t\) pendant laquelle elle reste allumée. Le quiz te donne les valeurs, te guide question par question, vérifie tes réponses et te propose une rédaction pour ta correction.
+      <br><br>
+      Une lampe reste allumée. Un appareil de mesure relève l'énergie électrique \(E\) (en J) qu'elle a consommée après différentes durées \(t\) (en s) de fonctionnement.
+      <div class="ct-scroll"><table class="ct-table"><tr><td class='ct-gr'>Durée <span class='ct-sym'>t (s)</span></td><td class='ct-val'>10</td><td class='ct-val'>20</td><td class='ct-val'>30</td><td class='ct-val'>40</td><td class='ct-val'>50</td><td class='ct-val'>60</td><td class='ct-val'>70</td><td class='ct-val'>80</td><td class='ct-val'>90</td><td class='ct-val'>100</td><td class='ct-val'>110</td><td class='ct-val'>120</td></tr><tr><td class='ct-gr'>Énergie consommée <span class='ct-sym'>E (J)</span></td><td class='ct-val'>779</td><td class='ct-val'>1344</td><td class='ct-val'>1710</td><td class='ct-val'>2343</td><td class='ct-val'>2894</td><td class='ct-val'>3480</td><td class='ct-val'>4225</td><td class='ct-val'>4869</td><td class='ct-val'>5354</td><td class='ct-val'>6080</td><td class='ct-val'>6521</td><td class='ct-val'>7143</td></tr></table></div>
+    </div>
+
+  <div class="qbloc" id="qb1">
+    <div class="qenonce"><span class="qnum">1</span><span>Dans un tableur, comment saisit-on la série de valeurs ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qb1"></ul>
+      <div class="fb" id="fb_qb1"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb1">Valider</button><button class="btn-r" id="btnr_qb1">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b1" data-requires="qb1" data-gate="qb2" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb2">
+    <div class="qenonce"><span class="qnum">2</span><span>Dans le tableur, saisis les valeurs, <strong>trace le graphique de l'énergie en fonction du temps</strong> et <strong>légende-le entièrement</strong> (titre + les deux axes avec leur unité).</span></div>
+    <div class="qcont">
+      <div class="rappel-feuille"><div class="rf-txt">✏️ J'ai saisi les valeurs, tracé le graphique \(E = f(t)\) et légendé les axes.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_actionB2" data-gate="qb3" onchange="gateFeuille(this)"> C'est fait&nbsp;!</label></div>
+    </div>
+  </div>
+  <div class="qbloc" id="qb3">
+    <div class="qenonce"><span class="qnum">3</span><span>Complète la phrase en choisissant chaque grandeur dans la liste.</span></div>
+    <div class="qcont">
+      <p style="line-height:2.1;font-size:.95rem">On a placé <select class="phdrop" id="qb3_x"></select> en <strong>abscisse</strong> et <select class="phdrop" id="qb3_y"></select> en <strong>ordonnée</strong>.</p>
+      <div class="fb" id="fb_qb3"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb3">Valider</button><button class="btn-r" id="btnr_qb3">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la phrase complète sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b3" data-requires="qb3" data-gate="qb4" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb4">
+    <div class="qenonce"><span class="qnum">4</span><span>Quelle est l'allure du nuage de points ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qb4"></ul>
+      <div class="fb" id="fb_qb4"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb4">Valider</button><button class="btn-r" id="btnr_qb4">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b4" data-requires="qb4" data-gate="qb5" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb5">
+    <div class="qenonce"><span class="qnum">5</span><span>Quel type de courbe de tendance choisis-tu pour modéliser ce nuage ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qb5"></ul>
+      <div class="fb" id="fb_qb5"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb5">Valider</button><button class="btn-r" id="btnr_qb5">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b5" data-requires="qb5" data-gate="qb6" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb6">
+    <div class="qenonce"><span class="qnum">6</span><span>Faut-il forcer l'ordonnée à l'origine à 0 ?</span></div>
+    <div class="qcont">
+      <ul class="opts" id="opts_qb6"></ul>
+      <div class="fb" id="fb_qb6"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb6">Valider</button><button class="btn-r" id="btnr_qb6">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Note ta réponse sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b6" data-requires="qb6" data-gate="qb7" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb7">
+    <div class="qenonce"><span class="qnum">7</span><span>Dans le tableur, <strong>ajoute la courbe de tendance</strong> au nuage de points et <strong>affiche son équation</strong>.</span></div>
+    <div class="qcont">
+      <div class="rappel-feuille"><div class="rf-txt">✏️ J'ai ajouté la courbe de tendance et affiché son équation.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_actionB7" data-gate="qb8" onchange="gateFeuille(this)"> C'est fait&nbsp;!</label></div>
+    </div>
+  </div>
+  <div class="qbloc" id="qb8">
+    <div class="qenonce"><span class="qnum">8</span><span>Écris l'équation affichée par le tableur. <span style="font-size:.86rem;color:#666">(Écris le coefficient avec 1 chiffre après la virgule.)</span></span></div>
+    <div class="qcont">
+      <div class="formule-ligne" id="formule_qb8">
+        <input class="f-champ" id="qb8_c0" type="text" autocomplete="off" placeholder="…">
+        <select class="f-op" id="qb8_o1"></select>
+        <input class="f-champ f-num" id="qb8_c2" type="text" autocomplete="off" placeholder="…">
+        <select class="f-op" id="qb8_o3"></select>
+        <input class="f-champ" id="qb8_c4" type="text" autocomplete="off" placeholder="…">
+      </div>
+      <div class="fb" id="fb_qb8"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb8" onclick="validerFormule('qb8')">Valider</button><button class="btn-r" id="btnr_qb8" onclick="retryFormule('qb8')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie l'équation sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b8" data-requires="qb8" data-gate="qb9" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb9">
+    <div class="qenonce"><span class="qnum">9</span><span>Complète la valeur du coefficient directeur de la droite.</span></div>
+    <div class="qcont">
+      <div class="saisie-ligne">
+        <label>\(k =\)</label>
+        <div class="disp" id="disp_qb9"></div>
+        <select id="unit_qb9" style="display:none"><option value="">—</option></select>
+      </div>
+      <div id="clav_qb9"></div>
+      <div class="fb" id="fb_qb9"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb9" onclick="validerNum('qb9')">Valider</button><button class="btn-r" id="btnr_qb9" onclick="retryNum('qb9')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la valeur sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b9" data-requires="qb9" data-gate="qb10" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb10">
+    <div class="qenonce"><span class="qnum">10</span><span>Dans l'équation \(f(x) = k \times x\), à quelle grandeur physique correspond chaque terme ?</span></div>
+    <div class="qcont">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'JetBrains Mono',monospace;min-width:52px">\(x\)</span><span style="color:var(--bleu-cl);font-size:1.35rem">⟷</span><select class="phdrop" id="qb10_x"></select></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'JetBrains Mono',monospace;min-width:52px">\(f(x)\)</span><span style="color:var(--bleu-cl);font-size:1.35rem">⟷</span><select class="phdrop" id="qb10_fx"></select></div>
+      </div>
+      <div class="fb" id="fb_qb10"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb10">Valider</button><button class="btn-r" id="btnr_qb10">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la correspondance sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b10" data-requires="qb10" data-gate="qb11" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb11">
+    <div class="qenonce"><span class="qnum">11</span><span>Remplace \(f(x)\) et \(x\) par les grandeurs portées en ordonnée et en abscisse, puis écris la relation de proportionnalité (avec la valeur du coefficient).</span></div>
+    <div class="qcont">
+      <div id="constr_qb11"></div>
+      <div class="fb" id="fb_qb11"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb11">Valider</button><button class="btn-r" id="btnr_qb11">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la relation sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b11" data-requires="qb11" data-gate="qb12" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+  <div class="qbloc" id="qb12">
+    <div class="qenonce"><span class="qnum">12</span><span>Quelle est la puissance \(P\) de la lampe ?</span></div>
+    <div class="qcont">
+      <div class="saisie-ligne">
+        <label>\(P =\)</label>
+        <div class="disp" id="disp_qb12"></div>
+        <label>Unité :</label>
+        <select class="phdrop" id="unit_qb12" style="min-width:90px"></select>
+      </div>
+      <div id="clav_qb12"></div>
+      <div class="fb" id="fb_qb12"></div>
+      <div style="margin-top:10px"><button class="btn-v" id="btnv_qb12" onclick="validerNum('qb12')">Valider</button><button class="btn-r" id="btnr_qb12" onclick="retryNum('qb12')">2<sup>e</sup> essai</button></div>
+    </div>
+  </div>
+  <div class="rappel-feuille gate-verrou"><div class="rf-txt">✍️ Recopie la conclusion sur ta feuille.</div><label class="rf-ok"><input type="checkbox" class="chk-feuille" id="chk_b12" data-requires="qb12" data-gate="btn-bilan" onchange="gateFeuille(this)" disabled> J'ai bien recopié&nbsp;!</label></div>
+
+  <button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+  <button class="btn-global btn-recommencer" id="btn-reload" onclick="location.reload()">&#8634; Recommencer</button>
+
+  <div id="bilan" style="display:none">
+    <div class="score-res">
+      <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 20</span></div>
+      <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 20</span></div>
+    </div>
+  </div>
+
+  </main>
+
+<script>
+/* ===== Constantes ===== */
+const TOUS_IDS = ["qu1","qu3","qu4","qu5","qu6","qu8","qu9","qu10","qu11","qu12","qb1","qb3","qb4","qb5","qb6","qb8","qb9","qb10","qb11","qb12"];
+const TOTAL = TOUS_IDS.length;
+const SCORM_IDS = { qu1:"A_saisie", qu3:"A_axes", qu4:"A_allure", qu5:"A_tendance", qu6:"A_origine", qu8:"A_equation", qu9:"A_coefficient", qu10:"A_variables", qu11:"A_relation", qu12:"A_vitesse", qb1:"B_saisie", qb3:"B_axes", qb4:"B_allure", qb5:"B_tendance", qb6:"B_origine", qb8:"B_equation", qb9:"B_coefficient", qb10:"B_variables", qb11:"B_relation", qb12:"B_puissance" };
+const IDS_NUM = ["qu9","qu12","qb9","qb12"];
+const CS_MODE = "tolérant";
+const EN_CLASSE = true;
+const RELANCE_PROF = '<div class="relance-prof">🖐️ Appelle le professeur, ou note ta question pour le prochain cours et relis ton cours.</div>';
+const etat = {};
+TOUS_IDS.forEach(id => etat[id] = { resultat:null, tentative:0 });
+
+let scormAPI=null, scormInit=false, scormNbInter=0;
+function scormFindAPI(win){ let n=0; while(win && !win.API && win.parent && win.parent!==win && n<12){ win=win.parent; n++; } return win?win.API:null; }
+function scormStart(){
+  try{
+    scormAPI = scormFindAPI(window);
+    if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+    if(scormAPI){
+      scormAPI.LMSInitialize("");
+      scormInit = true;
+      scormAPI.LMSSetValue("cmi.core.score.min","0");
+      scormAPI.LMSSetValue("cmi.core.score.max",String(TOTAL));
+      scormAPI.LMSSetValue("cmi.core.score.raw","0");
+      scormAPI.LMSSetValue("cmi.core.lesson_status","incomplete");
+      scormAPI.LMSCommit("");
+    }
+  }catch(e){}
+}
+function scormInteraction(qid, ok, repEleve, tentative){
+  try{
+    if(!scormInit) return;
+    const n = scormNbInter++;
+    const pre = "cmi.interactions." + n + ".";
+    scormAPI.LMSSetValue(pre+"id", qid + "_" + SCORM_IDS[qid]);
+    scormAPI.LMSSetValue(pre+"type","performance");
+    scormAPI.LMSSetValue(pre+"student_response", repEleve + " [essai " + tentative + "]");
+    scormAPI.LMSSetValue(pre+"result", ok ? "correct" : "wrong");
+    scormAPI.LMSSetValue(pre+"weighting","1");
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+function scormReport(note){
+  try{
+    if(!scormInit) return;
+    scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+    scormAPI.LMSSetValue("cmi.core.lesson_status","completed");
+    scormAPI.LMSCommit("");
+  }catch(e){}
+}
+
+/* ===== Utilitaires socle (verbatim) ===== */
+function melanger(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function parseVal(raw){
+  try {
+    let s = raw.replace(/,/g,'.').replace(/×10\^(−|-)(\d+)/g,(_,__,e)=>'e-'+e).replace(/×10\^(\d+)/g,(_,e)=>'e+'+e).replace(/[×x]/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+    return parseFloat(s);
+  } catch(e){ return NaN; }
+}
+function compteCS(raw){
+  if(!raw) return 0;
+  let s = raw.replace(/,/g,'.').replace(/−/g,'-').replace(/\s/g,'');
+  const mSci = s.match(/^(-?\d+(?:\.\d+)?)×10\^(-?\d+)$/);
+  if(mSci){ s = mSci[1]; }
+  s = s.replace(/^-/,'');
+  if(s.includes('.')){
+    const [intP, decP] = s.split('.');
+    const intClean = intP.replace(/^0+/,'');
+    if(intClean === ''){ return decP.replace(/^0+/,'').length; }
+    return intClean.length + decP.length;
+  } else {
+    const clean = s.replace(/^0+/,'');
+    return clean.length || (s === '0' ? 1 : 0);
+  }
+}
+const PHRASES = {};
+const NUMERO_Q = {};
+const FORMULECFG = {};
+function recopier(qid){
+  if(!PHRASES[qid]) return '';
+  const num = NUMERO_Q[qid] ? ('<strong>Question '+NUMERO_Q[qid]+'.</strong> ') : '';
+  return '<div class="a-recopier">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> '+num+PHRASES[qid]+'</div>';
+}
+function insUnit(qid, sym){ const u=document.getElementById("unit_"+qid); if(u && !u.disabled){ u.value += sym; u.focus(); } }
+function toggleNW(id){ const w=document.getElementById(id); w.style.display=(w.style.display==='block')?'none':'block'; }
+function toggleAide(qid){ const b=document.getElementById('aide_'+qid); b.classList.toggle('visible'); }
+function gateFeuille(cb){ const t=document.getElementById(cb.dataset.gate); if(!t) return; if(cb.checked) t.classList.remove('gated'); else t.classList.add('gated'); }
+
+/* ===== Clavier scientifique (verbatim) ===== */
+const TOUCHES = [
+  {l:'7',t:'ch',v:'7'},{l:'8',t:'ch',v:'8'},{l:'9',t:'ch',v:'9'},{l:'(',t:'op',v:'('},{l:')',t:'op',v:')'},
+  {l:'4',t:'ch',v:'4'},{l:'5',t:'ch',v:'5'},{l:'6',t:'ch',v:'6'},{l:'×',t:'op',v:'×'},{l:'÷',t:'op',v:'÷'},
+  {l:'1',t:'ch',v:'1'},{l:'2',t:'ch',v:'2'},{l:'3',t:'ch',v:'3'},{l:'+',t:'op',v:'+'},{l:'−',t:'op',v:'−'},
+  {l:'0',t:'ch',v:'0'},{l:',',t:'ch',v:','},{l:'.',t:'ch',v:'.'},{l:'×10ˣ',t:'sp',v:'EXP'},{l:'⌫',t:'del',v:'DEL'},
+];
+const saisi = {};
+IDS_NUM.forEach(id => { saisi[id] = ''; });
+function _kbtn(qid, t){ const b=document.createElement('button'); b.className='k'+(t.t==='op'?' k-op':t.t==='sp'?' k-spec':t.t==='del'?' k-del':''); b.textContent=t.l; b.addEventListener('click',()=>toucheClavier(qid,t.v)); return b; }
+function construireClavier(containerId, qid){ const div=document.getElementById(containerId); if(!div) return; const wrap=document.createElement('div'); wrap.className='clavier'; TOUCHES.forEach(t=>wrap.appendChild(_kbtn(qid,t))); div.innerHTML=''; div.appendChild(wrap); }
+function toucheClavier(qid, val){
+  if(val==='DEL'){ let c=saisi[qid]; const m=c.match(/(.*)(×10\^)(−?)(\d*)$/);
+    if(m){ if(m[4].length>0) c=m[1]+m[2]+m[3]+m[4].slice(0,-1); else if(m[3].length>0) c=m[1]+m[2]; else c=m[1]; } else { c=c.slice(0,-1); }
+    saisi[qid]=c;
+  } else if(val==='EXP'){ saisi[qid]+='×10^'; } else { saisi[qid]+=val; }
+  renderDisp(qid);
+}
+function renderDisp(qid){
+  const raw=saisi[qid]||'';
+  const rendu=raw.replace(/×10\^(−?)(\d*)/g,(_,sg,exp)=>'×10<sup>'+sg+exp+'</sup>');
+  const el=document.getElementById('disp_'+qid);
+  if(el) el.innerHTML = rendu + '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+}
+
+/* ===== Type 2 numérique — validerNum / retryNum (verbatim) ===== */
+const NUMCFG = {};
+function validerNum(qid){
+  const cfg = NUMCFG[qid];
+  const t = etat[qid]; t.tentative++;
+  const raw = saisi[qid];
+  const valeur = parseVal(raw);
+  const unite = document.getElementById('unit_'+qid).value.replace(/\s/g,'').replace(/⁻¹/g,'-1').replace(/\^-1/g,'-1').replace(/·/g,'.');
+  let valOk, uniteOk;
+  valOk = !isNaN(valeur) && Math.abs(valeur - cfg.val) / Math.abs(cfg.val) <= cfg.tol;
+  uniteOk = cfg.unites.some(u => unite.includes(u));
+  let csOk = true, csCount = 0, csIssue = null;
+  if(typeof cfg.cs === 'number'){ csCount = compteCS(raw); csOk = (csCount === cfg.cs); if(!csOk) csIssue = (csCount > cfg.cs) ? "trop" : "pas-assez"; }
+  let tolereCS = false;
+  if(typeof CS_MODE !== 'undefined' && CS_MODE === "tolérant" && valOk && uniteOk && csIssue === "trop"){ tolereCS = true; csOk = true; }
+  const isOk = valOk && uniteOk && csOk;
+  const disp = document.getElementById('disp_'+qid);
+  const uinp = document.getElementById('unit_'+qid);
+  const fb   = document.getElementById('fb_'+qid);
+  const btnv = document.getElementById('btnv_'+qid);
+  const btnr = document.getElementById('btnr_'+qid);
+  const bloc = document.getElementById(qid);
+  document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b => b.disabled = true);
+  uinp.disabled = true;
+  if(isOk){
+    disp.classList.add('ok'); uinp.classList.add('ok');
+    fb.className = 'fb ok';
+    if(tolereCS){ fb.innerHTML = cfg.fbok + '<br><span style="font-size:.9em;color:#5a4a1f">💡 Pour une meilleure précision, la forme attendue est : ' + cfg.corr + ' (1 chiffre après la virgule).</span>'; }
+    else { fb.innerHTML = cfg.fbok; }
+    fb.style.display = 'block';
+    t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+    btnv.disabled = true; btnr.style.display = 'none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else {
+    bloc.classList.add('warn-bloc'); fb.className = 'fb ko';
+    let msg = '';
+    if(!valOk){ disp.classList.add('ko'); if(!uniteOk) uinp.classList.add('ko');
+      msg = (t.tentative===1) ? '✗ '+cfg.fb1 : '✗ '+cfg.fb2+' &mdash; Réponse attendue : '+cfg.corr+(EN_CLASSE?RELANCE_PROF:''); }
+    else if(!uniteOk){ uinp.classList.add('ko');
+      msg = (t.tentative===1) ? "La valeur est correcte, mais vérifie l'unité." : "✗ L'unité est incorrecte. &mdash; Réponse attendue : "+cfg.corr+(EN_CLASSE?RELANCE_PROF:''); }
+    /* ⚠️ DÉVIATION 2nde : messages de précision formulés en « chiffre après la virgule » (le socle COMMUN parle de « chiffres significatifs », légitime en 1ère Spé). compteCS reste le mécanisme de contrôle. Voir brief formalisation. */
+    else if(!csOk){ disp.classList.add('ko');
+      if(t.tentative===1){ msg = (csIssue==="trop") ? "La valeur et l'unité sont correctes, mais tu as donné trop de précision : écris le coefficient avec 1 chiffre après la virgule." : "La valeur et l'unité sont correctes, mais tu as trop arrondi : écris le coefficient avec 1 chiffre après la virgule."; }
+      else { msg = "✗ La précision n'est pas la bonne : écris le coefficient avec 1 chiffre après la virgule. &mdash; Réponse attendue : "+cfg.corr+(EN_CLASSE?RELANCE_PROF:''); } }
+    fb.innerHTML = msg; fb.style.display = 'block';
+    if(t.tentative===1){ btnv.disabled=true; btnr.style.display='inline-block'; }
+    else { fb.className='fb ko2'; t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); }
+  }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  scormInteraction(qid, isOk, (raw||'')+' '+document.getElementById('unit_'+qid).value, t.tentative);
+  verifierFin();
+}
+function retryNum(qid){
+  const disp=document.getElementById('disp_'+qid), uinp=document.getElementById('unit_'+qid);
+  saisi[qid]=''; disp.classList.remove('ok','ko'); renderDisp(qid);
+  uinp.classList.remove('ok','ko'); uinp.value=''; uinp.disabled=false;
+  document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b=>b.disabled=false);
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===== QCM Type 1a (verbatim) ===== */
+const QCM = {};
+function construireQCM(qid){
+  const q=QCM[qid]; const ul=document.getElementById('opts_'+qid); ul.innerHTML='';
+  melanger(q.props).forEach(p=>{ const li=document.createElement('li'); li.innerHTML='<button class="opt-btn" data-correct="'+p.correct+'">'+p.html+'</button>'; ul.appendChild(li); });
+  ul.querySelectorAll('.opt-btn').forEach(btn=>{ btn.addEventListener('click',function(){ ul.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel')); this.classList.add('sel'); }); });
+  document.getElementById('btnv_'+qid).onclick=()=>validerQCM(qid);
+  document.getElementById('btnr_'+qid).onclick=()=>retryQCM(qid);
+}
+function validerQCM(qid){
+  const ul=document.getElementById('opts_'+qid); const sel=ul.querySelector('.opt-btn.sel');
+  if(!sel){ alert("Sélectionne une réponse."); return; }
+  const isOk=sel.dataset.correct==='true'; const t=etat[qid]; t.tentative++;
+  ul.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb_'+qid), btnv=document.getElementById('btnv_'+qid), btnr=document.getElementById('btnr_'+qid), bloc=document.getElementById(qid);
+  if(isOk){ sel.classList.add('ok'); fb.className='fb ok'; fb.innerHTML=QCM[qid].fbok+recopier(qid); fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else { sel.classList.add('ko'); fb.className='fb ko'; bloc.classList.add('warn-bloc');
+    if(t.tentative===1){ fb.innerHTML='✗ '+QCM[qid].fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block'; }
+    else { ul.querySelectorAll('.opt-btn').forEach(b=>{ if(b.dataset.correct==='true') b.classList.add('show-ok'); });
+      fb.className='fb ko2'; fb.innerHTML='✗ '+QCM[qid].fb2+recopier(qid)+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); } }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  scormInteraction(qid, isOk, sel.textContent.trim(), t.tentative);
+  verifierFin();
+}
+function retryQCM(qid){
+  const ul=document.getElementById('opts_'+qid);
+  ul.querySelectorAll('.opt-btn').forEach(b=>{ b.disabled=false; b.classList.remove('sel','ok','ko','show-ok'); });
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===== Association Type 1bis-b (selects) ===== */
+const ASSOC = {};
+function construireAssoc(qid){
+  const cfg=ASSOC[qid]; if(!cfg) return;
+  cfg.selects.forEach(s=>{ const sel=document.getElementById(s.id); sel.innerHTML='';
+    const o0=document.createElement('option'); o0.value=''; o0.textContent='—'; sel.appendChild(o0);
+    melanger(s.options).forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+    sel.value=''; });
+  document.getElementById('btnv_'+qid).onclick=()=>validerAssoc(qid);
+  document.getElementById('btnr_'+qid).onclick=()=>retryAssoc(qid);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([document.getElementById(qid)]);
+}
+function validerAssoc(qid){
+  const cfg=ASSOC[qid]; if(!cfg) return;
+  for(const s of cfg.selects){ if(document.getElementById(s.id).value===''){ alert("Complète toutes les listes avant de valider."); return; } }
+  const t=etat[qid]; t.tentative++;
+  let toutBon=true;
+  cfg.selects.forEach(s=>{ const sel=document.getElementById(s.id); const ok=(Array.isArray(s.good)?s.good.includes(sel.value):sel.value===s.good); sel.classList.remove('ok','ko'); sel.classList.add(ok?'ok':'ko'); if(!ok) toutBon=false; });
+  cfg.selects.forEach(s=>{ document.getElementById(s.id).disabled=true; });
+  const fb=document.getElementById('fb_'+qid), btnv=document.getElementById('btnv_'+qid), btnr=document.getElementById('btnr_'+qid), bloc=document.getElementById(qid);
+  const rep = cfg.selects.map(s=>document.getElementById(s.id).value).join(' | ');
+  if(toutBon){ fb.className='fb ok'; fb.innerHTML=cfg.fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else { bloc.classList.add('warn-bloc'); fb.className='fb ko';
+    if(t.tentative===1){ // on rouvre pour un 2e essai
+      cfg.selects.forEach(s=>{ document.getElementById(s.id).disabled=false; });
+      fb.innerHTML='✗ '+cfg.fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block';
+    } else { fb.className='fb ko2'; fb.innerHTML='✗ '+cfg.fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); } }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  scormInteraction(qid, toutBon, rep, t.tentative);
+  verifierFin();
+}
+function retryAssoc(qid){
+  const cfg=ASSOC[qid]; if(!cfg) return;
+  cfg.selects.forEach(s=>{ const sel=document.getElementById(s.id); sel.disabled=false; sel.classList.remove('ok','ko'); sel.value=''; });
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+/* ===== Feedback générique (légendes + coordonnées : 2 essais, convention socle) ===== */
+function finaliser(qid, ok, rep, fb1, fb2, fbok, freezeFn, reopenFn){
+  const t=etat[qid]; t.tentative++;
+  const fb=document.getElementById('fb_'+qid), btnv=document.getElementById('btnv_'+qid), btnr=document.getElementById('btnr_'+qid), bloc=document.getElementById(qid);
+  if(ok){ fb.className='fb ok'; fb.innerHTML=fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc'); if(freezeFn) freezeFn();
+  } else if(t.tentative===1){ fb.className='fb ko'; fb.innerHTML='✗ '+fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block'; bloc.classList.add('warn-bloc'); if(reopenFn) reopenFn();
+  } else { fb.className='fb ko2'; fb.innerHTML='✗ '+fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+    t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); if(freezeFn) freezeFn(); }
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  scormInteraction(qid, ok, rep, t.tentative);
+  verifierFin();
+}
+
+/* ===== Légendes libres ===== */
+function norm(s){ return String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[()]/g,' ').replace(/\s+/g,' ').trim(); }
+// Nom de grandeur : on retire un déterminant de tête (« la masse », « le poids »…) — majuscules déjà neutralisées par norm
+function normNom(s){ return norm(s).replace(/^(l['’]\s*|d['’]\s*|le\s+|la\s+|les\s+|un\s+|une\s+|des\s+|du\s+|de\s+)/,'').trim(); }
+function symEq(s, cible){ return String(s||'').trim() === cible; }   // strict : m ≠ M, P ≠ p
+function texToPlain(s){ return String(s).replace(/\\rho/g,"rho").replace(/\\lambda/g,"lambda").replace(/\\ell/g,"l").replace(/\\dfrac/g,"").replace(/[\\{}]/g,""); }
+function slotToPlain(slot){ const cells=slot.cells.map(c=>texToPlain(c||"?")); if(cells.length===1) return cells[0]; const symMap={produit:"*",somme:"+",difference:"-"}; return "("+cells[0]+(symMap[slot.subop]||"?")+cells[1]+")"; }
+function reponseConstr(qid){ const cfg=CONSTR[qid]; return cfg.lignes.map((lg,i)=>{ const st=cfg._etats[i]; const g=texToPlain(lg.gslot ? (st.gcell||"?") : lg.grandeur); const parts=st.slots.map(slotToPlain);
+  if(st.op==="fraction") return g+"="+parts[0]+"/"+parts[1]; if(st.op==="produit") return g+"="+parts.join("*"); if(st.op==="somme") return g+"="+parts.join("+"); if(st.op==="difference") return g+"="+parts[0]+"-"+parts[1]; return g+"=?"; }).join(" ; "); }
+function normalizeSlot(){ return { subop:null, cells:[null] }; }
+function construireConstr(qid){
+  const cfg=CONSTR[qid]; if(!cfg) return;
+  cfg._etats=cfg.lignes.map(lg=>({ op:null, sel:null, gcell:null, slots:lg.slots.map(()=>normalizeSlot()) }));
+  cfg._ligneFigee=cfg.lignes.map(()=>false);
+  cfg._bankComplete=[...cfg.lettres, ...(cfg.distracteurs||[])];
+  cfg._bankOrder=melanger(cfg._bankComplete);
+  const container=document.getElementById("constr_"+qid);
+  const helpHtml='<button class="help-icon" onclick="toggleHelp(\''+qid+'\')" title="Aide">?</button>'+
+    '<div class="help-bubble" id="helpbubble_'+qid+'"><strong>💡 Comment utiliser ce widget</strong>'+
+    '<ul style="margin:8px 0;padding-left:20px"><li>Choisis d\'abord l\'opération (× / fraction / + / −).</li>'+
+    '<li>Clique une étiquette pour la <strong>prendre</strong>, puis clique la <strong>case</strong> où la poser.</li>'+
+    '<li>Clic sur une lettre placée → elle retourne dans la banque.</li></ul>'+
+    '<em>Rien n\'est définitif avant « Valider ».</em></div>';
+  container.innerHTML='<div class="constr-wrap">'+helpHtml+cfg.lignes.map((lg,i)=>'<div class="constr-row" id="constr-row-'+qid+'-'+i+'">'+renderConstrRow(qid,i)+'</div>').join('')+'</div>';
+  document.getElementById('btnv_'+qid).onclick=()=>validerConstr(qid);
+  document.getElementById('btnr_'+qid).onclick=()=>retryConstr(qid);
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([container]);
+}
+function toggleHelp(qid){ const b=document.getElementById("helpbubble_"+qid); if(b) b.classList.toggle("visible"); }
+function banqueDisponible(cfg,row){ const st=cfg._etats[row]; const placees=new Set(); if(st.gcell) placees.add(st.gcell); st.slots.forEach(slot=>slot.cells.forEach(c=>{ if(c) placees.add(c); })); return cfg._bankOrder.filter(L=>!placees.has(L)); }
+function renderConstrRow(qid,i){
+  const cfg=CONSTR[qid]; const lg=cfg.lignes[i]; const st=cfg._etats[i]; const figee=cfg._ligneFigee[i]; const nbSlots=st.slots.length;
+  const bank=banqueDisponible(cfg,i); const sym=symFromOp(st.op);
+  const opsDispo=[['produit','× produit'],['fraction','fraction'],['somme','+ somme'],['difference','− différence']];
+  const opsHtml=opsDispo.map(([op,lbl])=>{ const sel=(st.op===op)?' selected':''; const dis=figee?' disabled':''; return '<button class="constr-op-btn'+sel+'"'+dis+" onclick=\"constrSetOp('"+qid+"',"+i+",'"+op+"')\">"+lbl+"</button>"; }).join('');
+  let slotsHtml;
+  if(st.op==='fraction'){ slotsHtml='<div class="frac-stack"><div class="frac-zone">'+renderSlot(qid,i,0)+'</div><div class="frac-line"></div><div class="frac-zone">'+renderSlot(qid,i,1)+'</div></div>'; }
+  else { slotsHtml=st.slots.map((slot,s)=>{ const symAfter=(s<nbSlots-1)?'<span class="constr-sym">'+sym+'</span>':''; return renderSlot(qid,i,s)+symAfter; }).join(''); }
+  if(lg.gslot){ slotsHtml = renderGrandeurCase(qid,i) + '<span class="constr-sym">=</span>' + slotsHtml; }
+  const bankHtml=figee?'<span class="constr-bank-figee">— ligne validée —</span>':(bank.length?bank.map(L=>"<button class=\"constr-token"+(st.sel===L?" selected":"")+"\" onclick=\"constrSelect('"+qid+"',"+i+",'"+L.replace(/\\/g,"\\\\")+"')\">\\("+L+"\\)</button>").join(''):'<span class="constr-bank-empty">— toutes les lettres sont placées —</span>');
+  const preview=previewTex(lg.gslot ? (st.gcell || '\\square') : lg.grandeur, st);
+  const headStyle=figee?' style="color:var(--vert);font-weight:700"':'';
+  return '<div class="constr-head"'+headStyle+'>\\('+preview+'\\)</div><div class="constr-ops">'+opsHtml+'</div><div class="constr-slots">'+slotsHtml+'</div><div class="constr-bank">'+bankHtml+'</div>';
+}
+function renderSlot(qid,row,slotIdx){
+  const cfg=CONSTR[qid]; const st=cfg._etats[row]; const opPrincipale=st.op; const slot=st.slots[slotIdx];
+  const cap=capsFromOp(opPrincipale,st.slots.length)[slotIdx]; const figee=cfg._ligneFigee[row]; const dis=figee?' disabled':'';
+  if(opPrincipale!=="fraction"&&opPrincipale!=="difference"&&opPrincipale!=="somme"){ return renderCase(qid,row,slotIdx,0,slot.cells[0],cap,dis,figee); }
+  if(slot.cells.length===1){ const html=renderCase(qid,row,slotIdx,0,slot.cells[0],cap,dis,figee);
+    if(!figee){ const phantom='<button class="add-case" onclick="constrAddSubCase(\''+qid+'\','+row+','+slotIdx+')" title="Ajouter une 2e case">⎕</button>'; return html+phantom; } return html; }
+  const selHtml=!figee?renderSubOpSelector(qid,row,slotIdx,slot.subop):'<span class="constr-sym">'+subSym(slot.subop)+'</span>';
+  const trashHtml=!figee?'<button class="del-case" onclick="constrRemoveSubCase(\''+qid+'\','+row+','+slotIdx+')" title="Retirer">🗑</button>':"";
+  return renderCase(qid,row,slotIdx,0,slot.cells[0],cap,dis,figee)+selHtml+renderCase(qid,row,slotIdx,1,slot.cells[1],cap,dis,figee)+trashHtml;
+}
+function subSym(subop){ if(subop==='produit')return '×'; if(subop==='somme')return '+'; if(subop==='difference')return '−'; return '?'; }
+function renderSubOpSelector(qid,row,slotIdx,currentSubOp){ const ops=[["produit","×"],["somme","+"],["difference","−"]]; const inner=ops.map(([op,sym])=>{ const sel=(currentSubOp===op)?' selected':''; return '<button class="sub-op-btn'+sel+'" onclick="constrSetSubOp(\''+qid+'\','+row+','+slotIdx+',\''+op+'\')">'+sym+'</button>'; }).join(''); return '<div class="sub-op-selector">'+inner+'</div>'; }
+function renderCase(qid,row,slotIdx,cellIdx,content,cap,dis,figee){
+  const st=CONSTR[qid]._etats[row]; const vide=!content; const selActive=(st.sel!==null);
+  const cls=(content?' filled':'')+(figee?' figee':'')+((vide&&selActive&&!figee)?' receptive':'');
+  const action=(vide&&!figee)?'constrPlaceAt(\''+qid+'\','+row+','+slotIdx+','+cellIdx+')':'constrUnplace(\''+qid+'\','+row+','+slotIdx+','+cellIdx+')';
+  return '<div class="constr-slot-wrap"><button class="constr-slot'+cls+'"'+dis+' onclick="'+action+'">'+(content?'\\('+content+'\\)':'?')+'</button><span class="constr-slot-cap">'+cap+'</span></div>';
+}
+function renderGrandeurCase(qid,row){
+  const cfg=CONSTR[qid]; const st=cfg._etats[row]; const figee=cfg._ligneFigee[row];
+  const content=st.gcell; const vide=!content; const selActive=(st.sel!==null);
+  const cls=(content?' filled':'')+(figee?' figee':'')+((vide&&selActive&&!figee)?' receptive':'');
+  const dis=figee?' disabled':'';
+  const action=(vide&&!figee)?'constrPlaceGrandeur(\''+qid+'\','+row+')':'constrUnplaceGrandeur(\''+qid+'\','+row+')';
+  return '<div class="constr-slot-wrap"><button class="constr-slot'+cls+'"'+dis+' onclick="'+action+'">'+(content?'\\('+content+'\\)':'?')+'</button><span class="constr-slot-cap">grandeur</span></div>';
+}
+function constrPlaceGrandeur(qid,row){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; if(st.sel===null) return; if(st.gcell!==null) return; st.gcell=st.sel; st.sel=null; refreshConstrRow(qid,row); }
+function constrUnplaceGrandeur(qid,row){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; if(st.gcell===null) return; st.gcell=null; refreshConstrRow(qid,row); }
+function capsFromOp(op,nb){ if(op==='fraction')return ['numérateur','dénominateur']; if(op==='difference')return ['1er terme','2e terme']; if(op==='produit')return Array(nb).fill('facteur'); if(op==='somme')return Array(nb).fill('terme'); return Array(nb).fill('position'); }
+function symFromOp(op){ if(op==='fraction')return '/'; if(op==='difference')return '−'; if(op==='produit')return '×'; if(op==='somme')return '+'; return '?'; }
+function previewTexCell(cell){ return cell||"\\square"; }
+function previewTexSlot(s){ if(s.cells.length===1) return previewTexCell(s.cells[0]); const a=previewTexCell(s.cells[0]),b=previewTexCell(s.cells[1]); if(s.subop==="produit")return a+" \\times "+b; if(s.subop==="somme")return a+" + "+b; if(s.subop==="difference")return a+" - "+b; return a+" \\,?\\, "+b; }
+function previewTexSlotParen(s){ const tex=previewTexSlot(s); if(s.cells.length===2&&(s.subop==="somme"||s.subop==="difference")) return "\\left("+tex+"\\right)"; return tex; }
+function previewTex(grandeur,st){
+  if(!st.op && st.slots.every(s=>s.cells.every(c=>!c))) return grandeur+' = \\square\\,?\\,\\square';
+  if(st.op==='fraction') return grandeur+' = \\dfrac{'+previewTexSlot(st.slots[0])+'}{'+previewTexSlot(st.slots[1])+'}';
+  if(st.op==='produit'){ const parts=st.slots.map(s=>previewTexCell(s.cells[0])); return grandeur+' = '+parts.join(' \\times '); }
+  const parts=st.slots.map(s=>previewTexSlotParen(s));
+  if(st.op==='somme') return grandeur+' = '+parts.join(' + ');
+  if(st.op==='difference') return grandeur+' = '+parts[0]+' - '+parts[1];
+  return grandeur+' = '+parts.join(' \\,?\\, ');
+}
+function refreshConstrRow(qid,i){ const el=document.getElementById('constr-row-'+qid+'-'+i); if(!el) return; el.innerHTML=renderConstrRow(qid,i); if(window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([el]); }
+function constrSetOp(qid,row,op){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; st.op=(st.op===op)?null:op; if(st.op!=='fraction'&&st.op!=='difference'&&st.op!=='somme'){ st.slots.forEach(slot=>{ slot.subop=null; slot.cells=[slot.cells[0]]; }); } refreshConstrRow(qid,row); }
+function estPlacee(st,letter){ return st.slots.some(slot=>slot.cells.includes(letter)); }
+function constrSelect(qid,row,letter){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; if(estPlacee(st,letter)) return; st.sel=(st.sel===letter)?null:letter; refreshConstrRow(qid,row); }
+function constrPlaceAt(qid,row,slotIdx,cellIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; if(st.sel===null) return; if(st.slots[slotIdx].cells[cellIdx]!==null) return; st.slots[slotIdx].cells[cellIdx]=st.sel; st.sel=null; refreshConstrRow(qid,row); }
+function constrUnplace(qid,row,slotIdx,cellIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; const cells=st.slots[slotIdx].cells; if(cells[cellIdx]===null) return; cells[cellIdx]=null; refreshConstrRow(qid,row); }
+function constrAddSubCase(qid,row,slotIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; if(st.op!=="fraction"&&st.op!=="difference"&&st.op!=="somme") return; const slot=st.slots[slotIdx]; if(slot.cells.length>=2) return; slot.subop="produit"; slot.cells.push(null); refreshConstrRow(qid,row); }
+function constrRemoveSubCase(qid,row,slotIdx){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; const slot=st.slots[slotIdx]; if(slot.cells.length<2) return; slot.subop=null; slot.cells=[slot.cells[0]]; refreshConstrRow(qid,row); }
+function constrSetSubOp(qid,row,slotIdx,subop){ const cfg=CONSTR[qid]; if(cfg._ligneFigee[row]) return; const st=cfg._etats[row]; const slot=st.slots[slotIdx]; if(slot.cells.length!==2) return; slot.subop=subop; refreshConstrRow(qid,row); }
+function evalSlot(a,e){ if(typeof a==="string"){ return e.cells.length===1&&e.cells[0]===a; } if(e.cells.length!==2) return false; if(e.subop!==a.subop) return false; if(a.subop==="difference"){ return e.cells[0]===a.cells[0]&&e.cells[1]===a.cells[1]; } const t1=[...e.cells].sort(),t2=[...a.cells].sort(); return t1.length===t2.length&&t1.every((v,i)=>v===t2[i]); }
+function evalLigne(oc,oa,sr,sa){ if(oc!==oa) return false; if(sr.length!==sa.length) return false; if(oa==='fraction'||oa==='difference'){ return sr.every((s,i)=>evalSlot(sa[i],s)); } const t1=sr.map(s=>s.cells[0]).sort(),t2=sa.map(s=>(typeof s==="string"?s:null)).sort(); return t1.length===t2.length&&t1.every((v,i)=>v===t2[i]); }
+function solutionInterne(lg){ return { op:lg.op, slots:lg.slots.map(s=>(typeof s==="string")?{subop:null,cells:[s]}:{subop:s.subop,cells:[...s.cells]}) }; }
+function validerConstr(qid){
+  const cfg=CONSTR[qid]; const t=etat[qid]; const multi=cfg.lignes.length>1;
+  for(let i=0;i<cfg.lignes.length;i++){ if(cfg._ligneFigee[i]) continue; const st=cfg._etats[i];
+    if(cfg.lignes[i].gslot && st.gcell===null){ alert("Place aussi la grandeur (le membre de gauche de la relation)."); return; }
+    if(!st.op){ alert("Choisis d'abord l'opération (× / fraction / + / −)."); return; }
+    if(st.slots.some(slot=>slot.cells.some(c=>c===null))){ alert("Remplis toutes les cases avant de valider."); return; } }
+  t.tentative++;
+  const resultats=cfg.lignes.map((lg,i)=>{ if(cfg._ligneFigee[i]) return true; const st=cfg._etats[i]; const relOk=evalLigne(st.op,lg.op,st.slots,lg.slots); const gOk=lg.gslot?(st.gcell===lg.grandeurCible):true; return relOk&&gOk; });
+  const toutBon=resultats.every(r=>r); const repEleve=reponseConstr(qid);
+  const fb=document.getElementById('fb_'+qid); const btnv=document.getElementById('btnv_'+qid); const btnr=document.getElementById('btnr_'+qid); const bloc=document.getElementById(qid);
+  if(toutBon){
+    fb.className='fb ok'; fb.innerHTML=cfg.fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none';
+    bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    cfg._ligneFigee=cfg.lignes.map(()=>true); cfg.lignes.forEach((_,i)=>refreshConstrRow(qid,i));
+    scormInteraction(qid,true,repEleve,t.tentative);
+  } else {
+    bloc.classList.add('warn-bloc'); fb.className='fb ko';
+    if(t.tentative===1){
+      if(multi){ let nbOk=0,nbTotal=cfg.lignes.length; cfg.lignes.forEach((lg,i)=>{ if(resultats[i]){ cfg._ligneFigee[i]=true; nbOk++; } else { cfg._etats[i].op=null; cfg._etats[i].slots=lg.slots.map(()=>normalizeSlot()); } refreshConstrRow(qid,i); }); fb.innerHTML="✗ "+nbOk+" ligne(s) sur "+nbTotal+" correctes. Revois celle(s) effacée(s).<br>"+cfg.fb1; }
+      else { cfg._etats[0].op=null; cfg._etats[0].gcell=null; cfg._etats[0].slots=cfg.lignes[0].slots.map(()=>normalizeSlot()); refreshConstrRow(qid,0); fb.innerHTML="✗ "+cfg.fb1; }
+      fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block';
+    } else {
+      cfg.lignes.forEach((lg,i)=>{ if(!resultats[i]){ const sol=solutionInterne(lg); cfg._etats[i].op=sol.op; cfg._etats[i].slots=sol.slots; if(lg.gslot) cfg._etats[i].gcell=lg.grandeurCible; } cfg._ligneFigee[i]=true; refreshConstrRow(qid,i); });
+      fb.className='fb ko2'; fb.innerHTML="✗ "+cfg.fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); scormInteraction(qid,false,repEleve,t.tentative);
+    }
+  }
+  if(window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  verifierFin();
+}
+function retryConstr(qid){
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+const CONSTR = {};
+function calculerScores(){ let n1=0,n2=0; TOUS_IDS.forEach(id=>{ const r=etat[id].resultat; if(r==="ok1"){ n1++; n2++; } else if(r==="ok2"){ n2++; } }); return { n1:n1, n2:n2 }; }
+function verifierFin(){
+  document.querySelectorAll('.chk-feuille[data-requires]').forEach(cb=>{ const q=cb.dataset.requires; if(q && etat[q] && etat[q].resultat!==null && cb.disabled){ cb.disabled=false; const w=cb.closest('.rappel-feuille'); if(w) w.classList.remove('gate-verrou'); } });
+  const fini=TOUS_IDS.every(id=>etat[id].resultat!==null); if(fini) afficherBilan();
+}
+function afficherBilan(){
+  const sc=calculerScores();
+  document.getElementById('bilan-n1').textContent=sc.n1+" / "+TOTAL;
+  document.getElementById('bilan-n2').textContent=sc.n2+" / "+TOTAL;
+  document.getElementById('bilan').style.display='block';
+  const fini=TOUS_IDS.every(id=>etat[id].resultat!==null);
+  if(fini) scormReport(sc.n1);
+}
+
+/* ===== INIT ===== */
+
+/* ===== Type 9 — Saisie de formule (cellules) ===== */
+function normFormChamp(str){ return String(str||'').trim().toLowerCase().replace(/\s+/g,'').replace(/,/g,'.'); }
+function construireFormule(qid){
+  const cfg=FORMULECFG[qid]; if(!cfg) return;
+  const OPS=[['','\u2014'],['+','+'],['\u2212','\u2212'],['\u00d7','\u00d7'],['/','/'],['=','=']];
+  cfg.cells.forEach((cell,i)=>{
+    if(cell.kind==='op'){ const sel=document.getElementById(qid+'_o'+i); if(sel){ sel.innerHTML=''; OPS.forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;sel.appendChild(o);}); sel.value=''; } }
+    else if(cell.kind==='num'){ const buf=qid+'_c'+i; saisi[buf]=''; construireClavier('clav_'+buf, buf); renderDisp(buf);
+      const disp=document.getElementById('disp_'+buf); if(disp) disp.addEventListener('click',()=>disp.classList.add('actif')); }
+  });
+}
+function validerFormule(qid){
+  const cfg=FORMULECFG[qid]; const t=etat[qid];
+  const els=cfg.cells.map((cell,i)=> cell.kind==='op' ? {cell,el:document.getElementById(qid+'_o'+i)}
+    : cell.kind==='num' ? {cell,buf:qid+'_c'+i,disp:document.getElementById('disp_'+qid+'_c'+i)}
+    : {cell,el:document.getElementById(qid+'_c'+i)} );
+  for(const c of els){
+    if(c.cell.kind==='op' && c.el.value===''){ alert("Choisis tous les op\u00e9rateurs et remplis tous les champs avant de valider."); return; }
+    if(c.cell.kind==='var' && c.el.value.trim()===''){ alert("Choisis tous les op\u00e9rateurs et remplis tous les champs avant de valider."); return; }
+    if(c.cell.kind==='num' && (saisi[c.buf]||'').trim()===''){ alert("Choisis tous les op\u00e9rateurs et remplis tous les champs avant de valider."); return; }
+  }
+  t.tentative++;
+  let ok=true;
+  els.forEach(c=>{
+    if(c.cell.kind==='var'){ const good=c.cell.accept.some(a=>normFormChamp(a)===normFormChamp(c.el.value)); c.el.classList.remove('ok','ko'); c.el.classList.add(good?'ok':'ko'); if(!good)ok=false; }
+    else if(c.cell.kind==='op'){ const good=(c.el.value===c.cell.good); c.el.classList.remove('ok','ko'); c.el.classList.add(good?'ok':'ko'); if(!good)ok=false; }
+    else { const raw=saisi[c.buf]; const v=parseVal(raw); let good=!isNaN(v)&&Math.abs(v-c.cell.val)/Math.abs(c.cell.val)<=c.cell.tol;
+      if(good && typeof c.cell.cs==='number'){ const csc=compteCS(raw); if(csc!==c.cell.cs && !(typeof CS_MODE!=='undefined'&&CS_MODE==='tol\u00e9rant'&&csc>c.cell.cs)) good=false; }
+      c.disp.classList.remove('ok','ko'); c.disp.classList.add(good?'ok':'ko'); if(!good)ok=false; }
+  });
+  const rep=els.map(c=> c.cell.kind==='op'?(' '+c.el.value+' '):(c.cell.kind==='num'?(saisi[c.buf]||''):c.el.value)).join('').trim();
+  const fb=document.getElementById('fb_'+qid), btnv=document.getElementById('btnv_'+qid), btnr=document.getElementById('btnr_'+qid), bloc=document.getElementById(qid);
+  const fige=(d)=>{ els.forEach(c=>{ if(c.cell.kind==='num'){ const cl=document.getElementById('clav_'+c.buf); if(cl) cl.querySelectorAll('button').forEach(b=>b.disabled=d); } else { c.el.disabled=d; } }); };
+  if(ok){ fige(true); fb.className='fb ok'; fb.innerHTML=cfg.fbok; fb.style.display='block';
+    t.resultat=(t.tentative===1)?'ok1':'ok2'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+  } else { bloc.classList.add('warn-bloc');
+    if(t.tentative===1){ fb.className='fb ko'; fb.innerHTML='\u2717 '+cfg.fb1; fb.style.display='block'; btnv.disabled=true; btnr.style.display='inline-block';
+    } else { fige(true); fb.className='fb ko2'; fb.innerHTML='\u2717 '+cfg.fb2+(EN_CLASSE?RELANCE_PROF:''); fb.style.display='block';
+      t.resultat='ko'; btnv.disabled=true; btnr.style.display='none'; bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc'); } }
+  if(window.MathJax&&MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+  scormInteraction(qid, ok, rep, t.tentative);
+  verifierFin();
+}
+function retryFormule(qid){
+  const cfg=FORMULECFG[qid];
+  cfg.cells.forEach((cell,i)=>{
+    if(cell.kind==='op'){ const o=document.getElementById(qid+'_o'+i); o.disabled=false; o.classList.remove('ok','ko'); o.value=''; }
+    else if(cell.kind==='num'){ const buf=qid+'_c'+i; saisi[buf]=''; renderDisp(buf); const disp=document.getElementById('disp_'+buf); if(disp) disp.classList.remove('ok','ko'); const cl=document.getElementById('clav_'+buf); if(cl) cl.querySelectorAll('button').forEach(b=>b.disabled=false); }
+    else { const c=document.getElementById(qid+'_c'+i); c.disabled=false; c.classList.remove('ok','ko'); c.value=''; }
+  });
+  document.getElementById('fb_'+qid).style.display='none';
+  document.getElementById('btnr_'+qid).style.display='none';
+  document.getElementById('btnv_'+qid).disabled=false;
+  document.getElementById(qid).classList.remove('warn-bloc');
+}
+
+function peuplerSelect(id, opts, placeholder){
+  const s=document.getElementById(id); if(!s) return;
+  s.innerHTML='';
+  const o0=document.createElement('option'); o0.value=''; o0.textContent=placeholder||'\u2014'; s.appendChild(o0);
+  melanger(opts.slice()).forEach(o=>{ const op=document.createElement('option'); if(o&&typeof o==='object'){op.value=o.v;op.textContent=o.t;}else{op.value=o;op.textContent=o;} s.appendChild(op); });
+}
+
+
+/* ===================== CONFIGS PARTIE A (Exercice 5) ===================== */
+QCM.qu1 = { props:[
+  { html:"En saisissant chaque grandeur dans une colonne (le temps dans l'une, la distance dans l'autre).", correct:true },
+  { html:"En saisissant chaque grandeur sur une ligne (le temps sur une ligne, la distance sur l'autre).", correct:false },
+  { html:"Peu importe : le tableur devine tout seul quelle grandeur va sur chaque axe.", correct:false },
+  { html:"Dans une seule cellule, les valeurs s\u00e9par\u00e9es par des virgules.", correct:false }
+ ],
+ fb1:"Le tableur doit associer chaque grandeur \u00e0 un axe : dans quoi la place-t-on alors ?",
+ fb2:"On saisit chaque grandeur dans sa propre colonne : le temps dans l'une, la distance dans l'autre.",
+ fbok:"&#10003; Exact ! Une grandeur par colonne : le tableur associe alors chaque colonne \u00e0 un axe." };
+PHRASES.qu1 = "On saisit chaque grandeur dans une colonne : le temps dans l'une, la distance dans l'autre.";
+NUMERO_Q.qu1 = 1;
+
+ASSOC.qu3 = { selects:[
+  { label:'abscisse', id:'qu3_x', options:['le temps \\(t\\) (s)','la distance \\(d\\) (m)'], good:'le temps \\(t\\) (s)' },
+  { label:'ordonn\u00e9e', id:'qu3_y', options:['le temps \\(t\\) (s)','la distance \\(d\\) (m)'], good:'la distance \\(d\\) (m)' }
+ ],
+ fb1:"La grandeur que l'on fait varier va en abscisse ; celle qui en d\u00e9pend va en ordonn\u00e9e.",
+ fb2:"Dans ce graphique, on a plac\u00e9 le temps \\(t\\) (s) en abscisse et la distance \\(d\\) (m) en ordonn\u00e9e.<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> dans ce graphique, on a plac\u00e9 le temps \\(t\\) (s) en abscisse et la distance \\(d\\) (m) en ordonn\u00e9e.</div>",
+ fbok:"&#10003; Exact ! Le temps en abscisse, la distance en ordonn\u00e9e.<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> dans ce graphique, on a plac\u00e9 le temps \\(t\\) (s) en abscisse et la distance \\(d\\) (m) en ordonn\u00e9e.</div>" };
+
+QCM.qu4 = { props:[
+  { html:"Une droite qui passe par l'origine.", correct:true },
+  { html:"Une droite qui ne passe pas par l'origine.", correct:false },
+  { html:"Une courbe qui passe par l'origine.", correct:false },
+  { html:"Une courbe qui ne passe pas par l'origine.", correct:false }
+ ],
+ fb1:"Les points suivent-ils une ligne bien droite ? Et o\u00f9 semble-t-elle d\u00e9marrer quand \\(t = 0\\) ?",
+ fb2:"Le nuage forme une droite qui passe par l'origine : les points sont align\u00e9s et, \u00e0 \\(t = 0\\), la distance est nulle.",
+ fbok:"&#10003; Exact ! Points align\u00e9s, droite partant de l'origine \\((0~;~0)\\)." };
+PHRASES.qu4 = "Les points sont align\u00e9s : le nuage forme une droite qui passe par l'origine.";
+NUMERO_Q.qu4 = 4;
+
+QCM.qu5 = { props:[
+  { html:"Lin\u00e9aire.", correct:true },
+  { html:"Exponentielle.", correct:false },
+  { html:"Puissance.", correct:false },
+  { html:"Polynomiale.", correct:false }
+ ],
+ fb1:"Tu veux mod\u00e9liser une droite : quel mod\u00e8le du menu trace une droite ?",
+ fb2:"On choisit le mod\u00e8le <strong>Lin\u00e9aire</strong> : c'est celui qui trace une droite.",
+ fbok:"&#10003; Exact ! Le mod\u00e8le lin\u00e9aire trace une droite." };
+PHRASES.qu5 = "On mod\u00e9lise le nuage avec une courbe de tendance Lin\u00e9aire.";
+NUMERO_Q.qu5 = 5;
+
+QCM.qu6 = { props:[
+  { html:"Oui : la droite passe par l'origine, donc on force ce param\u00e8tre \u00e0 0.", correct:true },
+  { html:"Non : on laisse le tableur choisir l'ordonn\u00e9e \u00e0 l'origine.", correct:false }
+ ],
+ fb1:"Ta droite passe par l'origine (question 4). Que doit alors valoir son ordonn\u00e9e \u00e0 l'origine ?",
+ fb2:"<strong>Oui</strong> : puisque la droite passe par l'origine, son ordonn\u00e9e \u00e0 l'origine vaut 0 \u2014 on force donc ce param\u00e8tre \u00e0 0.",
+ fbok:"&#10003; Exact ! La droite passe par l'origine : on force l'ordonn\u00e9e \u00e0 l'origine \u00e0 0." };
+PHRASES.qu6 = "On force l'ordonn\u00e9e \u00e0 l'origine \u00e0 0, car la droite passe par l'origine.";
+NUMERO_Q.qu6 = 6;
+
+FORMULECFG.qu8 = { cells:[ {kind:'var', accept:['f(x)']}, {kind:'op', good:'='}, {kind:'var', accept:['20,3','20.3']}, {kind:'op', good:'\u00d7'}, {kind:'var', accept:['x']} ],
+ fb1:"Recopie exactement ce qu'affiche le tableur. Attention : le \u00ab \\(x\\) \u00bb n'est pas un signe de multiplication, c'est la variable. \u00c9cris le membre de gauche, puis l'\u00e9galit\u00e9, le nombre, la multiplication, et la variable.",
+ fb2:"L'\u00e9quation affich\u00e9e est \\(f(x) = 20{,}3 \\times x\\). Le \u00ab \\(x\\) \u00bb de droite est la variable, pas un signe de multiplication.",
+ fbok:"&#10003; Exact !<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille \u2014 Question 8 :</strong> l'\u00e9quation mod\u00e9lis\u00e9e par le tableur est \\(f(x) = 20{,}3 \\times x\\).</div>" };
+
+NUMCFG.qu9 = { val:20.3, tol:0.02, cs:3, unites:[''],
+ fb1:"Dans l'\u00e9quation \\(f(x) = 20{,}3 \\times x\\), le coefficient directeur est le nombre qui multiplie \\(x\\). Quelle est sa valeur ?",
+ fb2:"Le coefficient directeur vaut \\(k = 20{,}3\\).",
+ fbok:"&#10003; Exact ! \\(k = 20{,}3\\).<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille \u2014 Question 9 :</strong> le coefficient directeur de la droite est \\(k = 20{,}3\\).</div>",
+ corr:"20,3" };
+
+ASSOC.qu10 = { selects:[
+  { label:'x', id:'qu10_x', options:['le temps \\(t\\)','la distance \\(d\\)'], good:'le temps \\(t\\)' },
+  { label:'f(x)', id:'qu10_fx', options:['le temps \\(t\\)','la distance \\(d\\)'], good:'la distance \\(d\\)' }
+ ],
+ fb1:"Reviens au graphique : \u00e0 la place de \\(x\\) tu avais l'abscisse, \u00e0 la place de \\(f(x)\\) l'ordonn\u00e9e.",
+ fb2:"\\(x\\) \\(\\leftrightarrow\\) le temps \\(t\\) ; \\(f(x)\\) \\(\\leftrightarrow\\) la distance \\(d\\).<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> dans l'\u00e9quation \\(f(x) = k \\times x\\), \\(x \\leftrightarrow\\) le temps \\(t\\) et \\(f(x) \\leftrightarrow\\) la distance \\(d\\).</div>",
+ fbok:"&#10003; Exact ! \\(x \\leftrightarrow\\) le temps \\(t\\), \\(f(x) \\leftrightarrow\\) la distance \\(d\\).<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille :</strong> dans l'\u00e9quation \\(f(x) = k \\times x\\), \\(x \\leftrightarrow\\) le temps \\(t\\) et \\(f(x) \\leftrightarrow\\) la distance \\(d\\).</div>" };
+
+CONSTR.qu11 = { lignes:[ { gslot:true, grandeurCible:"d", op:"produit", slots:["20{,}3","t"] } ], lettres:["d","20{,}3","t"], distracteurs:["x","f(x)"],
+ fb1:"Remplace les lettres du mod\u00e8le par les grandeurs physiques : \\(f(x)\\) devient la distance \\(d\\), \\(x\\) devient le temps \\(t\\).",
+ fb2:"La relation est \\(d = 20{,}3 \\times t\\) : on a remplac\u00e9 \\(f(x)\\) par \\(d\\) et \\(x\\) par \\(t\\).",
+ fbok:"&#10003; Exact !<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille \u2014 Question 11 :</strong> la relation de proportionnalit\u00e9 entre la distance et le temps est \\(d = 20{,}3 \\times t\\).</div>" };
+
+NUMCFG.qu12 = { val:20.3, tol:0.02, cs:3, unites:['m/s'],
+ fb1:"Relis l'\u00e9nonc\u00e9 : que cherche-t-on ? Quelle formule connais-tu qui relie la distance, la vitesse et le temps ? Compare-la \u00e0 ta relation \\(d = 20{,}3 \\times t\\).",
+ fb2:"En comparant \\(d = v \\times t\\) et \\(d = 20{,}3 \\times t\\), on trouve \\(v = 20{,}3~\\text{m/s}\\).",
+ fbok:"&#10003; Exact ! \\(v = 20{,}3~\\text{m/s}\\).<div class=\"a-recopier\">\u270d\ufe0f <strong>\u00c0 recopier sur ta feuille \u2014 Question 12 :</strong> en comparant \\(d = v \\times t\\) \u00e0 \\(d = 20{,}3 \\times t\\), la vitesse du drone est \\(v = 20{,}3~\\text{m/s}\\).</div>",
+ corr:"20,3 m/s" };
+
+/* ===================== CONFIGS PARTIE B (Exercice 5 — N = n·NA) ===================== */
+QCM.qb1 = { props:[
+  { html:"En saisissant chaque grandeur dans une colonne (la durée dans l'une, l'énergie dans l'autre).", correct:true },
+  { html:"En saisissant chaque grandeur sur une ligne (l'une sur une ligne, l'autre sur l'autre).", correct:false },
+  { html:"Peu importe : le tableur devine tout seul quelle grandeur va sur chaque axe.", correct:false },
+  { html:"Dans une seule cellule, les valeurs séparées par des virgules.", correct:false }
+ ],
+ fb1:"Le tableur doit associer chaque grandeur à un axe : dans quoi la place-t-on alors ?",
+ fb2:"On saisit chaque grandeur dans sa propre colonne : la durée dans l'une, l'énergie dans l'autre.",
+ fbok:"&#10003; Exact ! Une grandeur par colonne : le tableur associe alors chaque colonne à un axe." };
+PHRASES.qb1 = "On saisit chaque grandeur dans une colonne : la durée dans l'une, l'énergie dans l'autre.";
+NUMERO_Q.qb1 = 1;
+
+ASSOC.qb3 = { selects:[
+  { label:'abscisse', id:'qb3_x', options:['le temps \\(t\\) (s)','l\'énergie \\(E\\) (J)'], good:'le temps \\(t\\) (s)' },
+  { label:'ordonnée', id:'qb3_y', options:['le temps \\(t\\) (s)','l\'énergie \\(E\\) (J)'], good:'l\'énergie \\(E\\) (J)' }
+ ],
+ fb1:"La grandeur que l'on fait varier va en abscisse ; celle qui en dépend va en ordonnée.",
+ fb2:"On a placé le temps \\(t\\) (s) en abscisse et l'énergie \\(E\\) (J) en ordonnée.<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille :</strong> on a placé le temps \\(t\\) (s) en abscisse et l'énergie \\(E\\) (J) en ordonnée.</div>",
+ fbok:"&#10003; Exact ! \\(t\\) en abscisse, \\(E\\) en ordonnée.<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille :</strong> on a placé le temps \\(t\\) (s) en abscisse et l'énergie \\(E\\) (J) en ordonnée.</div>" };
+
+QCM.qb4 = { props:[
+  { html:"Une droite qui passe par l'origine.", correct:true },
+  { html:"Une droite qui ne passe pas par l'origine.", correct:false },
+  { html:"Une courbe qui passe par l'origine.", correct:false },
+  { html:"Une courbe qui ne passe pas par l'origine.", correct:false }
+ ],
+ fb1:"Les points suivent-ils une ligne bien droite ? Et où semble-t-elle démarrer quand \\(t = 0\\) ?",
+ fb2:"Le nuage forme une droite qui passe par l'origine : les points sont alignés et, à \\(t = 0\\), l'énergie consommée est nulle.",
+ fbok:"&#10003; Exact ! Points alignés, droite partant de l'origine \\((0~;~0)\\)." };
+PHRASES.qb4 = "Les points sont alignés : le nuage forme une droite qui passe par l'origine.";
+NUMERO_Q.qb4 = 4;
+
+QCM.qb5 = { props:[
+  { html:"Linéaire.", correct:true },
+  { html:"Exponentielle.", correct:false },
+  { html:"Puissance.", correct:false },
+  { html:"Polynomiale.", correct:false }
+ ],
+ fb1:"Tu veux modéliser une droite : quel modèle du menu trace une droite ?",
+ fb2:"On choisit le modèle <strong>Linéaire</strong> : c'est celui qui trace une droite.",
+ fbok:"&#10003; Exact ! Le modèle linéaire trace une droite." };
+PHRASES.qb5 = "On modélise le nuage avec une courbe de tendance Linéaire.";
+NUMERO_Q.qb5 = 5;
+
+QCM.qb6 = { props:[
+  { html:"Oui : la droite passe par l'origine, donc on force ce paramètre à 0.", correct:true },
+  { html:"Non : on laisse le tableur choisir l'ordonnée à l'origine.", correct:false }
+ ],
+ fb1:"Ta droite passe par l'origine (question 4). Que doit alors valoir son ordonnée à l'origine ?",
+ fb2:"<strong>Oui</strong> : puisque la droite passe par l'origine, son ordonnée à l'origine vaut 0 — on force donc ce paramètre à 0.",
+ fbok:"&#10003; Exact ! La droite passe par l'origine : on force l'ordonnée à l'origine à 0." };
+PHRASES.qb6 = "On force l'ordonnée à l'origine à 0, car la droite passe par l'origine.";
+NUMERO_Q.qb6 = 6;
+
+FORMULECFG.qb8 = { cells:[
+   {kind:'var', accept:['f(x)']},
+   {kind:'op', good:'='},
+   {kind:'var', accept:['59,7','59.7']},
+   {kind:'op', good:'×'},
+   {kind:'var', accept:['x']}
+ ],
+ fb1:"Recopie exactement ce qu'affiche le tableur. Attention : le « \\(x\\) » n'est pas un signe de multiplication, c'est la variable. Écris le membre de gauche, puis l'égalité, le nombre, la multiplication, et la variable.",
+ fb2:"L'équation affichée est \\(f(x) = 59{,}7 \\times x\\). Le « \\(x\\) » de droite est la variable, pas un signe de multiplication.",
+ fbok:"&#10003; Exact !<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille — Question 8 :</strong> l'équation modélisée par le tableur est \\(f(x) = 59{,}7 \\times x\\).</div>" };
+
+NUMCFG.qb9 = { val:59.7, tol:0.02, cs:3, unites:[''],
+ fb1:"Dans l'équation \\(f(x) = 59{,}7 \\times x\\), le coefficient directeur est le nombre qui multiplie \\(x\\). Quelle est sa valeur ?",
+ fb2:"Le coefficient directeur vaut \\(k = 59{,}7\\).",
+ fbok:"&#10003; Exact ! \\(k = 59{,}7\\).<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille — Question 9 :</strong> le coefficient directeur de la droite est \\(k = 59{,}7\\).</div>",
+ corr:"59,7" };
+
+ASSOC.qb10 = { selects:[
+  { label:'x', id:'qb10_x', options:['le temps \\(t\\)','l\'énergie \\(E\\)'], good:'le temps \\(t\\)' },
+  { label:'f(x)', id:'qb10_fx', options:['le temps \\(t\\)','l\'énergie \\(E\\)'], good:'l\'énergie \\(E\\)' }
+ ],
+ fb1:"Reviens au graphique : à la place de \\(x\\) tu avais l'abscisse, à la place de \\(f(x)\\) l'ordonnée.",
+ fb2:"\\(x\\) \\(\\leftrightarrow\\) \\(t\\) ; \\(f(x)\\) \\(\\leftrightarrow\\) \\(E\\).<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille :</strong> dans l'équation \\(f(x) = k \\times x\\), \\(x \\leftrightarrow\\) le temps \\(t\\) et \\(f(x) \\leftrightarrow\\) l'énergie \\(E\\).</div>",
+ fbok:"&#10003; Exact ! \\(x \\leftrightarrow t\\), \\(f(x) \\leftrightarrow E\\).<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille :</strong> dans l'équation \\(f(x) = k \\times x\\), \\(x \\leftrightarrow\\) le temps \\(t\\) et \\(f(x) \\leftrightarrow\\) l'énergie \\(E\\).</div>" };
+
+CONSTR.qb11 = { lignes:[ { gslot:true, grandeurCible:"E", op:"produit", slots:["59{,}7","t"] } ], lettres:["E","59{,}7","t"], distracteurs:["x","f(x)"],
+ fb1:"Remplace les lettres du modèle par les grandeurs physiques : \\(f(x)\\) devient \\(E\\), \\(x\\) devient \\(t\\).",
+ fb2:"La relation est \\(E = 59{,}7 \\times t\\).",
+ fbok:"&#10003; Exact !<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille — Question 11 :</strong> la relation de proportionnalité entre l'énergie et le temps est \\(E = 59{,}7 \\times t\\).</div>" };
+
+NUMCFG.qb12 = { val:59.7, tol:0.02, cs:3, unites:['W','J/s'],
+ fb1:"Relis l'énoncé : que cherche-t-on ? Quelle formule connais-tu qui relie l'énergie, la puissance et la durée ? Compare-la à ta relation \\(E = 59{,}7 \\times t\\).",
+ fb2:"En comparant \\(E = P \\times t\\) et \\(E = 59{,}7 \\times t\\), on trouve \\(P = 59{,}7~\\text{W}\\). L'unité de la puissance est le watt (W), avec \\(1~\\text{W} = 1~\\text{J/s}\\).",
+ fbok:"&#10003; Exact ! \\(P = 59{,}7~\\text{W}\\). L'unité de la puissance est le <strong>watt (W)</strong>, avec \\(1~\\text{W} = 1~\\text{J/s}\\).<div class=\"a-recopier\">✍️ <strong>À recopier sur ta feuille — Question 12 :</strong> en comparant \\(E = P \\times t\\) à \\(E = 59{,}7 \\times t\\), la puissance de la lampe est \\(P = 59{,}7~\\text{W}\\).</div>",
+ corr:"59,7 W" };
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  scormStart();
+  /* Partie A */
+  construireQCM('qu1'); construireQCM('qu4'); construireQCM('qu5'); construireQCM('qu6');
+  construireAssoc('qu3'); construireAssoc('qu10');
+  construireFormule('qu8');
+  construireConstr('qu11');
+  construireClavier('clav_qu9','qu9'); renderDisp('qu9');
+  document.getElementById('disp_qu9').addEventListener('click', ()=>document.getElementById('disp_qu9').classList.add('actif'));
+  construireClavier('clav_qu12','qu12'); renderDisp('qu12');
+  document.getElementById('disp_qu12').addEventListener('click', ()=>document.getElementById('disp_qu12').classList.add('actif'));
+  peuplerSelect('unit_qu12', ['m','s','km/h','m/s'], '—');
+  /* Partie B */
+  construireQCM('qb1'); construireQCM('qb4'); construireQCM('qb5'); construireQCM('qb6');
+  construireAssoc('qb3'); construireAssoc('qb10');
+  construireFormule('qb8');
+  construireConstr('qb11');
+  construireClavier('clav_qb9','qb9'); renderDisp('qb9');
+  document.getElementById('disp_qb9').addEventListener('click', ()=>document.getElementById('disp_qb9').classList.add('actif'));
+  construireClavier('clav_qb12','qb12'); renderDisp('qb12');
+  document.getElementById('disp_qb12').addEventListener('click', ()=>document.getElementById('disp_qb12').classList.add('actif'));
+  peuplerSelect('unit_qb12', ['W','J','s','J/s'], '—');
+  document.querySelectorAll('.chk-feuille').forEach(cb=>{ const t=document.getElementById(cb.dataset.gate); if(t) t.classList.add('gated'); });
+  if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+});
+</script>
+</body>
+</html>

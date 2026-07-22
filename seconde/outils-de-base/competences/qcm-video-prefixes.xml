@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<!--Titre du QCM-->
+	<question type="category">
+		<category>
+			<text><![CDATA[<infos><name>**2PC0 QCM Vidéo 1</name><answernumbering>123</answernumbering><niveau>2NDE</niveau><matiere>PHYSIQUE-CHIMIE</matiere></infos>]]></text>
+		</category>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Un fichier fait 5 Mo (avec un M majuscule). Que désigne le préfixe M ici ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Milli, soit 10 puissance moins 3]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Méga, soit 10 puissance 6]]></text>
+			<feedback>
+				<text><![CDATA[M majuscule = méga = 10 puissance 6. Avec un m minuscule, ce serait milli, mille fois plus petit.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Mètre, c'est l'unité de longueur]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Mini, un préfixe plus petit que l'unité]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">À quelle puissance de 10 correspond le préfixe giga (G) ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[10 puissance 9 (un milliard)]]></text>
+			<feedback>
+				<text><![CDATA[giga = 10 puissance 9 = un milliard. Un film pèse quelques gigaoctets.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance 6 (un million)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance 12 (mille milliards)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance 3 (un millier)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">De méga à giga, par combien multiplie-t-on ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par 10 seulement, comme pour le préfixe déca]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par 100, comme on pourrait le croire à tort]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Par 3, en faisant la différence des exposants]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Par 1000, le saut habituel entre ces préfixes]]></text>
+			<feedback>
+				<text><![CDATA[De méga à giga : de 10 puissance 6 à 10 puissance 9, soit 1000 fois plus. Entre kilo, méga, giga et téra, le saut est toujours de 1000.]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Quel est le symbole du préfixe déca ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[d, en une seule lettre minuscule]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[D, en une seule lettre majuscule]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[da, écrit en deux lettres]]></text>
+			<feedback>
+				<text><![CDATA[déca = da, en deux lettres. Attention : d minuscule seul, c'est déci (10 puissance moins 1), pas déca.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[déc, écrit en trois lettres]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Range ces préfixes du plus grand au plus petit : centi, kilo, micro, hecto.</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[kilo, puis hecto, puis centi, puis micro]]></text>
+			<feedback>
+				<text><![CDATA[kilo (10 puissance 3) est le plus grand, puis hecto (10 puissance 2), puis centi (10 puissance moins 2), puis micro (10 puissance moins 6).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[hecto, puis kilo, puis centi, puis micro]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[kilo, puis hecto, puis micro, puis centi]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[micro, puis centi, puis hecto, puis kilo]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">À quelle puissance de 10 correspond le préfixe téra (T) ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance 9 (un milliard)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[10 puissance 12 (mille milliards)]]></text>
+			<feedback>
+				<text><![CDATA[téra = 10 puissance 12 = mille milliards. Les disques durs ont une capacité de plusieurs téraoctets.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance 6 (un million)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[10 puissance moins 12 (l'inverse)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Le préfixe centi (c) correspond à quelle part de l'unité ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Un dixième, comme le préfixe déci]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Un millième, comme le préfixe milli]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Une centaine, c'est un préfixe plus grand]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Un centième]]></text>
+			<feedback>
+				<text><![CDATA[centi = 10 puissance moins 2 = un centième, comme le centime, un centième d'euro.]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">D'après l'astuce de la vidéo, pour passer du gramme au kilogramme (unité plus grande), que fait-on au nombre ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On divise (on va vers une unité plus grande)]]></text>
+			<feedback>
+				<text><![CDATA[Vers une unité plus grande, on divise ; vers une unité plus petite, on multiplie.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On multiplie (on va vers une unité plus grande)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On ne change rien, c'est le même nombre]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On ajoute le nombre de zéros du préfixe]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Quel est le plus petit préfixe présenté dans la vidéo ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[nano (10 puissance moins 9)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[micro (10 puissance moins 6)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[pico (10 puissance moins 12)]]></text>
+			<feedback>
+				<text><![CDATA[pico = 10 puissance moins 12, un millième de milliardième : le plus petit préfixe de la vidéo.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[milli (10 puissance moins 3)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial; font-size: 13px;">Le préfixe hecto (h) correspond à quelle valeur ?</div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Une dizaine (10 puissance 1)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Une centaine (10 puissance 2)]]></text>
+			<feedback>
+				<text><![CDATA[hecto = 10 puissance 2 = une centaine. À ne pas confondre avec déca (10 puissance 1) ni kilo (10 puissance 3).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Un millier (10 puissance 3)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Un centième (10 puissance moins 2)]]></text>
+			<feedback>
+				<text><![CDATA[]]></text>
+			</feedback>
+		</answer>
+		<tags>
+			<tag>
+				<text>compulsory</text>
+			</tag>
+		</tags>
+	</question>
+</quiz>

@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seconde : Lecture d'axes gradués — la durée du signal</title>
+<script>
+window.MathJax = { tex: { inlineMath: [["\\(","\\)"]] }, startup: { typeset: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap');
+:root{
+  --bleu:#1a3a5c;--bleu-cl:#2c6fad;--or:#c8922a;--fond:#f5f2ec;
+  --blanc:#fff;--gris-l:#eae7e0;--gris-m:#b0a99a;--texte:#1c1a17;
+  --vert:#2a7a4b;--rouge:#c0392b;--orange:#d4670c;--r:6px;
+  --eval:#1f6b54;--edl:#5b2a4e;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--fond);color:var(--texte);min-height:100vh}
+header{background:var(--bleu);color:var(--blanc);border-bottom:3px solid var(--or);display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:15px max(clamp(16px,3vw,28px),calc(50% - 600px + clamp(16px,3vw,28px)))}
+header.mode-evaluation{background:var(--eval)}
+header.mode-etatdeslieux{background:var(--edl)}
+.hg{display:flex;flex-direction:column;gap:3px;min-width:0}
+.h-niveau{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+.h-chap{font-size:1.2rem;font-weight:600;line-height:1.2}
+.h-code{font-family:'JetBrains Mono',monospace;opacity:.92}
+.h-sous{font-size:.9rem;opacity:.85;font-style:italic;margin-top:1px}
+.h-phase{display:inline-block;background:var(--or);color:var(--bleu);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:999px;font-style:normal;vertical-align:middle;margin-right:6px;white-space:nowrap}
+.hd{display:flex;flex-direction:column;gap:1px;text-align:right;font-size:.82rem;white-space:nowrap}
+.h-lycee{font-weight:600}
+.h-ville{letter-spacing:.06em}
+.h-prof{opacity:.9;font-style:italic}
+main{max-width:1200px;margin:0 auto;padding:28px clamp(16px,3vw,28px) 60px}
+
+/* ═══════ LA PROSE EST PLAFONNÉE PAR DÉFAUT ═══════ */
+main > *{max-width:820px}
+
+/* Les SEULES exceptions : ce qui CONTIENT des questions, ou ce qui SE MANIPULE. */
+main > .qbloc,
+main > .partie-titre,
+main > .section-titre,
+main > .soussection-titre,
+main > .situation,
+main > .instr,
+main > .scores-bandeau,
+main > .barre-finale,
+main > .btn-global,
+main > .nw-wrap, main > .nw-btn,
+main > .zoom-fond,
+main > #bilan,
+main > #questions,
+main > [id^="zone-"],
+main > [id^="echelle_"]{max-width:none}
+.contexte{background:#f0ede6;border-left:3px solid var(--bleu-cl);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:24px;font-size:.92rem;line-height:1.7}
+.contexte img{display:block;max-width:340px;margin:10px auto 0;border-radius:4px;border:1px solid var(--gris-l)}
+.partie-titre{font-size:1.05rem;font-weight:600;color:var(--bleu);margin:26px 0 14px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+.partie-titre:first-of-type{margin-top:0}
+.consignes-titre{font-size:1.2rem;font-weight:700;text-align:center;color:var(--bleu);letter-spacing:.05em;margin-bottom:12px}
+.scores-bandeau{display:flex;gap:14px;margin-bottom:24px}
+.score-box{flex:1;background:var(--blanc);border:1.5px solid var(--gris-l);border-radius:var(--r);padding:12px 16px;text-align:center}
+.score-box .slabel{font-size:.76rem;text-transform:uppercase;letter-spacing:.07em;color:#888}
+.score-box .sval{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--bleu);margin-top:2px}
+.score-box.actif{border-color:var(--bleu-cl);background:#eef4fa}
+.qbloc{border:1px solid var(--gris-l);border-radius:var(--r);margin-bottom:18px;overflow:hidden;background:var(--blanc)}
+.qbloc.ok-bloc{border-color:var(--vert)}
+.qbloc.ko-bloc{border-color:var(--rouge)}
+.qbloc.warn-bloc{border-color:var(--orange)}
+.qenonce{background:var(--gris-l);padding:10px 15px;font-size:.91rem;font-weight:600;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #d8d3cb}
+.qnum{background:var(--bleu-cl);color:var(--blanc);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:2px}
+.qcont{padding:15px}
+.donnees{font-style:italic;color:#666;font-size:.87rem;margin-top:5px;font-weight:400;margin-bottom:8px}
+.saisie-ligne{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.saisie-ligne label{font-size:.89rem;color:#555;white-space:nowrap}
+.disp{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 11px;border:1.5px solid #ccc;border-radius:var(--r);min-width:160px;background:var(--blanc);color:var(--texte);min-height:38px;cursor:text}
+.sunit{font-family:'JetBrains Mono',monospace;font-size:.98rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);width:90px;background:var(--blanc);color:var(--texte);transition:border-color .14s}
+.sunit:focus{border-color:var(--bleu-cl);outline:none}
+.disp.ok,.sunit.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.disp.ko,.sunit.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.clavier{display:grid;grid-template-columns:repeat(5,44px);gap:4px;margin:8px 0 12px}
+.k{font-family:'JetBrains Mono',monospace;font-size:.8rem;height:36px;border:1.5px solid #c8cdd6;border-radius:5px;background:var(--blanc);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s,transform .08s;color:var(--texte);font-weight:600;user-select:none}
+.k:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.k:active{transform:scale(.93)}
+.k.k-op{color:var(--bleu-cl)}
+.k.k-spec{background:var(--bleu);color:var(--blanc);border-color:var(--bleu);font-size:.7rem}
+.k.k-spec:hover{background:var(--bleu-cl)}
+.k.k-del{background:#fdecea;border-color:#e0a0a0;color:var(--rouge)}
+.k.k-del:hover{background:#fcd8d5}
+.nw-btn{background:none;border:1.5px solid var(--bleu-cl);color:var(--bleu-cl);padding:5px 13px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:'Source Serif 4',serif;display:inline-flex;align-items:center;gap:6px;margin-bottom:11px;transition:all .14s}
+.nw-btn:hover{background:#eef4fa}
+.nw-wrap{display:none;border:1.5px solid var(--bleu-cl);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.nw-wrap iframe{width:100%;height:480px;border:none;display:block}
+.fb{display:none;padding:9px 13px;border-radius:var(--r);font-size:.88rem;margin-top:9px;line-height:1.55}
+.fb.ok{background:#e6f4eb;color:var(--vert);border-left:3px solid var(--vert)}
+.fb.ko{background:#fdecea;color:var(--rouge);border-left:3px solid var(--rouge)}
+.fb.ko2{background:#fff3e0;color:var(--orange);border-left:3px solid var(--orange)}
+.relance-prof{margin-top:10px;padding:10px 12px;background:#fff8ec;border-left:4px solid var(--or);border-radius:0 var(--r) var(--r) 0;color:var(--bleu);font-size:.92rem;font-weight:600;line-height:1.5}
+.btn-v{margin-top:11px;padding:8px 20px;background:var(--bleu);color:var(--blanc);border:none;border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:background .14s}
+.btn-v:hover:not(:disabled){background:var(--bleu-cl)}
+.btn-v:disabled{opacity:.4;cursor:default}
+.btn-r{margin-top:8px;margin-left:9px;padding:8px 16px;background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange);border-radius:var(--r);font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .14s;display:none}
+.btn-r:hover{background:#fff3e0}
+.barre-finale{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
+.btn-global{padding:11px 26px;border-radius:var(--r);border:none;font-family:'Source Serif 4',serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .14s}
+.btn-valider-tout{background:var(--bleu);color:var(--blanc)}
+.btn-valider-tout:hover{background:var(--bleu-cl)}
+.btn-recommencer{background:var(--blanc);color:var(--orange);border:1.5px solid var(--orange)}
+.btn-recommencer:hover{background:#fff3e0}
+#bilan{display:none;background:var(--blanc);border:1px solid #d8d3cb;border-radius:var(--r);padding:26px;margin-top:24px}
+#bilan h2{font-size:1.05rem;font-weight:600;color:var(--bleu);margin-bottom:14px;border-bottom:2px solid var(--or);padding-bottom:7px}
+.score-res{display:flex;gap:28px;flex-wrap:wrap;background:#f0ede6;border-radius:var(--r);padding:13px 16px}
+.score-res-item{font-size:.92rem;line-height:1.7}
+.score-res-val{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--bleu)}
+/* === Widget relation ↔ (PIÈCE NEUVE, autorisée — absente du moteur) === */
+.rel-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin:6px 0 12px}
+.rel-side{display:flex;align-items:center;gap:6px}
+.rel-arrow{font-size:1.7rem;color:var(--bleu-cl);line-height:1}
+.rel-field{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:7px 10px;border:1.5px solid #ccc;border-radius:var(--r);background:var(--blanc);color:var(--texte);min-height:40px;min-width:88px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rel-field.active{border-color:var(--bleu-cl);box-shadow:0 0 0 2px #dce8f4}
+.rel-field .ph{color:#b9b3a6;font-style:italic}
+.rel-field.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.rel-field.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.rel-dd{font-family:'JetBrains Mono',monospace;font-size:.92rem;padding:7px 6px;border:1.5px solid #ccc;border-radius:var(--r);width:104px;min-height:40px;background:var(--blanc);color:var(--texte);cursor:pointer}
+.rel-dd:focus{border-color:var(--bleu-cl);outline:none}
+.rel-dd.ok{border-color:var(--vert)!important;background:#e6f4eb!important}
+.rel-dd.ko{border-color:var(--rouge)!important;background:#fdecea!important}
+.rel-aide{font-size:.84rem;color:#5a5346;background:#fbf6ec;border:1px solid #ecdfbf;border-radius:var(--r);padding:7px 11px;text-align:center;margin-bottom:10px}
+/* emplacement (placeholder de coque) */
+.placeholder-moteur{border:1.5px dashed var(--gris-m);border-radius:var(--r);background:#faf8f3;padding:14px 16px;color:#7a7363;font-size:.88rem;line-height:1.6}
+.placeholder-moteur strong{color:var(--bleu)}
+.svg-fig{display:block;max-width:420px;width:100%;margin:4px auto 2px;border:1px solid var(--gris-l);border-radius:4px;background:#fff}
+/* === Widget CONSTR (Type 5) === */
+.constr-wrap{display:flex;flex-direction:column;gap:14px;margin:8px 0 12px}
+.constr-row{background:#f8f6f2;border-radius:var(--r);padding:12px;position:relative}
+.constr-head{font-family:'JetBrains Mono',monospace;font-size:1rem;margin-bottom:8px;color:var(--bleu)}
+.constr-ops{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.constr-op-btn{font-family:'JetBrains Mono',monospace;font-size:.88rem;padding:4px 10px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-op-btn:hover:not(:disabled){background:#eef4fa}
+.constr-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl)}
+.constr-op-btn:disabled{opacity:.5;cursor:default}
+.constr-slots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.constr-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.constr-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;min-width:42px;min-height:38px;padding:4px 10px;border:2px dashed var(--gris-l);border-radius:var(--r);background:var(--blanc);cursor:pointer;transition:all .14s}
+.constr-slot:hover:not(:disabled){background:#eef4fa}
+.constr-slot.filled{border-style:solid;background:var(--blanc);color:var(--bleu);font-weight:600}
+.constr-slot.figee{background:#e6f4eb;color:var(--vert);border-color:var(--vert);cursor:default}
+.constr-slot:disabled{cursor:default}
+.constr-slot-cap{font-size:.72em;color:#888;font-style:italic}
+.constr-sym{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--bleu)}
+.constr-bank{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;border-top:1px solid var(--gris-l)}
+.constr-token{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:4px 12px;border:1.5px solid var(--bleu-cl);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.constr-token:hover{background:#eef4fa}
+.constr-token.selected{background:var(--bleu-cl);color:var(--blanc);border-color:var(--bleu-cl);box-shadow:0 0 0 3px rgba(44,111,173,.30)}
+.constr-bank-empty,.constr-bank-figee{font-style:italic;color:#888;font-size:.9rem;padding:4px 0}
+.constr-bank-figee{color:var(--vert)}
+.add-case{font-family:'JetBrains Mono',monospace;font-size:1.05rem;min-width:50px;min-height:42px;padding:6px 14px;border:2px dashed #ccc;border-radius:6px;background:#f0f0f0;cursor:pointer;color:#aaa;transition:all .15s;display:inline-flex;align-items:center;justify-content:center}
+.add-case:hover{border-color:var(--bleu-cl);background:#eef4fa;color:var(--bleu-cl)}
+.del-case{font-size:1.2rem;width:28px;height:28px;border:none;background:transparent;cursor:pointer;align-self:center;opacity:.55;transition:opacity .15s;padding:0}
+.del-case:hover{opacity:1}
+.sub-op-selector{display:inline-flex;border:1.5px solid var(--bleu-cl);border-radius:6px;overflow:hidden;font-family:'JetBrains Mono',monospace;align-self:center}
+.sub-op-btn{background:var(--blanc);border:none;padding:6px 10px;font-size:.95rem;cursor:pointer;color:#555;border-right:1px solid var(--bleu-cl)}
+.sub-op-btn:last-child{border-right:none}
+.sub-op-btn.selected{background:var(--bleu-cl);color:var(--blanc);font-weight:bold}
+.sub-op-btn:hover:not(.selected){background:#eef4fa}
+.help-icon{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:#ddd;color:#555;text-align:center;font-size:.85rem;font-weight:bold;cursor:pointer;line-height:22px;user-select:none;border:none;padding:0}
+.help-icon:hover{background:var(--bleu-cl);color:var(--blanc)}
+.help-bubble{position:absolute;top:38px;right:10px;max-width:380px;background:var(--blanc);border:1px solid var(--bleu-cl);border-radius:6px;padding:12px 16px;font-size:.88rem;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;z-index:10}
+.help-bubble.visible{display:block}
+.consigne{background:#fff8e8;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:13px 16px;margin-bottom:18px;font-size:.92rem;line-height:1.6;color:#5a4a1f}
+.consigne strong{color:var(--bleu)}
+.calc-note{margin-top:12px;padding-top:9px;border-top:1px dashed var(--gris-l);font-size:.86rem;line-height:1.55;color:#555}
+.calc-note b{color:var(--bleu)}
+.qbloc.locked .qcont{display:none}
+.qbloc.locked .verrou{display:block}
+.verrou{display:none;padding:13px 15px;font-size:.88rem;color:#666;font-style:italic;background:#f8f6f2}
+.constr-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.constr-slot.receptive:hover{background:#d8e8f6}
+.frac-zone{display:flex;align-items:center;justify-content:center;gap:6px;padding:3px 6px}
+.frac-stack{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.frac-line{align-self:stretch;height:3px;background:var(--bleu);border-radius:2px;margin:1px 0}
+.sym-bank{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:540px;margin:2px auto 12px}
+.sym-bank-lbl{font-size:.85rem;color:#555;margin-right:2px}
+.sym-bank.done{display:none}
+.sym-btn{font-family:'Source Serif 4',Georgia,serif;font-size:.95rem;min-width:34px;padding:3px 9px;border:1.5px solid var(--gris-l);border-radius:var(--r);background:var(--blanc);color:var(--bleu);cursor:pointer;transition:all .14s}
+.sym-btn:hover{background:#eef4fa;border-color:var(--bleu-cl)}
+.sym-btn.selected{background:var(--bleu-cl);color:#fff;border-color:var(--bleu-cl)}
+.sym-slot{font-family:'JetBrains Mono',monospace;font-size:1rem;padding:7px 12px;border:1.5px dashed #bbb;border-radius:var(--r);background:var(--blanc);color:var(--bleu);min-height:40px;min-width:64px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.sym-slot .ph{color:#b9b3a6;font-style:italic}
+.sym-slot.receptive{border-color:var(--bleu-cl);background:#eaf2fa}
+.sym-slot.ok{border-style:solid;border-color:var(--vert)!important;background:#e6f4eb!important}
+.sym-slot.ko{border-style:solid;border-color:var(--rouge)!important;background:#fdecea!important}
+</style>
+</head>
+<body>
+  <header class="mode-entrainement">
+    <div class="hg">
+      <div class="h-niveau">Seconde</div>
+      <div class="h-chap"><span class="h-code">2PC0</span> — La boîte à outils du parfait petit physicien chimiste</div>
+      <div class="h-sous"><span class="h-phase">Maîtriser les compétences de Seconde</span> Lire une grandeur sur un schéma (Entraînement)</div>
+    </div>
+    <div class="hd">
+      <div class="h-lycee">Lycée Henri Cornat</div>
+      <div class="h-ville">VALOGNES</div>
+      <div class="h-prof">Z. Lechevalier</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="consigne">
+      📝 <strong>Cet exercice est à faire sur une feuille.</strong> Écris ta démarche et tes réponses sur ta feuille avant de valider dans le quiz : il t'accompagne et vérifie chaque étape, il ne remplace pas ta rédaction. En cas d'erreur, corrige ta feuille en même temps que ta réponse à l'écran.<br><br>À chaque question, la calculatrice <b>NumWorks</b> est disponible. Si tu utilises une <b>Casio collège</b>, elle est disponible sur <b>Éléa &gt; 2PC0 &gt; Calculatrices</b>.
+    </div>
+    <div class="consignes-titre">CONSIGNES</div>
+    <div class="contexte">
+      <strong>Tu peux zoomer pour gagner en précision, mais ne change pas le zoom entre tes deux mesures.</strong><br>
+      Relancer l'activité remet tout à zéro et remélange les questions.
+    </div>
+
+    <div class="partie-titre">Question 1 — La durée du signal</div>
+
+    <div class="contexte">
+      On a enregistré un <strong>signal</strong> au cours du temps. Sur l'axe des temps, deux repères sont imprimés : 0 et 100 µs, et le signal est encadré par les repères t₁ et t₂. L'objectif est de déterminer précisément la <strong>durée</strong> \(Δt\) du signal.
+      <svg class="svg-fig" viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Signal U en fonction du temps ; échelle 0 et 100 µs ; le signal est encadré par les repères t1 et t2">
+        <line x1="70" y1="320" x2="70" y2="70" stroke="#1c1a17" stroke-width="1.6"/>
+        <polygon points="70,64 65,76 75,76" fill="#1c1a17"/>
+        <line x1="70" y1="240" x2="515" y2="240" stroke="#1c1a17" stroke-width="1.6"/>
+        <polygon points="521,240 509,235 509,245" fill="#1c1a17"/>
+        <text x="46" y="80" font-family="'Source Serif 4',Georgia,serif" font-size="20" font-style="italic" fill="#1c1a17">U</text>
+        <text x="486" y="270" font-family="'Source Serif 4',Georgia,serif" font-size="17" fill="#1c1a17"><tspan font-style="italic">t</tspan> (µs)</text>
+        <!-- repères d'échelle 0 et 100 -->
+        <text x="62" y="261" text-anchor="end" font-family="'Source Serif 4',Georgia,serif" font-size="16" fill="#1c1a17">0</text>
+        <line x1="410" y1="234" x2="410" y2="246" stroke="#1c1a17" stroke-width="1.8"/>
+        <text x="410" y="261" text-anchor="middle" font-family="'Source Serif 4',Georgia,serif" font-size="16" fill="#1c1a17">100</text>
+        <!-- repères t1 et t2 encadrant le signal (valeurs non données) -->
+        <line x1="145" y1="240" x2="145" y2="120" stroke="#2c6fad" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="145" y="112" text-anchor="middle" font-family="'Source Serif 4',Georgia,serif" font-size="14" font-style="italic" fill="#2c6fad">t₁</text>
+        <line x1="226" y1="240" x2="226" y2="120" stroke="#2c6fad" stroke-width="1.2" stroke-dasharray="4 3"/>
+        <text x="226" y="112" text-anchor="middle" font-family="'Source Serif 4',Georgia,serif" font-size="14" font-style="italic" fill="#2c6fad">t₂</text>
+        <polyline points="145,240.0 147,238.4 149,234.4 151,229.8 153,226.8 155,227.6 157,233.1 159,242.7 161,254.4 163,265.1 165,271.5 167,271.1 169,263.2 171,248.8 173,230.8 175,213.4 177,200.9 179,196.5 181,201.6 183,215.4 185,234.8 187,255.4 189,272.4 191,282.1 193,282.5 195,273.7 197,258.2 199,240.0 201,223.3 203,211.9 205,207.8 207,211.0 209,219.9 211,231.5 213,242.5 215,250.2 217,253.3 219,252.0 221,248.0 223,243.4 225,240.4" fill="none" stroke="#2c6fad" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="rel-aide">👉 <strong>Clique d'abord sur une case</strong>, puis remplis-la avec le clavier. Pour l'unité, choisis dans le <strong>menu déroulant</strong>.</div>
+
+    <!-- Q1 — Relation réalité ↔ schéma (widget NEUF, câblé au moteur) -->
+    <div class="qbloc" id="q1">
+      <div class="qenonce"><span class="qnum">a</span><span>À l'aide du document fourni, détermine la relation de proportionnalité entre le schéma et la réalité.</span></div>
+      <div class="qcont">
+        <div class="rel-row">
+          <div class="rel-side"><div class="rel-field" data-f="q1L"></div><select class="rel-dd" data-f="q1Lu"></select></div>
+          <div class="rel-arrow">↔</div>
+          <div class="rel-side"><div class="rel-field" data-f="q1R"></div><select class="rel-dd" data-f="q1Ru"></select></div>
+        </div>
+        <div class="clavier-rel" data-kb="q1"></div>
+        <div class="fb" id="fb_q1"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q1" onclick="validerRel('q1')">Valider</button>
+          <button class="btn-r" id="btnr_q1" onclick="retryRel('q1')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 — Mesure (symbole + unité ↔ longueur en cm) (widget NEUF, câblé au moteur) -->
+    <div class="qbloc" id="q2">
+      <div class="qenonce"><span class="qnum">b</span><span>Indique la grandeur cherchée (son symbole et son unité), puis mesure en cm la largeur du signal (entre les repères t₁ et t₂).</span></div>
+      <div class="qcont">
+        <div class="sym-bank" data-bank="q2L"></div>
+        <div class="rel-row">
+          <div class="rel-side"><div class="sym-slot" data-f="q2L" onclick="symDrop('q2L')"></div><select class="rel-dd" data-f="q2Lu"></select></div>
+          <div class="rel-arrow">↔</div>
+          <div class="rel-side"><div class="rel-field" data-f="q2R"></div><select class="rel-dd" data-f="q2Ru"></select></div>
+        </div>
+        <div class="clavier-rel" data-kb="q2"></div>
+        <div class="fb" id="fb_q2"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q2" onclick="validerRel('q2')">Valider</button>
+          <button class="btn-r" id="btnr_q2" onclick="retryRel('q2')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 — Construction du calcul (CONSTR sous-opérations) — HORS BARÈME pour l'instant -->
+    <div class="qbloc locked" id="q3">
+      <div class="qenonce"><span class="qnum">c</span><span>Construis le calcul qui donne la durée \(Δt\), avec les nombres que tu as mesurés (produit en croix).</span></div>
+      <div class="verrou">Termine d'abord les étapes a et b : le calcul utilisera les nombres que tu y auras mesurés.</div>
+      <div class="qcont">
+        <div id="constr_q3"></div>
+        <div class="fb" id="fb_q3"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q3">Valider</button>
+          <button class="btn-r" id="btnr_q3">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 — Résultat (Type 2 verbatim) -->
+    <div class="qbloc locked" id="q4">
+      <div class="qenonce"><span class="qnum">d</span><span>Donne la valeur de la durée \(Δt\), avec son unité.</span></div>
+      <div class="verrou">Termine d'abord l'étape c.</div>
+      <div class="qcont">
+        <button class="nw-btn" onclick="toggleNW('nw_q4')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Calculatrice NumWorks
+        </button>
+        <div class="nw-wrap" id="nw_q4">
+          <iframe src="https://www.numworks.com/simulator/embed/" title="NumWorks" allow="fullscreen"></iframe>
+        </div>
+        <div class="saisie-ligne">
+          <label>\(Δt =\)</label>
+          <div class="disp" id="disp_q4"></div>
+          <label>Unité :</label>
+          <select class="rel-dd" id="unit_q4">
+            <option value="">— choisis —</option>
+            <option value="µs">µs</option>
+            <option value="ms">ms</option>
+            <option value="ns">ns</option>
+            <option value="s">s</option>
+          </select>
+        </div>
+        <div id="clav_q4"></div>
+        <div class="fb" id="fb_q4"></div>
+        <div style="margin-top:10px">
+          <button class="btn-v" id="btnv_q4" onclick="validerNum('q4')">Valider</button>
+          <button class="btn-r" id="btnr_q4" onclick="retryNum('q4')">2<sup>e</sup> essai</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-global btn-valider-tout" id="btn-bilan" onclick="afficherBilan()">Calculer les scores</button>
+    <button class="btn-global btn-recommencer" id="btn-reload" onclick="location.reload()">&#8634; Recommencer</button>
+
+    <div id="bilan" style="display:none">
+      <div class="score-res">
+        <div class="score-res-item">Note 1 (1ᵉʳ essai)<br><span class="score-res-val" id="bilan-n1">— / 4</span></div>
+        <div class="score-res-item">Note 2 (1ᵉʳ ou 2ᵉ essai)<br><span class="score-res-val" id="bilan-n2">— / 4</span></div>
+      </div>
+    </div>
+  </main>
+  <script>
+  /* ===== CONSTANTES (socle COMMUN, adaptées aux types présents) ===== */
+  const MODE_QUIZ = "entrainement";
+  const LABELS = { q1:"Relation réalité↔schéma", q2:"Mesure symbole+unité↔cm", q3:"Construction du calcul (produit en croix)", q4:"Valeur de la durée" };
+  const SCORM_IDS = { q1:"duree_relation", q2:"duree_mesure", q3:"duree_calcul", q4:"duree_valeur" };
+  const IDS_NUM = ["q4"];          // Type 2
+  const IDS_REL = ["q1","q2"];     // widget relation ↔ (pièce neuve)
+  const IDS_CONSTR = ["q3"];       // Type 5 — construction de formule
+  const TOUS_IDS = ["q1","q2","q3","q4"];
+  const TOTAL = TOUS_IDS.length;
+  const etat = {};
+  TOUS_IDS.forEach(id=>{ etat[id] = {resultat:null, tentative:0}; });
+  const CS_MODE = "tolérant";
+  const EN_CLASSE = (MODE_QUIZ === "entrainement");
+  const RELANCE_PROF = '<div class="relance-prof">Ce n\'est pas clair&nbsp;? Tu n\'as pas compris pourquoi tu t\'es trompé, ou tu ne comprends pas la bonne réponse&nbsp;? Ne reste pas bloqué&nbsp;: demande de l\'aide à ton professeur — lève la main si tu es en classe, sinon note ta question pour le prochain cours. Et relis ton cours&nbsp;: tu peux y trouver la réponse à ton questionnement&nbsp;! Je ne peux pas t\'aider si tu ne le demandes pas&nbsp;!</div>';
+
+  /* ===== NUMCFG (Type 2) ===== */
+  const NUMCFG = {
+    q4: {
+      val: 24, tol: 0.08,
+      unites: ['µs'],
+      fb1: "Pars de ta relation de proportionnalité : la durée est proportionnelle à la largeur mesurée du signal. Multiplie 100 µs par le rapport des deux longueurs mesurées.",
+      fb2: "Δt = 100 × (largeur du signal ÷ longueur du segment 0→100). Tu obtiens environ 24 µs.",
+      fbok: "&#10003; Exact ! La durée du signal vaut environ 24 µs.",
+      corr: "24 µs"
+    }
+  };
+
+  /* ===== parseVal (socle, verbatim) ===== */
+  function parseVal(raw){
+    try {
+      let s = raw
+        .replace(/,/g, '.')
+        .replace(/×10\^(−|-)(\d+)/g, (_, __, e) => 'e-' + e)
+        .replace(/×10\^(\d+)/g, (_, e) => 'e+' + e)
+        .replace(/[×x]/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/−/g, '-');
+      return parseFloat(s);
+    } catch(e) { return NaN; }
+  }
+
+  /* ===== compteCS (verbatim) ===== */
+  function compteCS(raw){
+    if(!raw) return 0;
+    let s = raw.replace(/,/g, '.').replace(/−/g, '-').replace(/\s/g, '');
+    const mSci = s.match(/^(-?\d+(?:\.\d+)?)×10\^(-?\d+)$/);
+    if(mSci){ s = mSci[1]; }
+    s = s.replace(/^-/, '');
+    if(s.includes('.')){
+      const [intP, decP] = s.split('.');
+      const intClean = intP.replace(/^0+/, '');
+      if(intClean === ''){
+        const decClean = decP.replace(/^0+/, '');
+        return decClean.length;
+      } else {
+        return intClean.length + decP.length;
+      }
+    } else {
+      const clean = s.replace(/^0+/, '');
+      return clean.length || (s === '0' ? 1 : 0);
+    }
+  }
+
+  /* ===== Clavier scientifique (verbatim) ===== */
+  const TOUCHES = [
+    {l:'7',t:'ch',v:'7'},{l:'8',t:'ch',v:'8'},{l:'9',t:'ch',v:'9'},{l:'(',t:'op',v:'('},{l:')',t:'op',v:')'},
+    {l:'4',t:'ch',v:'4'},{l:'5',t:'ch',v:'5'},{l:'6',t:'ch',v:'6'},{l:'×',t:'op',v:'×'},{l:'÷',t:'op',v:'÷'},
+    {l:'1',t:'ch',v:'1'},{l:'2',t:'ch',v:'2'},{l:'3',t:'ch',v:'3'},{l:'+',t:'op',v:'+'},{l:'−',t:'op',v:'−'},
+    {l:'0',t:'ch',v:'0'},{l:',',t:'ch',v:','},{l:'.',t:'ch',v:'.'},{l:'×10ˣ',t:'sp',v:'EXP'},{l:'⌫',t:'del',v:'DEL'},
+  ];
+  const saisi = {};
+  IDS_NUM.forEach(id => { saisi[id] = ''; });
+  function construireClavier(containerId, qid){
+    const div = document.getElementById(containerId);
+    if(!div) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'clavier';
+    TOUCHES.forEach(t => {
+      const btn = document.createElement('button');
+      btn.className = 'k' + (t.t==='op' ? ' k-op' : t.t==='sp' ? ' k-spec' : t.t==='del' ? ' k-del' : '');
+      btn.textContent = t.l;
+      btn.addEventListener('click', () => toucheClavier(qid, t.v));
+      wrap.appendChild(btn);
+    });
+    div.innerHTML = '';
+    div.appendChild(wrap);
+  }
+  function toucheClavier(qid, val){
+    if(val === 'DEL'){
+      let c = saisi[qid];
+      const m = c.match(/(.*)(×10\^)(−?)(\d*)$/);
+      if(m){
+        if(m[4].length > 0) c = m[1] + m[2] + m[3] + m[4].slice(0,-1);
+        else if(m[3].length > 0) c = m[1] + m[2];
+        else c = m[1];
+      } else { c = c.slice(0,-1); }
+      saisi[qid] = c;
+    } else if(val === 'EXP'){
+      saisi[qid] += '×10^';
+    } else {
+      saisi[qid] += val;
+    }
+    renderDisp(qid);
+  }
+  function renderDisp(qid){
+    const raw = saisi[qid];
+    const rendu = raw.replace(/×10\^(−?)(\d*)/g, (_, sg, exp) => '×10<sup>' + sg + exp + '</sup>');
+    const el = document.getElementById('disp_'+qid);
+    if(el) el.innerHTML = rendu + '<span style="border-right:2px solid #1a3a5c;margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+  }
+
+  /* ===== NumWorks (verbatim) ===== */
+  function toggleNW(id){
+    const w = document.getElementById(id);
+    w.style.display = (w.style.display === 'block') ? 'none' : 'block';
+  }
+
+  /* ===== Bouton exposant (verbatim) ===== */
+  function insUnit(qid, sym){
+    const u = document.getElementById("unit_"+qid);
+    if(u && !u.disabled){ u.value += sym; u.focus(); }
+  }
+
+  /* ===== validerNum + retryNum (Type 2, verbatim) ===== */
+  function validerNum(qid){
+    const cfg = NUMCFG[qid];
+    const t = etat[qid]; t.tentative++;
+    const raw = saisi[qid];
+    const valeur = parseVal(raw);
+    const unite = document.getElementById('unit_'+qid).value
+      .replace(/\s/g, '')
+      .replace(/⁻¹/g, '-1')
+      .replace(/\^-1/g, '-1')
+      .replace(/·/g, '.');
+    let valOk, uniteOk;
+    if(cfg.multi){
+      let f = null;
+      for(const grp of cfg.unites){
+        if(grp.forms.some(fm => unite.includes(fm))){ f = grp.f; break; }
+      }
+      uniteOk = (f !== null);
+      valOk = uniteOk && !isNaN(valeur) && Math.abs(valeur*f - cfg.base)/Math.abs(cfg.base) <= cfg.tol;
+    } else {
+      valOk = !isNaN(valeur) && Math.abs(valeur - cfg.val) / Math.abs(cfg.val) <= cfg.tol;
+      uniteOk = cfg.unites.some(u => unite.includes(u));
+    }
+    let csOk = true, csCount = 0, csIssue = null;
+    if(typeof cfg.cs === 'number'){
+      csCount = compteCS(raw);
+      csOk = (csCount === cfg.cs);
+      if(!csOk) csIssue = (csCount > cfg.cs) ? "trop" : "pas-assez";
+    }
+    let tolereCS = false;
+    if(typeof CS_MODE !== 'undefined' && CS_MODE === "tolérant" && valOk && uniteOk && csIssue === "trop"){
+      tolereCS = true;
+      csOk = true;
+    }
+    const isOk = valOk && uniteOk && csOk;
+    const disp = document.getElementById('disp_'+qid);
+    const uinp = document.getElementById('unit_'+qid);
+    const fb   = document.getElementById('fb_'+qid);
+    const btnv = document.getElementById('btnv_'+qid);
+    const btnr = document.getElementById('btnr_'+qid);
+    const bloc = document.getElementById(qid);
+    document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b => b.disabled = true);
+    uinp.disabled = true;
+    if(isOk){
+      disp.classList.add('ok'); uinp.classList.add('ok');
+      fb.className = 'fb ok';
+      if(tolereCS){
+        fb.innerHTML = cfg.fbok +
+          '<br><span style="font-size:.9em;color:#5a4a1f">' +
+          '💡 Pour une meilleure précision physique, la forme attendue est : ' + cfg.corr +
+          ' (' + cfg.cs + ' chiffres significatifs).</span>';
+      } else {
+        fb.innerHTML = cfg.fbok;
+      }
+      fb.style.display = 'block';
+      t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+    } else {
+      bloc.classList.add('warn-bloc');
+      fb.className = 'fb ko';
+      let msg = '';
+      if(!valOk){
+        disp.classList.add('ko');
+        if(!uniteOk) uinp.classList.add('ko');
+        msg = (t.tentative === 1)
+          ? '✗ ' + cfg.fb1
+          : '✗ ' + cfg.fb2 + ' &mdash; Réponse attendue : ' + cfg.corr + (EN_CLASSE ? RELANCE_PROF : '');
+      } else if(!uniteOk){
+        uinp.classList.add('ko');
+        msg = (t.tentative === 1)
+          ? "La valeur est correcte, mais vérifie l'unité."
+          : "✗ L'unité est incorrecte. &mdash; Réponse attendue : " + cfg.corr;
+      } else if(!csOk){
+        disp.classList.add('ko');
+        if(t.tentative === 1){
+          if(csIssue === "trop"){
+            msg = "La valeur et l'unité sont correctes, mais tu as donné plus de précision que ce qui est attendu ("
+                + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+          } else {
+            msg = "La valeur et l'unité sont correctes, mais tu as arrondi trop fortement ("
+                + csCount + " CS au lieu de " + cfg.cs + "). Vérifie le nombre de chiffres significatifs.";
+          }
+        } else {
+          msg = "✗ Nombre de chiffres significatifs incorrect ("
+              + csCount + " au lieu de " + cfg.cs + "). &mdash; Réponse attendue : " + cfg.corr;
+        }
+      }
+      fb.innerHTML = msg;
+      fb.style.display = 'block';
+      if(t.tentative === 1){
+        btnv.disabled = true; btnr.style.display = 'inline-block';
+      } else {
+        fb.className = 'fb ko2';
+        t.resultat = 'ko';
+        btnv.disabled = true; btnr.style.display = 'none';
+        bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+      }
+    }
+    if(t.resultat !== null) scormInteraction(qid, isOk, (raw + ' ' + document.getElementById('unit_'+qid).value), t.tentative);
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+    verifierFin();
+  }
+  function retryNum(qid){
+    const disp = document.getElementById('disp_'+qid);
+    const uinp = document.getElementById('unit_'+qid);
+    saisi[qid] = '';
+    disp.classList.remove('ok','ko');
+    renderDisp(qid);
+    uinp.classList.remove('ok','ko');
+    uinp.value = '';
+    uinp.disabled = false;
+    document.getElementById('clav_'+qid).querySelectorAll('button').forEach(b => b.disabled = false);
+    document.getElementById('fb_'+qid).style.display = 'none';
+    document.getElementById('btnr_'+qid).style.display = 'none';
+    document.getElementById('btnv_'+qid).disabled = false;
+    document.getElementById(qid).classList.remove('warn-bloc');
+  }
+
+  /* ===== Scores 2 notes / bilan (socle entraînement, verbatim) ===== */
+  function calculerScores(){
+    let n1 = 0, n2 = 0;
+    TOUS_IDS.forEach(id => {
+      const r = etat[id].resultat;
+      if (r === "ok1"){ n1++; n2++; }
+      else if (r === "ok2"){ n2++; }
+    });
+    return { n1: n1, n2: n2 };
+  }
+  function majScores(){
+    const sc = calculerScores();
+    const e1 = document.getElementById('sval-n1'); if(e1) e1.textContent = sc.n1 + " / " + TOTAL;
+    const e2 = document.getElementById('sval-n2'); if(e2) e2.textContent = sc.n2 + " / " + TOTAL;
+  }
+    window.__score = function(){
+    try{ return { n1: calculerScores().n1, n2: calculerScores().n2, nb: TOUS_IDS.length,
+                  fini: TOUS_IDS.every(function(id){ return etat[id].resultat!==null; }) }; }
+    catch(e){ return { n1:0, n2:0, nb:0, fini:false }; }
+  };
+  function verifierFin(){
+    majScores();
+    const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+    if(fini) afficherBilan();
+  }
+  function afficherBilan(){
+    const sc = calculerScores();
+    document.getElementById('bilan-n1').textContent = sc.n1 + " / " + TOTAL;
+    document.getElementById('bilan-n2').textContent = sc.n2 + " / " + TOTAL;
+    document.getElementById('bilan').style.display = 'block';
+    const fini = TOUS_IDS.every(id => etat[id].resultat !== null);
+    if(fini){ try{ if(!window.__envoye){ window.__envoye=true;
+        window.parent.postMessage({type:'situationTerminee'},'*');
+        var _n=parseInt((location.hash||'#').slice(1),10)||0;
+        var _w=document.createElement('div'); _w.style.cssText='text-align:center;margin:14px 0 30px';
+        if(_n){ var _c=document.createElement('div'); _c.style.cssText='color:#5a5247;font-size:.9rem;margin-bottom:8px'; _c.textContent='Question '+_n+' / 6  terminée'; _w.appendChild(_c); }
+        var _b=document.createElement('button'); _b.type='button'; _b.textContent=(_n>=6?'Voir le bilan de l\u2019exercice':'Question suivante \u2192');
+        _b.style.cssText='font:inherit;font-weight:700;padding:12px 30px;border:none;border-radius:8px;background:#1a3a5c;color:#fff;cursor:pointer';
+        _b.onclick=function(){ try{ if(window.parent&&window.parent.allerSuivante) window.parent.allerSuivante(); }catch(e){} };
+        _w.appendChild(_b);
+        var _bil=document.getElementById('bilan'); if(_bil&&_bil.parentNode){ _bil.parentNode.insertBefore(_w,_bil.nextSibling); }
+      } }catch(e){} }
+  }
+
+  /* ===== Couche SCORM 1.2 (socle, verbatim — variante entraînement) ===== */
+  var scormAPI = null, scormInit = false;
+  var scormNbInter = 0;
+  function scormFindAPI(win){ return null; /* iframe : SCORM géré par la page-hôte */
+    let tries = 0;
+    while(win && !win.API && tries < 10){
+      if(win.parent && win.parent !== win){ win = win.parent; } else { break; }
+      tries++;
+    }
+    return (win && win.API) ? win.API : null;
+  }
+  function scormEnd(){
+    try{ if(scormInit){ scormAPI.LMSFinish(""); scormInit = false; } }catch(e){}
+  }
+  window.addEventListener("beforeunload", scormEnd);
+  window.addEventListener("unload", scormEnd);
+  function scormStart(){
+    try{
+      scormAPI = scormFindAPI(window);
+      if(!scormAPI && window.opener){ scormAPI = scormFindAPI(window.opener); }
+      if(scormAPI){
+        scormAPI.LMSInitialize("");
+        scormInit = true;
+        scormAPI.LMSSetValue("cmi.core.score.min", "0");
+        scormAPI.LMSSetValue("cmi.core.score.max", String(TOTAL));
+        scormAPI.LMSSetValue("cmi.core.score.raw", "0");
+        scormAPI.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        scormAPI.LMSCommit("");
+      }
+    }catch(e){ /* hors LMS : silencieux */ }
+  }
+  function scormInteraction(qid, ok, repEleve, tentative){
+    try{
+      if(!scormInit) return;
+      const n = scormNbInter++;
+      const pre = "cmi.interactions." + n + ".";
+      scormAPI.LMSSetValue(pre + "id", qid + "_" + SCORM_IDS[qid]);
+      scormAPI.LMSSetValue(pre + "type", "performance");
+      scormAPI.LMSSetValue(pre + "student_response", repEleve + " [essai " + tentative + "]");
+      scormAPI.LMSSetValue(pre + "result", ok ? "correct" : "wrong");
+      scormAPI.LMSSetValue(pre + "weighting", "1");
+      var pts = ok ? ((tentative === 1) ? "1" : "0.5") : "0";
+      var po = "cmi.objectives." + n + ".";
+      scormAPI.LMSSetValue(po + "id", qid + "_" + SCORM_IDS[qid]);
+      scormAPI.LMSSetValue(po + "score.min", "0");
+      scormAPI.LMSSetValue(po + "score.max", "1");
+      scormAPI.LMSSetValue(po + "score.raw", pts);
+      scormAPI.LMSSetValue(po + "status", ok ? "passed" : "failed");
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(calculerScores().n1));
+      scormAPI.LMSCommit("");
+    }catch(e){ /* silencieux */ }
+  }
+  function scormReport(note){
+    try{
+      if(!scormInit) return;
+      scormAPI.LMSSetValue("cmi.core.score.raw", String(note));
+      scormAPI.LMSSetValue("cmi.core.lesson_status", "completed");
+      scormAPI.LMSCommit("");
+    }catch(e){ /* silencieux */ }
+  }
+
+  /* ===== Widget relation ↔ (PIÈCE NEUVE — câblée à etat / scores / SCORM / 2 essais) ===== */
+  const UNITES = ['ms','µs','s','min','cm','mm','m','V','mV','Hz','kHz'];
+  const SYMBOLES = ['t_0','t','t_1','t_2','Δt','U','f','T','d','x','m'];
+  const Vr = {q1L:'',q1R:'',q2R:''};   // champs au clavier (q2L = case de dépôt du symbole)
+  const symEnMain = {};                 // symbole « en main » par champ (clic étiquette -> clic case)
+  let actif = null;
+  const figeR = {q1:false,q2:false};
+  function elr(f){ return document.querySelector('[data-f="'+f+'"]'); }
+  function renderRel(f){
+    const e=elr(f); if(!e || e.tagName==='SELECT' || e.classList.contains('sym-slot')) return;
+    const cur='<span style="border-right:2px solid var(--bleu);margin-left:1px;animation:blink 1s infinite">&thinsp;</span>';
+    const raw=Vr[f]||'';
+    if(raw===''){ e.innerHTML=(f===actif)?cur:'<span class="ph">…</span>'; return; }
+    const rendu=raw.replace(/×10\^(−?)(\d*)/g,(_,sg,exp)=>'×10<sup>'+sg+exp+'</sup>');
+    e.innerHTML=rendu+(f===actif?cur:'');
+  }
+  function focusR(f){ if(figeR[f.slice(0,2)]) return; const prev=actif; if(actif) elr(actif).classList.remove('active'); actif=f; elr(f).classList.add('active'); if(prev&&prev!==f) renderRel(prev); renderRel(f); }
+  // Clavier scientifique standard (mêmes TOUCHES que le Type 2) routé vers le champ actif
+  function toucheRel(val){
+    if(!actif) return;
+    if(val==='DEL'){
+      let c=Vr[actif]||'';
+      const m=c.match(/(.*)(×10\^)(−?)(\d*)$/);
+      if(m){ if(m[4].length>0) c=m[1]+m[2]+m[3]+m[4].slice(0,-1); else if(m[3].length>0) c=m[1]+m[2]; else c=m[1]; }
+      else { c=c.slice(0,-1); }
+      Vr[actif]=c;
+    } else if(val==='EXP'){ Vr[actif]=(Vr[actif]||'')+'×10^'; }
+    else { Vr[actif]=(Vr[actif]||'')+val; }
+    renderRel(actif);
+  }
+  function construireClavierRel(div){
+    const wrap=document.createElement('div'); wrap.className='clavier';
+    TOUCHES.forEach(t=>{ const b=document.createElement('button'); b.className='k'+(t.t==='op'?' k-op':t.t==='sp'?' k-spec':t.t==='del'?' k-del':''); b.textContent=t.l; b.addEventListener('click',()=>toucheRel(t.v)); wrap.appendChild(b); });
+    div.innerHTML=''; div.appendChild(wrap);
+  }
+  function uvalR(f){ const s=elr(f); if(!s) return ''; return s.classList.contains('sym-slot') ? (s.dataset.val||'') : s.value; }
+  function nbR(s){ s=(s||'').trim().replace(',','.'); if(s==='') return null; const v=parseFloat(s); return isNaN(v)?null:v; }
+  function estRef(val,u){ return nbR(val)===100 && u==='µs'; }
+  function estSym(val,u){ return val==='Δt' && u==='µs'; }
+  function estMes(val,u){ return u==='cm' && nbR(val)!==null && nbR(val)>0; }
+  function champsDe(q){ return [q+'L',q+'R',q+'Lu',q+'Ru']; }
+  function symPick(dest, sym){
+    if(figeR[dest.slice(0,2)]) return;
+    symEnMain[dest]=sym;
+    const bank=document.querySelector('[data-bank="'+dest+'"]');
+    if(bank) bank.querySelectorAll('.sym-btn').forEach(b=>b.classList.toggle('selected', b.dataset.sym===sym));
+    const slot=elr(dest); if(slot) slot.classList.add('receptive');
+  }
+  function symDrop(dest){
+    if(figeR[dest.slice(0,2)]) return;
+    const sym=symEnMain[dest]; if(!sym) return;
+    const slot=elr(dest); if(!slot) return;
+    slot.dataset.val=sym;
+    slot.classList.remove('receptive');
+    slot.innerHTML='\\('+sym+'\\)';
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([slot]);
+  }
+
+  function validerRel(q){
+    if(figeR[q]) return;
+    const t = etat[q]; t.tentative++;
+    let bon, rep;
+    if(q==='q1'){
+      const L=Vr.q1L, Lu=uvalR('q1Lu'), R=Vr.q1R, Ru=uvalR('q1Ru');
+      bon = (estRef(L,Lu)&&estMes(R,Ru)) || (estRef(R,Ru)&&estMes(L,Lu));
+      rep = L+' '+Lu+' <-> '+R+' '+Ru;
+    } else {
+      const sv=uvalR('q2L'), su=uvalR('q2Lu'), mv=Vr.q2R, mu=uvalR('q2Ru');
+      bon = estSym(sv,su) && estMes(mv,mu);
+      rep = sv+' '+su+' <-> '+mv+' '+mu;
+    }
+    const fb=document.getElementById('fb_'+q), bloc=document.getElementById(q);
+    const btnv=document.getElementById('btnv_'+q), btnr=document.getElementById('btnr_'+q);
+    if(bon){
+      figeR[q]=true;
+      champsDe(q).forEach(f=>{ const e=elr(f); e.classList.remove('ko'); e.classList.add('ok'); if(e.tagName==='SELECT') e.disabled=true; });
+      bloc.classList.remove('warn-bloc','ko-bloc'); bloc.classList.add('ok-bloc');
+      fb.className='fb ok'; fb.style.display='block';
+      fb.innerHTML="Parfait — la relation est correcte. Les centimètres mesurés sont enregistrés ; ils dépendent de ton zoom, ils ne sont pas notés.";
+      t.resultat = (t.tentative===1) ? 'ok1' : 'ok2';
+      btnv.disabled=true; btnr.style.display='none';
+      if(actif && actif.slice(0,2)===q){ elr(actif).classList.remove('active'); actif=null; }
+    } else {
+      if(t.tentative===1){
+        bloc.classList.add('warn-bloc');
+        fb.className='fb ko'; fb.style.display='block';
+        fb.innerHTML = (q==='q1')
+          ? "Pas encore. Un côté = la valeur lue sur le document + son unité ; l'autre = la longueur que tu as mesurée, en cm."
+          : "Pas encore. À gauche, le symbole de la grandeur cherchée et son unité ; à droite, la largeur du signal (entre t₁ et t₂) que tu as mesurée, en cm.";
+        btnv.disabled=true; btnr.style.display='inline-block';
+      } else {
+        figeR[q]=true;
+        champsDe(q).forEach(f=>{ const e=elr(f); e.classList.add('ko'); if(e.tagName==='SELECT') e.disabled=true; });
+        bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+        fb.className='fb ko2'; fb.style.display='block';
+        fb.innerHTML = ((q==='q1')
+          ? "Un côté doit porter la valeur du repère lu sur le document (<strong>100 µs</strong>), l'autre la longueur du segment 0→100 µs <strong>en cm</strong>."
+          : "À gauche : le <strong>symbole de la durée (Δt)</strong> et son unité (µs). À droite : la largeur du signal (entre t₁ et t₂), <strong>en cm</strong>.")
+          + (EN_CLASSE ? RELANCE_PROF : '');
+        t.resultat='ko';
+        btnv.disabled=true; btnr.style.display='none';
+      }
+    }
+    if(figeR[q]){ const bk=document.querySelector('[data-bank="'+q+'L"]'); if(bk) bk.classList.add('done'); }
+    if(t.resultat !== null){
+      scormInteraction(q, bon, rep, t.tentative);
+      if(q==='q1') mesures.scale_cm = cmDe('q1');
+      if(q==='q2') mesures.arrow_cm = cmDe('q2');
+      maybeRevealC();
+    }
+    verifierFin();
+  }
+
+  function retryRel(q){
+    champsDe(q).forEach(f=>{ const e=elr(f); e.classList.remove('ko','ok'); if(e.classList.contains('sym-slot')){ e.dataset.val=''; e.classList.remove('receptive'); e.innerHTML='<span class="ph">?</span>'; symEnMain[f]=null; const bk=document.querySelector('[data-bank="'+f+'"]'); if(bk){ bk.classList.remove('done'); bk.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('selected')); } } else if(e.tagName==='SELECT'){ e.disabled=false; e.value=''; } else { Vr[f]=''; renderRel(f); } });
+    document.getElementById('fb_'+q).style.display='none';
+    document.getElementById('btnr_'+q).style.display='none';
+    document.getElementById('btnv_'+q).disabled=false;
+    document.getElementById(q).classList.remove('warn-bloc');
+  }
+
+  function initRelation(){
+    document.querySelectorAll('select.rel-dd:not(.sym-dd)').forEach(s=>{
+      const o=document.createElement('option'); o.value=''; o.textContent='— unité —'; s.appendChild(o);
+      melanger(UNITES).forEach(u=>{ const op=document.createElement('option'); op.value=u; op.textContent=u; s.appendChild(op); });
+    });
+    document.querySelectorAll('.sym-bank').forEach(bank=>{
+      const dest=bank.dataset.bank;
+      bank.innerHTML = '<span class="sym-bank-lbl">Choisis la grandeur, puis clique la case :</span>' + melanger(SYMBOLES).map(u => '<button type="button" class="sym-btn" data-sym="'+u+'" onclick="symPick(\''+dest+'\',\''+u+'\')">\\('+u+'\\)</button>').join('');
+    });
+    document.querySelectorAll('.sym-slot').forEach(slot=>{ slot.dataset.val=''; slot.innerHTML='<span class="ph">?</span>'; });
+    if(window.MathJax && MathJax.typesetPromise){ document.querySelectorAll('.sym-bank').forEach(c=>MathJax.typesetPromise([c])); }
+    document.querySelectorAll('[data-kb]').forEach(construireClavierRel);
+    document.querySelectorAll('.rel-field').forEach(e=>{ e.addEventListener('click',()=>focusR(e.dataset.f)); });
+    ['q1L','q1R','q2R'].forEach(renderRel);
+  }
+
+
+  /* ===== Type 5 — CONSTR à sous-opérations (socle COURS : base + extension, verbatim) ===== */
+  function melanger(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function normalizeSlot(){
+    // Au démarrage, toujours 1 case vide par emplacement,
+    // même si la solution attendue en comporte 2 (l'élève décide d'ajouter la 2e case).
+    return { subop: null, cells: [null] };
+  }
+
+  function construireConstr(qid){
+    const cfg = CONSTR[qid];
+    if(!cfg) return;
+    cfg._etats = cfg.lignes.map(lg => ({
+      op: null,
+      sel: null,                          // lettre actuellement "en main" (placement explicite : on prend une étiquette, puis on choisit la case)
+      slots: lg.slots.map(() => normalizeSlot())
+    }));
+    cfg._ligneFigee = cfg.lignes.map(() => false);
+    cfg._bankComplete = [...cfg.lettres, ...(cfg.distracteurs || [])];
+    cfg._bankOrder = melanger(cfg._bankComplete);
+
+    const container = document.getElementById("constr_" + qid);
+    const helpHtml =
+      '<button class="help-icon" onclick="toggleHelp(\'' + qid + '\')" title="Aide">?</button>' +
+      '<div class="help-bubble" id="helpbubble_' + qid + '">' +
+        "<strong>💡 Comment utiliser ce widget</strong>" +
+        '<ul style="margin:8px 0;padding-left:20px">' +
+          "<li>Choisis d'abord l'opération (× / fraction / + / −) en cliquant sur un bouton.</li>" +
+          "<li>Clique une étiquette dans la banque pour la <strong>prendre</strong> (elle s'illumine), puis clique la <strong>case</strong> où la poser. Reclique l'étiquette pour la lâcher.</li>" +
+          "<li>Clic sur une lettre déjà placée → elle retourne dans la banque.</li>" +
+        '</ul>' +
+        "<strong>Pour les fractions :</strong>" +
+        '<ul style="margin:8px 0;padding-left:20px">' +
+          "<li>Clic sur la case grise vide à côté d'une case remplie → ajoute une 2\u1d49 case avec un sous-opérateur (×, + ou − au choix).</li>" +
+          "<li>Sélecteur × / + / − → change le sous-opérateur à tout moment (les lettres restent).</li>" +
+          "<li>Icône corbeille 🗑 → retire la 2\u1d49 case (les lettres reviennent dans la banque).</li>" +
+        '</ul>' +
+        "<em>Tu peux revenir en arrière à n'importe quel moment, rien n'est définitif avant de cliquer sur « Valider ».</em>" +
+      '</div>';
+    container.innerHTML = '<div class="constr-wrap">' + helpHtml +
+      cfg.lignes.map((lg, i) =>
+        '<div class="constr-row" id="constr-row-' + qid + '-' + i + '">' +
+        renderConstrRow(qid, i) +
+        '</div>'
+      ).join('') +
+    '</div>';
+    document.getElementById('btnv_' + qid).onclick = () => validerConstr(qid);
+    document.getElementById('btnr_' + qid).onclick = () => retryConstr(qid);
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([container]);
+  }
+
+  function toggleHelp(qid){
+    const bubble = document.getElementById("helpbubble_" + qid);
+    if(bubble) bubble.classList.toggle("visible");
+  }
+
+  function banqueDisponible(cfg, row){
+    const st = cfg._etats[row];
+    const placees = new Set();
+    st.slots.forEach(slot => {
+      slot.cells.forEach(c => { if(c) placees.add(c); });
+    });
+    return cfg._bankOrder.filter(L => !placees.has(L));
+  }
+
+  function renderConstrRow(qid, i){
+    const cfg = CONSTR[qid];
+    const lg = cfg.lignes[i];
+    const st = cfg._etats[i];
+    const figee = cfg._ligneFigee[i];
+    const nbSlots = st.slots.length;
+
+    const bank = banqueDisponible(cfg, i);
+    const sym = symFromOp(st.op);
+
+    const opsDispo =
+      [['produit','× produit'], ['fraction','fraction'],
+       ['somme','+ somme'], ['difference','− différence']];
+
+    const opsHtml = opsDispo.map(([op, lbl]) => {
+      const sel = (st.op === op) ? ' selected' : '';
+      const dis = figee ? ' disabled' : '';
+      return '<button class="constr-op-btn' + sel + '"' + dis +
+             " onclick=\"constrSetOp('" + qid + "'," + i + ",'" + op + "')\">" + lbl + "</button>";
+    }).join('');
+
+    // Zone des emplacements
+    let slotsHtml;
+    if(st.op === 'fraction'){
+      slotsHtml =
+        '<div class="frac-stack">' +
+          '<div class="frac-zone">' + renderSlot(qid, i, 0) + '</div>' +
+          '<div class="frac-line"></div>' +
+          '<div class="frac-zone">' + renderSlot(qid, i, 1) + '</div>' +
+        '</div>';
+    } else {
+      slotsHtml = st.slots.map((slot, s) => {
+        const symAfter = (s < nbSlots - 1) ?
+          '<span class="constr-sym">' + sym + '</span>' : '';
+        return renderSlot(qid, i, s) + symAfter;
+      }).join('');
+    }
+
+    const bankHtml = figee ? '<span class="constr-bank-figee">— ligne validée —</span>' :
+      (bank.length ? bank.map(L =>
+        "<button class=\"constr-token" + (st.sel === L ? " selected" : "") + "\" onclick=\"constrSelect('" + qid + "'," + i + ",'" + L.replace(/\\/g, "\\\\") + "')\">\\(" + L + "\\)</button>"
+      ).join('') :
+      '<span class="constr-bank-empty">— toutes les lettres sont placées —</span>');
+
+    const preview = previewTex(lg.grandeur, st);
+
+    const headStyle = figee ? ' style="color:var(--vert);font-weight:700"' : '';
+    return '<div class="constr-head"' + headStyle + '>\\(' + preview + '\\)</div>' +
+      '<div class="constr-ops">' + opsHtml + '</div>' +
+      '<div class="constr-slots">' + slotsHtml + '</div>' +
+      '<div class="constr-bank">' + bankHtml + '</div>';
+  }
+
+  function renderSlot(qid, row, slotIdx){
+    const cfg = CONSTR[qid];
+    const st = cfg._etats[row];
+    const opPrincipale = st.op;
+    const slot = st.slots[slotIdx];
+    const cap = capsFromOp(opPrincipale, st.slots.length)[slotIdx];
+    const figee = cfg._ligneFigee[row];
+    const dis = figee ? ' disabled' : '';
+
+    // Opération principale produit (ou non choisie) : 1 case par slot, pas de sous-op possible
+    if(opPrincipale !== "fraction" && opPrincipale !== "difference" && opPrincipale !== "somme"){
+      return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+    }
+
+    // Fraction : 1 case + case-fantôme OU 2 cases + sélecteur + corbeille
+    if(slot.cells.length === 1){
+      const html = renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee);
+      if(!figee){
+        const phantom = '<button class="add-case" onclick="constrAddSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Ajouter une 2e case avec un sous-opérateur">⎕</button>';
+        return html + phantom;
+      }
+      return html;
+    }
+
+    const selHtml = !figee ? renderSubOpSelector(qid, row, slotIdx, slot.subop) :
+      '<span class="constr-sym">' + subSym(slot.subop) + '</span>';
+    const trashHtml = !figee ? '<button class="del-case" onclick="constrRemoveSubCase(\'' + qid + '\',' + row + ',' + slotIdx + ')" title="Retirer cette case">🗑</button>' : "";
+    return renderCase(qid, row, slotIdx, 0, slot.cells[0], cap, dis, figee) +
+           selHtml +
+           renderCase(qid, row, slotIdx, 1, slot.cells[1], cap, dis, figee) +
+           trashHtml;
+  }
+
+  function subSym(subop){
+    if(subop === 'produit')    return '×';
+    if(subop === 'somme')      return '+';
+    if(subop === 'difference') return '−';
+    return '?';
+  }
+
+  function renderSubOpSelector(qid, row, slotIdx, currentSubOp){
+    const ops = [["produit","×"], ["somme","+"], ["difference","−"]];
+    const inner = ops.map(([op, sym]) => {
+      const sel = (currentSubOp === op) ? ' selected' : '';
+      return '<button class="sub-op-btn' + sel + '" onclick="constrSetSubOp(\'' + qid + '\',' + row + ',' + slotIdx + ',\'' + op + '\')">' + sym + '</button>';
+    }).join('');
+    return '<div class="sub-op-selector">' + inner + '</div>';
+  }
+
+  function renderCase(qid, row, slotIdx, cellIdx, content, cap, dis, figee){
+    const st = CONSTR[qid]._etats[row];
+    const vide = !content;
+    const selActive = (st.sel !== null);
+    const cls = (content ? ' filled' : '') + (figee ? ' figee' : '') +
+                ((vide && selActive && !figee) ? ' receptive' : '');
+    const action = (vide && !figee)
+      ? 'constrPlaceAt(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')'
+      : 'constrUnplace(\'' + qid + '\',' + row + ',' + slotIdx + ',' + cellIdx + ')';
+    return '<div class="constr-slot-wrap">' +
+      '<button class="constr-slot' + cls + '"' + dis +
+      ' onclick="' + action + '">' +
+      (content ? '\\(' + content + '\\)' : '?') + '</button>' +
+      '<span class="constr-slot-cap">' + cap + '</span>' +
+    '</div>';
+  }
+
+  function capsFromOp(op, nb){
+    if(op === 'fraction')   return ['numérateur', 'dénominateur'];
+    if(op === 'difference') return ['1er terme', '2e terme'];
+    if(op === 'produit')    return Array(nb).fill('facteur');
+    if(op === 'somme')      return Array(nb).fill('terme');
+    return Array(nb).fill('position');
+  }
+
+  function symFromOp(op){
+    if(op === 'fraction')   return '/';
+    if(op === 'difference') return '−';
+    if(op === 'produit')    return '×';
+    if(op === 'somme')      return '+';
+    return '?';
+  }
+
+  function previewTexCell(cell){
+    return cell || "\\square";
+  }
+
+  function previewTexSlot(slotInterne){
+    if(slotInterne.cells.length === 1){
+      return previewTexCell(slotInterne.cells[0]);
+    }
+    const a = previewTexCell(slotInterne.cells[0]);
+    const b = previewTexCell(slotInterne.cells[1]);
+    if(slotInterne.subop === "produit")    return a + " \\times " + b;
+    if(slotInterne.subop === "somme")      return a + " + " + b;
+    if(slotInterne.subop === "difference") return a + " - " + b;
+    return a + " \\,?\\, " + b;
+  }
+
+  function previewTexSlotParen(slotInterne){
+    // Dans une somme/différence principale, un slot à 2 cases dont la sous-opération est additive
+    // (+ ou −) doit être parenthésé pour rester correct (ex. y − (a + x)).
+    // Un produit n'a jamais besoin de parenthèses (y − a×x).
+    const tex = previewTexSlot(slotInterne);
+    if(slotInterne.cells.length === 2 &&
+       (slotInterne.subop === "somme" || slotInterne.subop === "difference")){
+      return "\\left(" + tex + "\\right)";
+    }
+    return tex;
+  }
+
+  function previewTex(grandeur, st){
+    if(!st.op && st.slots.every(s => s.cells.every(c => !c))){
+      return grandeur + ' = \\square\\,?\\,\\square';
+    }
+    if(st.op === 'fraction'){
+      return grandeur + ' = \\dfrac{' + previewTexSlot(st.slots[0]) + '}{' + previewTexSlot(st.slots[1]) + '}';
+    }
+    // produit : 1 case par slot (pas de sous-op) -> previewTexCell ; somme/difference : previewTexSlot (sous-op possible)
+    if(st.op === 'produit'){
+      const parts = st.slots.map(s => previewTexCell(s.cells[0]));
+      return grandeur + ' = ' + parts.join(' \\times ');
+    }
+    const parts = st.slots.map(s => previewTexSlotParen(s));
+    if(st.op === 'somme')      return grandeur + ' = ' + parts.join(' + ');
+    if(st.op === 'difference') return grandeur + ' = ' + parts[0] + ' - ' + parts[1];
+    return grandeur + ' = ' + parts.join(' \\,?\\, ');
+  }
+
+  function refreshConstrRow(qid, i){
+    const el = document.getElementById('constr-row-' + qid + '-' + i);
+    if(!el) return;
+    el.innerHTML = renderConstrRow(qid, i);
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]);
+  }
+
+  function constrSetOp(qid, row, op){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    st.op = (st.op === op) ? null : op;
+    // Si la nouvelle opération n'autorise pas les sous-cases (produit / aucune) :
+    // les 2e cases disparaissent, leurs lettres retournent dans la banque
+    if(st.op !== 'fraction' && st.op !== 'difference' && st.op !== 'somme'){
+      st.slots.forEach(slot => {
+        slot.subop = null;
+        slot.cells = [slot.cells[0]];
+      });
+    }
+    refreshConstrRow(qid, row);
+  }
+
+  function estPlacee(st, letter){
+    return st.slots.some(slot => slot.cells.includes(letter));
+  }
+
+  function constrSelect(qid, row, letter){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    if(estPlacee(st, letter)) return;              // lettre déjà posée → ne pas la reprendre
+    st.sel = (st.sel === letter) ? null : letter;  // reclic sur la même étiquette = on la lâche
+    refreshConstrRow(qid, row);
+  }
+
+  function constrPlaceAt(qid, row, slotIdx, cellIdx){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    if(st.sel === null) return;                            // aucune lettre en main → ne rien faire
+    if(st.slots[slotIdx].cells[cellIdx] !== null) return; // case déjà occupée → ne rien faire
+    st.slots[slotIdx].cells[cellIdx] = st.sel;            // on pose ICI la lettre en main
+    st.sel = null;                                        // la main se vide
+    refreshConstrRow(qid, row);
+  }
+
+  // (LEGACY — placement automatique séquentiel. REMPLACÉ par constrSelect + constrPlaceAt ; conservé pour historique, plus câblé.)
+  function constrPlace(qid, row, letter){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    if(estPlacee(st, letter)) return;
+    for(let i = 0; i < st.slots.length; i++){
+      const cells = st.slots[i].cells;
+      for(let j = 0; j < cells.length; j++){
+        if(cells[j] === null){
+          cells[j] = letter;
+          refreshConstrRow(qid, row);
+          return;
+        }
+      }
+    }
+  }
+
+  function constrUnplace(qid, row, slotIdx, cellIdx){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    const cells = st.slots[slotIdx].cells;
+    if(cells[cellIdx] === null) return;
+    cells[cellIdx] = null;
+    refreshConstrRow(qid, row);
+  }
+
+  function constrAddSubCase(qid, row, slotIdx){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    if(st.op !== "fraction" && st.op !== "difference" && st.op !== "somme") return;
+    const slot = st.slots[slotIdx];
+    if(slot.cells.length >= 2) return;
+    slot.subop = "produit";
+    slot.cells.push(null);
+    refreshConstrRow(qid, row);
+  }
+
+  function constrRemoveSubCase(qid, row, slotIdx){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    const slot = st.slots[slotIdx];
+    if(slot.cells.length < 2) return;
+    slot.subop = null;
+    slot.cells = [slot.cells[0]];
+    refreshConstrRow(qid, row);
+  }
+
+  function constrSetSubOp(qid, row, slotIdx, subop){
+    const cfg = CONSTR[qid];
+    if(cfg._ligneFigee[row]) return;
+    const st = cfg._etats[row];
+    const slot = st.slots[slotIdx];
+    if(slot.cells.length !== 2) return;
+    slot.subop = subop;
+    refreshConstrRow(qid, row);
+  }
+
+  function evalSlot(slotAttendu, slotEleve){
+    if(typeof slotAttendu === "string"){
+      return slotEleve.cells.length === 1 && slotEleve.cells[0] === slotAttendu;
+    }
+    if(slotEleve.cells.length !== 2) return false;
+    if(slotEleve.subop !== slotAttendu.subop) return false;
+    if(slotAttendu.subop === "difference"){
+      return slotEleve.cells[0] === slotAttendu.cells[0]
+          && slotEleve.cells[1] === slotAttendu.cells[1];
+    }
+    const tri1 = [...slotEleve.cells].sort();
+    const tri2 = [...slotAttendu.cells].sort();
+    return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+  }
+
+  function evalLigne(opChoisie, opAttendue, slotsRemplis, slotsAttendus){
+    if(opChoisie !== opAttendue) return false;
+    if(slotsRemplis.length !== slotsAttendus.length) return false;
+    if(opAttendue === 'fraction' || opAttendue === 'difference'){
+      return slotsRemplis.every((slotR, i) => evalSlot(slotsAttendus[i], slotR));
+    }
+    // Commutatif (produit, somme) : comparaison de multi-ensembles sur les 1res cases
+    const tri1 = slotsRemplis.map(s => s.cells[0]).sort();
+    const tri2 = slotsAttendus.map(s => (typeof s === "string" ? s : null)).sort();
+    return tri1.length === tri2.length && tri1.every((v, i) => v === tri2[i]);
+  }
+
+  // Représentation interne de la solution (pour révélation en fin de 2e tentative)
+  function solutionInterne(lg){
+    return {
+      op: lg.op,
+      slots: lg.slots.map(s => (typeof s === "string") ?
+        { subop: null, cells: [s] } :
+        { subop: s.subop, cells: [...s.cells] })
+    };
+  }
+
+  function validerConstr(qid){
+    const cfg = CONSTR[qid];
+    const t = etat[qid];
+    const multi = cfg.lignes.length > 1;
+
+    for(let i = 0; i < cfg.lignes.length; i++){
+      if(cfg._ligneFigee[i]) continue;
+      const st = cfg._etats[i];
+      if(!st.op){
+        alert("Choisis d'abord l'opération (× / fraction / + / −).");
+        return;
+      }
+      if(st.slots.some(slot => slot.cells.some(c => c === null))){
+        alert("Remplis toutes les cases avant de valider.");
+        return;
+      }
+    }
+
+    t.tentative++;
+
+    const resultats = cfg.lignes.map((lg, i) => {
+      if(cfg._ligneFigee[i]) return true;
+      const st = cfg._etats[i];
+      return evalLigne(st.op, lg.op, st.slots, lg.slots);
+    });
+
+    const toutBon = resultats.every(r => r);
+    const repEleve = reponseConstr(qid);   // capture avant toute révélation de solution
+    const fb = document.getElementById('fb_' + qid);
+    const btnv = document.getElementById('btnv_' + qid);
+    const btnr = document.getElementById('btnr_' + qid);
+    const bloc = document.getElementById(qid);
+
+    if(toutBon){
+      fb.className = 'fb ok'; fb.innerHTML = cfg.fbok; fb.style.display = 'block';
+      t.resultat = (t.tentative === 1) ? 'ok1' : 'ok2';
+      btnv.disabled = true; btnr.style.display = 'none';
+      bloc.classList.remove('warn-bloc'); bloc.classList.add('ok-bloc');
+      cfg._ligneFigee = cfg.lignes.map(() => true);
+      cfg.lignes.forEach((_, i) => refreshConstrRow(qid, i));
+      scormInteraction(qid, true, repEleve, t.tentative);
+    } else {
+      bloc.classList.add('warn-bloc');
+      fb.className = 'fb ko';
+
+      if(t.tentative === 1){
+        if(multi){
+          let nbOk = 0, nbTotal = cfg.lignes.length;
+          cfg.lignes.forEach((lg, i) => {
+            if(resultats[i]){
+              cfg._ligneFigee[i] = true;
+              nbOk++;
+            } else {
+              cfg._etats[i].op = null;
+              cfg._etats[i].slots = lg.slots.map(() => normalizeSlot());
+            }
+            refreshConstrRow(qid, i);
+          });
+          fb.innerHTML = "✗ " + nbOk + " ligne(s) sur " + nbTotal +
+                         " correctes. Revois celle(s) effacée(s).<br>" + cfg.fb1;
+        } else {
+          cfg._etats[0].op = null;
+          cfg._etats[0].slots = cfg.lignes[0].slots.map(() => normalizeSlot());
+          refreshConstrRow(qid, 0);
+          fb.innerHTML = "✗ " + cfg.fb1;
+        }
+        fb.style.display = 'block';
+        btnv.disabled = true; btnr.style.display = 'inline-block';
+      } else {
+        cfg.lignes.forEach((lg, i) => {
+          if(!resultats[i]){
+            const sol = solutionInterne(lg);
+            cfg._etats[i].op = sol.op;
+            cfg._etats[i].slots = sol.slots;
+          }
+          cfg._ligneFigee[i] = true;
+          refreshConstrRow(qid, i);
+        });
+        fb.className = 'fb ko2';
+        fb.innerHTML = "✗ " + cfg.fb2 + (EN_CLASSE ? RELANCE_PROF : '');
+        fb.style.display = 'block';
+        t.resultat = 'ko';
+        btnv.disabled = true; btnr.style.display = 'none';
+        bloc.classList.remove('warn-bloc'); bloc.classList.add('ko-bloc');
+        scormInteraction(qid, false, repEleve, t.tentative);
+      }
+    }
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([fb]);
+    verifierFin();
+    if(qid==='q3' && t.resultat!==null){ const dbloc=document.getElementById('q4'); if(dbloc) dbloc.classList.remove('locked'); }
+  }
+
+  function retryConstr(qid){
+    document.getElementById('fb_' + qid).style.display = 'none';
+    document.getElementById('btnr_' + qid).style.display = 'none';
+    document.getElementById('btnv_' + qid).disabled = false;
+    document.getElementById(qid).classList.remove('warn-bloc');
+  }
+  /* Helpers SCORM Type 5 (socle COMMUN, verbatim) */
+  function texToPlain(s){ return String(s).replace(/\\rho/g,"rho").replace(/\\lambda/g,"lambda").replace(/\\ell/g,"l").replace(/\\dfrac/g,"").replace(/[\\{}]/g,""); }
+  function slotToPlain(slot){
+    const cells = slot.cells.map(c => texToPlain(c || "?"));
+    if(cells.length === 1) return cells[0];
+    const symMap = { produit: "*", somme: "+", difference: "-" };
+    return "(" + cells[0] + (symMap[slot.subop] || "?") + cells[1] + ")";
+  }
+  function reponseConstr(qid){
+    const cfg = CONSTR[qid];
+    return cfg.lignes.map((lg, i) => {
+      const st = cfg._etats[i]; const g = texToPlain(lg.grandeur);
+      const parts = st.slots.map(slotToPlain);
+      if(st.op === "fraction")   return g + "=" + parts[0] + "/" + parts[1];
+      if(st.op === "produit")    return g + "=" + parts.join("*");
+      if(st.op === "somme")      return g + "=" + parts.join("+");
+      if(st.op === "difference") return g + "=" + parts[0] + "-" + parts[1];
+      return g + "=?";
+    }).join(" ; ");
+  }
+  /* Q3 (calcul) — construit dynamiquement à la révélation, avec les NOMBRES mesurés par l'élève */
+  const CONSTR = {};
+  const mesures = { scale_cm:'', arrow_cm:'' };   // longueurs mesurées : segment 0→100 µs / largeur du signal, en cm
+  function cmDe(q){                                 // valeur (chaîne) du côté en cm de la relation q
+    if(uvalR(q+'Lu')==='cm') return Vr[q+'L']||'';
+    if(uvalR(q+'Ru')==='cm') return Vr[q+'R']||'';
+    return '';
+  }
+  function maybeRevealC(){                          // révèle l'étape c quand a ET b sont résolues
+    if(etat.q1.resultat===null || etat.q2.resultat===null) return;
+    if(CONSTR.q3) return;                            // déjà construite
+    const a=(mesures.arrow_cm||'?').replace(/,/g,'{,}');   // largeur du signal (t₁→t₂)
+    const s=(mesures.scale_cm||'?').replace(/,/g,'{,}');   // longueur du segment 0→100 µs
+    CONSTR.q3 = {
+      lettres: ['100', a, s],
+      distracteurs: [],
+      lignes: [ { grandeur:'Δt', op:'fraction', slots:[ {subop:'produit', cells:['100', a]}, s ] } ],
+      fb1: "Pose une fraction. En haut : le produit de la valeur lue (100) par la largeur du signal. En bas : la longueur du segment 0→100 µs.",
+      fb2: "Δt = (100 × largeur du signal) ÷ longueur du segment 0→100.",
+      fbok: "&#10003; Exact ! Tu as bien posé le produit en croix avec tes mesures."
+    };
+    document.getElementById('q3').classList.remove('locked');
+    construireConstr('q3');
+  }
+
+  /* ===== Init (socle, adapté aux types présents) ===== */
+  window.addEventListener('DOMContentLoaded',()=>{
+    scormStart();
+    IDS_NUM.forEach(qid=>{ construireClavier('clav_'+qid,qid); renderDisp(qid); });
+    initRelation();
+    IDS_CONSTR.forEach(construireConstr);
+    function renderMath(){
+      if(window.MathJax&&MathJax.typesetPromise){ MathJax.typesetPromise([document.body]); }
+      else { setTimeout(renderMath,100); }
+    }
+    renderMath();
+  });
+  </script>
+</body>
+</html>
