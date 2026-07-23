@@ -46,10 +46,11 @@
   .niveaux{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; margin:0}
   .niveau{border:1px solid var(--gris-l); border-radius:var(--r);
     padding:1rem 1.15rem 1.1rem; display:flex; flex-direction:column}
-  .pastille{display:inline-block; align-self:flex-start; background:var(--or);
-    color:var(--bleu); font-size:.68rem; font-weight:700; text-transform:uppercase;
-    letter-spacing:.05em; padding:2px 9px; border-radius:999px; white-space:nowrap}
-  .niveau h2{color:var(--bleu); font-size:1.15rem; font-weight:700; margin:.55rem 0 .35rem}
+  .niveau h2{margin:0 0 .7rem; text-align:center}
+  .niveau h2 span{display:inline-block; background:var(--or); color:var(--bleu);
+    font-size:1rem; font-weight:700; letter-spacing:.02em;
+    padding:.28rem 1rem; border-radius:999px}
+  .niveau h2 sup{font-size:.72em; line-height:0}
   .niveau p{margin:0; font-size:.9rem; color:var(--doux)}
   .acces{margin:.9rem 0 0; padding-top:.7rem; border-top:1px solid var(--gris-l)}
   .acces a{font-weight:600}
@@ -109,15 +110,13 @@
 <div class="niveaux">
 
   <div class="niveau">
-    <span class="pastille">Niveau</span>
-    <h2>Seconde</h2>
+    <h2><span>Seconde</span></h2>
     <p>Les chapitres du programme de Seconde, chacun avec ses vidéos, ses quiz, ses activités et sa fiche de cours.</p>
     <p class="acces"><a href="seconde/">Voir les chapitres de Seconde</a></p>
   </div>
 
   <div class="niveau">
-    <span class="pastille">Niveau</span>
-    <h2>Première spécialité</h2>
+    <h2><span>1<sup>re</sup> spécialité</span></h2>
     <p>Les chapitres de la spécialité physique-chimie en Première, construits sur le même modèle.</p>
     <p class="acces"><a href="premiere-spe/">Voir les chapitres de Première spécialité</a></p>
   </div>
