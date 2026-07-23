@@ -33,6 +33,19 @@
      font-weight:700}
   .sous-titre{font-size:.98rem; color:var(--doux); margin:0}
 
+  /* Lien de retour vers l'accueil du site */
+  .retour{margin:0 0 .7rem; font-size:.85rem}
+  .retour a{color:var(--doux); border-bottom-color:rgba(90,83,70,.28)}
+  .retour a:hover{color:var(--bleu); border-bottom-color:var(--bleu)}
+
+  /* Objectifs du chapitre — liste à flèches */
+  .objectifs-titre{font-size:.9rem; font-weight:600; color:var(--texte);
+    margin:.9rem 0 .3rem}
+  .objectifs li{padding:.16rem 0; border-bottom:0; gap:.5rem;
+    font-size:.9rem; color:var(--doux)}
+  .objectifs li::before{content:"→"; color:var(--or); font-weight:700;
+    flex:0 0 auto; line-height:1.5}
+
   a{color:var(--bleu-cl); text-decoration:none;
     border-bottom:1px solid rgba(44,111,173,.28)}
   a:hover{color:var(--bleu); border-bottom-color:var(--bleu)}
@@ -93,6 +106,7 @@
 
   footer{margin-top:2.4rem; padding-top:.9rem; border-top:1px solid var(--gris-l);
     font-size:.88rem; color:var(--doux)}
+  footer .retour{margin:0 0 .6rem}
 
   @media(max-width:900px){
     .colonnes{grid-template-columns:1fr; gap:2rem}
@@ -107,20 +121,29 @@
 <div class="page">
 
 <header>
+  <p class="retour"><a href="../../">← Accueil du site</a></p>
   <span class="h-phase">Seconde</span>
   <h1>La boîte à outils du parfait petit physicien chimiste</h1>
   <p class="sous-titre">Conversions, formules, matériel</p>
+
+  <p class="objectifs-titre">Objectifs du chapitre</p>
+  <ul class="objectifs">
+    <li>Convertir des grandeurs avec les préfixes et les puissances de 10 associées.</li>
+    <li>Isoler une grandeur.</li>
+    <li>Exploiter la proportionnalité, « à la main » et avec un tableur.</li>
+    <li>Connaître les pictogrammes de sécurité et le matériel de laboratoire.</li>
+  </ul>
 </header>
 
 <div class="intro">
   <div class="intro-cols">
-    <p>Ces ressources sont conçues pour une classe inversée : la capsule vidéo se regarde avant la séance, le temps de classe étant consacré aux activités et aux exercices. Les quiz ne servent pas à évaluer mais à apprendre — ils sont faits pour être refaits.</p>
+    <p>Ces ressources sont conçues pour une classe inversée : les vidéos se regardent avant la séance, le temps de classe étant consacré aux activités et aux exercices. Les quiz ne servent pas à évaluer mais à apprendre — ils sont faits pour être refaits.</p>
     <p>Les quiz sont des fichiers HTML autonomes : ils s'ouvrent dans un navigateur, sans installation ni compte, et n'enregistrent aucun résultat. Les QCM de vérification de visionnage sont des fichiers XML, à importer dans Pronote ou dans Moodle. Les vidéos sont également proposées en version interactive au format H5P, à importer dans Moodle ou dans Éléa.</p>
-    <p>Les pastilles de format à droite de chaque titre portent les liens : elles ouvrent la ressource, ou l'enregistrent sur votre ordinateur lorsqu'elles indiquent « télécharger ».</p>
+    <p>Les pastilles à droite de chaque titre sont "cliquables" : elles ouvrent la ressource, ou l'enregistrent sur votre ordinateur lorsqu'elles indiquent « télécharger ».</p>
   </div>
   <p class="liens-haut">
     <span>📡 <a href="../../methode/" target="_blank" rel="noopener">Comment utiliser ces ressources</a></span>
-    <span>👀 <a href="https://www.youtube.com/playlist?list=PLe8tIQRcJeF4" target="_blank" rel="noopener">Toutes les capsules vidéo du chapitre (playlist YouTube)</a></span>
+    <span>👀 <a href="https://www.youtube.com/playlist?list=PLe8tIQRcJeF4" target="_blank" rel="noopener">Toutes les vidéos du chapitre (playlist YouTube)</a></span>
   </p>
 </div>
 
@@ -369,6 +392,7 @@
 </div>
 
 <footer>
+<p class="retour"><a href="../../">← Retour à l'accueil du site</a></p>
 <p>Z. Lechevalier, professeure de physique-chimie en lycée.<br>
 Contact : zeline.lechevalier [arobase] ac-normandie.fr</p>
 </footer>
